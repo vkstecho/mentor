@@ -325,13 +325,20 @@ MG.initMentorPwaUi = function() {
     var hint = document.getElementById('loginInstallHint');
     if (isStandalone()) {
       if (grid) grid.style.display = 'none';
-      if (shareOnly) shareOnly.classList.remove('hidden');
-      if (hint) hint.textContent = 'App installed on this device — share with teammates.';
-      var title = row.querySelector('p.font-semibold, p.text-xs.font-semibold');
-      if (title) title.textContent = 'Share Mentor app';
+      if (shareOnly) {
+        shareOnly.classList.remove('hidden');
+        shareOnly.textContent = 'Share Mentor app';
+      }
+      // Single label — do NOT also set title to "Share Mentor app" (was duplicated on login)
+      var title = document.getElementById('loginInstallTitle') || row.querySelector('p.font-semibold, p.text-xs.font-semibold');
+      if (title) title.textContent = 'Already on this device';
+      if (hint) hint.textContent = 'Share the app link with teammates.';
     } else {
       if (grid) grid.style.display = '';
       if (shareOnly) shareOnly.classList.add('hidden');
+      var title2 = document.getElementById('loginInstallTitle') || row.querySelector('p.font-semibold, p.text-xs.font-semibold');
+      if (title2) title2.textContent = 'Install Mentor app';
+      if (hint) hint.textContent = 'Install for home-screen access · OTP login after install';
     }
   }
   function bindLoginInstall() {
