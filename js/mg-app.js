@@ -156,15 +156,69 @@ MG.bindEvents = function() {
     const code = MG.$('#otpStepCode');
     if (phone) phone.classList.toggle('hidden', !!showCode);
     if (code) code.classList.toggle('hidden', !showCode);
+    // Hide install/share chrome on OTP step (cleaner, like Man Power)
+    try {
+      var installRow = document.getElementById('mentorLoginInstallRow');
+      var webHint = document.getElementById('mentorWebViewInstallHint');
+      if (installRow) installRow.style.display = showCode ? 'none' : '';
+      if (webHint && showCode) webHint.classList.add('hidden');
+    } catch (e) {}
+    var outcome = document.getElementById('loginOutcomeHeadline');
     if (showCode) {
-      MG.$('#loginTitle').textContent = 'Enter OTP';
-      MG.$('#loginSub').textContent = 'OTP sent to +91 ' + _pendingMobile;
-      setTimeout(() => MG.$('#otpInput')?.focus(), 100);
+      MG.$('#loginTitle').textContent = 'Mentor verification';
+      MG.$('#loginSub').textContent = 'OTP for mentor.vkstech.com · sent to +91 ' + _pendingMobile;
+      if (outcome) outcome.style.display = 'none';
+      setTimeout(function(){ try{ MG.$('#otpInput')?.focus(); }catch(e){} }, 100);
+      try{ MG._startMentorWebOtp(); }catch(e){}
     } else {
       MG.$('#loginTitle').textContent = 'Login with Mobile OTP';
       MG.$('#loginSub').textContent = 'Enter mobile number to continue';
+      if (outcome) outcome.style.display = '';
+      try{ MG._stopMentorWebOtp(); }catch(e){}
     }
   }
+
+  // Web OTP autofill (Chrome Android) — same pattern as Man Power
+  MG._mentorWebOtpAbort = null;
+  MG._stopMentorWebOtp = function() {
+    try { if (MG._mentorWebOtpAbort) MG._mentorWebOtpAbort.abort(); } catch (e) {}
+    MG._mentorWebOtpAbort = null;
+  };
+  MG._startMentorWebOtp = function() {
+    MG._stopMentorWebOtp();
+    var el = MG.$('#otpInput');
+    if (el) {
+      try {
+        el.setAttribute('autocomplete', 'one-time-code');
+        el.setAttribute('inputmode', 'numeric');
+        el.setAttribute('name', 'one-time-code');
+        el.setAttribute('enterkeyhint', 'done');
+      } catch (e) {}
+    }
+    if (typeof window.OTPCredential === 'undefined' || !navigator.credentials || !window.isSecureContext) return;
+    try {
+      MG._mentorWebOtpAbort = new AbortController();
+      var t = setTimeout(function(){ try{ MG._stopMentorWebOtp(); }catch(e){} }, 120000);
+      navigator.credentials.get({ otp: { transport: ['sms'] }, signal: MG._mentorWebOtpAbort.signal })
+        .then(function(cred) {
+          try { clearTimeout(t); } catch (e) {}
+          if (!cred || !cred.code) return;
+          var code = String(cred.code).replace(/\D/g, '').slice(0, 6);
+          if (code.length < 4) return;
+          if (el) {
+            el.value = code;
+            try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+          }
+          try { MG.showToast('OTP auto-filled from SMS'); } catch (e) {}
+          if (code.length === 6) setTimeout(function(){ try{ MG.verifyMentorOtp(); }catch(e){} }, 250);
+        })
+        .catch(function(err) {
+          try { clearTimeout(t); } catch (e) {}
+          if (err && err.name === 'AbortError') return;
+          console.warn('[Mentor WebOTP]', err && err.message);
+        });
+    } catch (e) {}
+  };
 
   MG.sendMentorOtp = async function() {
     const val = (MG.$('#mobileInput').value || '').trim();

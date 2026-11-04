@@ -323,17 +323,60 @@ MG.initMentorPwaUi = function() {
     var shareOnly = document.getElementById('loginShareOnly');
     var grid = row.querySelector('.grid');
     var hint = document.getElementById('loginInstallHint');
+    var title = document.getElementById('mentorLoginInstallTitle') || row.querySelector('p.font-semibold, p.text-xs.font-semibold');
     if (isStandalone()) {
       if (grid) grid.style.display = 'none';
-      if (shareOnly) shareOnly.classList.remove('hidden');
+      if (shareOnly) {
+        shareOnly.classList.remove('hidden');
+        shareOnly.textContent = 'Share Mentor app';
+      }
       if (hint) hint.textContent = 'App installed on this device — share with teammates.';
-      var title = row.querySelector('p.font-semibold, p.text-xs.font-semibold');
-      if (title) title.textContent = 'Share Mentor app';
+      // One label only — avoid "Share Mentor app" title + same button text
+      if (title) title.textContent = 'Invite teammates';
     } else {
       if (grid) grid.style.display = '';
       if (shareOnly) shareOnly.classList.add('hidden');
+      if (title) title.textContent = 'Install Mentor app';
+      if (hint) hint.textContent = 'Install for home-screen access · OTP login after install';
     }
+    // WebView / in-app browser (e.g. opened from Man Power)
+    try {
+      var hintEl = document.getElementById('mentorWebViewInstallHint');
+      if (hintEl) {
+        var ua = navigator.userAgent || '';
+        var isWv = /; wv\)/i.test(ua) || /WebView/i.test(ua) ||
+          (/(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(ua));
+        // Also treat missing standalone + referrer from manpower as embedded
+        var fromMp = false;
+        try { fromMp = /manpower\.vkstech\.com/i.test(document.referrer || ''); } catch (e) {}
+        if (!isStandalone() && (isWv || fromMp)) {
+          hintEl.classList.remove('hidden');
+        } else {
+          hintEl.classList.add('hidden');
+        }
+      }
+    } catch (e) {}
   }
+
+  function bindWebViewHint() {
+    var btn = document.getElementById('mentorCopyOpenChrome');
+    if (!btn || btn._bound) return;
+    btn._bound = true;
+    btn.onclick = function () {
+      var url = 'https://mentor.vkstech.com/mentor.html';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          btn.textContent = 'Copied — open in Chrome';
+          setTimeout(function () { btn.textContent = 'Copy mentor.vkstech.com link'; }, 2000);
+        }).catch(function () {
+          prompt('Copy this link and open in Chrome:', url);
+        });
+      } else {
+        prompt('Copy this link and open in Chrome:', url);
+      }
+    };
+  }
+
   function bindLoginInstall() {
     var a = document.getElementById('loginInstallAndroid');
     var i = document.getElementById('loginInstallIos');
@@ -364,7 +407,12 @@ MG.initMentorPwaUi = function() {
     };
     refreshLoginInstallUI();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindLoginInstall);
-  else bindLoginInstall();
+  function _initLoginInstallRow() {
+    bindLoginInstall();
+    bindWebViewHint();
+    refreshLoginInstallUI();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _initLoginInstallRow);
+  else _initLoginInstallRow();
   window.addEventListener('appinstalled', refreshLoginInstallUI);
 })();
