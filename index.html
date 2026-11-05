@@ -93,6 +93,9 @@
   background:linear-gradient(180deg,#fff,#f8fafc) !important;
 }
 
+
+/* Hide expanded language strip on landing — single chip only */
+.mn-lang-promo{display:none!important;}
 </style>
 
 <script>
@@ -134,22 +137,9 @@
       </a>
       <div style="display:flex;gap:8px">
         <a class="btn btn-ghost" href="mentor.html" data-i18n="login">Login</a>
-        <button type="button" id="mentorLandingLang" onclick="try{mentorLandingOpenPicker()}catch(e){mentorLandingToggleLang()}" style="margin-left:8px;padding:8px 12px;border-radius:10px;border:1.5px solid #cbd5e1;background:linear-gradient(180deg,#fff,#f8fafc);font-weight:800;cursor:pointer" title="Country & Language">🌐 EN</button>
+        <button type="button" id="mentorLandingLang" onclick="try{mentorLandingToggleLang()}catch(e){}" style="margin-left:4px;padding:8px 14px;border-radius:999px;border:1.5px solid #cbd5e1;background:#fff;font-weight:800;font-size:13px;cursor:pointer" title="Switch language">🌐 EN</button>
         <a class="btn btn-primary" href="mentor.html" data-i18n="start">Start free modules</a>
       </div>
-
-    <div class="mn-lang-promo" id="mn-lang-promo" role="region" aria-label="Choose language">
-      <div class="mn-lang-promo-inner">
-        <div class="mn-lang-promo-label">
-          <span class="mn-lang-promo-icon" aria-hidden="true">🌐</span>
-          <span class="mn-lang-promo-title">Multi-language</span>
-          <span class="mn-lang-promo-sub">Tap a language · works in app too</span>
-        </div>
-        <div class="mn-lang-chips"><button type="button" class="mn-chip" data-set-lang="en" onclick="try{localStorage.setItem('mp_lang','en');localStorage.setItem('mentor_lang','en');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">EN</button><button type="button" class="mn-chip" data-set-lang="hi" onclick="try{localStorage.setItem('mp_lang','hi');localStorage.setItem('mentor_lang','hi');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">हिं</button><button type="button" class="mn-chip" data-set-lang="gu" onclick="try{localStorage.setItem('mp_lang','gu');localStorage.setItem('mentor_lang','gu');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">ગુ</button><button type="button" class="mn-chip" data-set-lang="ta" onclick="try{localStorage.setItem('mp_lang','ta');localStorage.setItem('mentor_lang','ta');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">த</button><button type="button" class="mn-chip" data-set-lang="te" onclick="try{localStorage.setItem('mp_lang','te');localStorage.setItem('mentor_lang','te');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">తె</button><button type="button" class="mn-chip" data-set-lang="bn" onclick="try{localStorage.setItem('mp_lang','bn');localStorage.setItem('mentor_lang','bn');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">বা</button><button type="button" class="mn-chip" data-set-lang="ar" onclick="try{localStorage.setItem('mp_lang','ar');localStorage.setItem('mentor_lang','ar');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">ع</button><button type="button" class="mn-chip" data-set-lang="zh" onclick="try{localStorage.setItem('mp_lang','zh');localStorage.setItem('mentor_lang','zh');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">中</button><button type="button" class="mn-chip" data-set-lang="de" onclick="try{localStorage.setItem('mp_lang','de');localStorage.setItem('mentor_lang','de');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">DE</button><button type="button" class="mn-chip" data-set-lang="es" onclick="try{localStorage.setItem('mp_lang','es');localStorage.setItem('mentor_lang','es');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">ES</button><button type="button" class="mn-chip" data-set-lang="fr" onclick="try{localStorage.setItem('mp_lang','fr');localStorage.setItem('mentor_lang','fr');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">FR</button><button type="button" class="mn-chip" data-set-lang="id" onclick="try{localStorage.setItem('mp_lang','id');localStorage.setItem('mentor_lang','id');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">ID</button><button type="button" class="mn-chip" data-set-lang="pt" onclick="try{localStorage.setItem('mp_lang','pt');localStorage.setItem('mentor_lang','pt');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">PT</button><button type="button" class="mn-chip" data-set-lang="vi" onclick="try{localStorage.setItem('mp_lang','vi');localStorage.setItem('mentor_lang','vi');if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">VI</button>
-          <button type="button" class="mn-chip mn-chip-more" onclick="try{if(window.mentorLandingOpenPicker)mentorLandingOpenPicker();else if(window.mentorLandingToggleLang)mentorLandingToggleLang();}catch(e){}">More…</button>
-        </div>
-      </div>
-    </div>
     </div>
   </header>
 
@@ -228,10 +218,43 @@
     </div>
   </section>
 
+  <!-- Testimonials — shared source: github.com/vkstecho/manpower/testimonials -->
+  <section id="testimonials" style="padding:56px 0;background:#f8fafc">
+    <div class="wrap">
+      <h2 style="text-align:center;margin-bottom:8px">What learners say</h2>
+      <p class="lead" style="text-align:center;margin:0 auto 28px">Real sessions. Real outcomes. Real career paths under VKS Tech mentoring — loaded live from the shared testimonials library on GitHub.</p>
+      <div id="testimonialsGrid" class="grid grid-3" style="margin-top:8px">
+        <div class="card" style="text-align:center;color:var(--slate);font-size:14px;padding:28px 18px" id="testimonialsPlaceholder">
+          Loading testimonials…
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact — same style as vkstech.com -->
+  <section id="contact" style="padding:48px 0;background:#0f172a;color:#fff">
+    <div class="wrap" style="display:grid;gap:24px">
+      <div>
+        <h2 style="color:#fff;margin-bottom:8px">Contact</h2>
+        <p style="opacity:.8;max-width:36rem;margin:0">Questions about tracks, sessions, or free modules? Reach out the same way as on VKS Tech.</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <a class="btn btn-orange" href="https://wa.me/918929394920" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn" href="mailto:Care@vkstech.com" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)">Care@vkstech.com</a>
+        <a class="btn" href="https://vkstech.com" target="_blank" rel="noopener" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)">vkstech.com</a>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    <div class="wrap" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center">
       <span>© VKS Tech · Mentor</span>
-      <span><a href="mentor.html">App</a> · Admin rates via +91 8929397949</span>
+      <span style="display:flex;flex-wrap:wrap;gap:14px">
+        <a href="mentor.html">App</a>
+        <a href="#tracks">Tracks</a>
+        <a href="#contact">Contact</a>
+        <a href="https://vkstech.com" target="_blank" rel="noopener">VKS Tech</a>
+      </span>
     </div>
   </footer>
   <script>
@@ -356,7 +379,17 @@ if ('serviceWorker' in navigator) {
     });
     document.getElementById('mnLandDone').onclick=close;
   };
-  window.mentorLandingToggleLang=function(){window.mentorLandingOpenPicker();};
+  window.mentorLandingToggleLang=function(){
+    var cur=(function(){try{return (localStorage.getItem('mentor_lang')||localStorage.getItem('mp_lang')||'en').toLowerCase();}catch(e){return'en';}})();
+    var next = (cur==='hi') ? 'en' : 'hi';
+    try{localStorage.setItem('mentor_lang',next);localStorage.setItem('mp_lang',next);}catch(e){}
+    var btn=document.getElementById('mentorLandingLang');
+    if(btn) btn.textContent = next==='hi' ? '🌐 हिं' : '🌐 EN';
+    if(typeof apply==='function') apply();
+    else location.reload();
+  };
+  // Keep openPicker available but do not auto-use on landing
+  
   
   function bindMnChips(){
     document.querySelectorAll('.mn-chip[data-set-lang]').forEach(function(btn){
@@ -373,6 +406,116 @@ if ('serviceWorker' in navigator) {
     });
   }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){apply();try{bindMnChips();}catch(e){}});else{apply();try{bindMnChips();}catch(e){}}
+})();
+</script>
+
+
+
+
+<script>
+/* Testimonials — source of truth:
+   https://github.com/vkstecho/manpower/tree/main/testimonials
+   Data: htmls/testimonials.html  (TESTIMONIALS array)
+   Photos: Images/<Folder>/avatar.jpg|png|svg
+*/
+(function(){
+  var grid = document.getElementById('testimonialsGrid');
+  if(!grid) return;
+
+  var RAW = 'https://raw.githubusercontent.com/vkstecho/manpower/main/testimonials/';
+  var CDN = 'https://cdn.jsdelivr.net/gh/vkstecho/manpower@main/testimonials/';
+  var HTML_URLS = [RAW + 'htmls/testimonials.html', CDN + 'htmls/testimonials.html'];
+
+  function esc(s){
+    return String(s==null?'':s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function parseTestimonials(html){
+    var m = html.match(/const\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
+    if(!m) m = html.match(/var\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
+    if(!m) return null;
+    try {
+      return (new Function('return (' + m[1] + ')'))();
+    } catch(e){
+      console.warn('Testimonials parse error', e);
+      return null;
+    }
+  }
+
+  function avatarFallbacks(folder){
+    if(!folder || folder === 'placeholder'){
+      return [RAW + 'Images/placeholder-avatar.svg', CDN + 'Images/placeholder-avatar.svg'];
+    }
+    var f = encodeURIComponent(folder);
+    return [
+      RAW + 'Images/' + f + '/avatar.jpg',
+      RAW + 'Images/' + f + '/avatar.png',
+      RAW + 'Images/' + f + '/avatar.svg',
+      CDN + 'Images/' + f + '/avatar.jpg',
+      CDN + 'Images/' + f + '/avatar.png',
+      CDN + 'Images/' + f + '/avatar.svg',
+      RAW + 'Images/placeholder-avatar.svg'
+    ];
+  }
+
+  function bindImgFallback(img, urls){
+    var i = 0;
+    img.onerror = function(){
+      i++;
+      if(i < urls.length) img.src = urls[i];
+      else img.style.display = 'none';
+    };
+  }
+
+  function render(list){
+    if(!Array.isArray(list) || !list.length){
+      grid.innerHTML = '<div class="acard" style="text-align:center;padding:28px 18px;color:#64748b">Testimonials will appear here shortly.</div>';
+      return;
+    }
+    list = list.slice().sort(function(a,b){ return (b.featured?1:0)-(a.featured?1:0); });
+
+    grid.innerHTML = list.map(function(t){
+      var stars = '★'.repeat(Math.min(5, Math.max(1, Number(t.stars)||5)));
+      var urls = avatarFallbacks(t.imageFolder);
+      var path = t.path ? '<div style="font-size:12px;color:#64748b;margin-top:4px;line-height:1.4">'+esc(t.path)+'</div>' : '';
+      var role = [t.role, t.plant].filter(Boolean).join(' · ');
+      return (
+        '<article class="acard reveal" style="text-align:left;display:flex;flex-direction:column;gap:10px">' +
+          '<div style="display:flex;gap:12px;align-items:center">' +
+            '<img data-avatar="1" src="'+esc(urls[0])+'" alt="" width="48" height="48" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#f1f5f9" loading="lazy"/>' +
+            '<div style="min-width:0">' +
+              '<div style="font-weight:700;font-size:0.95rem;color:#0f172a">'+esc(t.name||'')+'</div>' +
+              '<div style="font-size:0.8rem;color:#64748b">'+esc(role)+'</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="color:#ea580c;letter-spacing:2px;font-size:12px">'+stars+'</div>' +
+          '<p style="font-size:0.92rem;line-height:1.65;color:#1e293b;flex:1">"'+esc(t.quote||t.text||'')+'"</p>' +
+          path +
+        '</article>'
+      );
+    }).join('');
+
+    var imgs = grid.querySelectorAll('img[data-avatar]');
+    list.forEach(function(t, idx){
+      if(imgs[idx]) bindImgFallback(imgs[idx], avatarFallbacks(t.imageFolder));
+    });
+    try{ grid.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('visible'); }); }catch(e){}
+  }
+
+  function tryFetch(i){
+    if(i >= HTML_URLS.length){ render([]); return; }
+    fetch(HTML_URLS[i], {cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error('fail'); return r.text(); })
+      .then(function(html){
+        var list = parseTestimonials(html);
+        if(!list) throw new Error('parse');
+        render(list);
+      })
+      .catch(function(){ tryFetch(i+1); });
+  }
+  tryFetch(0);
 })();
 </script>
 
