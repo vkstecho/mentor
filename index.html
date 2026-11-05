@@ -156,19 +156,20 @@
   <section class="hero">
     <div class="wrap">
       <div class="badge" data-i18n="badge">1:1 mentorship · Career & AI · Flexible packaging</div>
-      <h1 data-i18n="hero">Learn with a mentor who works on real plant & AI problems.</h1>
-      <p>Free self-study modules for the shop floor. Paid one-to-one hours when you need your Excel, yield, prompts, or career plan fixed — not a generic course video dump.</p>
+      <h1 data-i18n="hero">1:1 guidance from a production leader who led 60-member teams.</h1>
+      <p><strong>Vivek Kumar</strong> — M.Tech (GATE), NIT Uttarakhand · 9 years at UFlex, JPFL &amp; GLS · highest single-line output 818 MT · defects cut from 9% to 0.2%. Free plant modules to start. Paid hours when you need Excel, yield, AI prompts, or career decisions fixed — not a generic course dump.</p>
       <div class="hero-actions">
-        <a class="btn btn-orange" href="mentor.html" data-i18n="openApp">Open Mentor app</a>
-        <a class="btn btn-ghost" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)" href="#tracks" data-i18n="seeTracks">See tracks & rates</a>
+        <a class="btn btn-orange" href="mentor.html" data-i18n="openApp">Book a paid hour →</a>
+        <a class="btn btn-ghost" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)" href="#tracks" data-i18n="seeTracks">See tracks &amp; live rates</a>
       </div>
+      <p style="margin-top:18px;font-size:13px;opacity:.85">Not sure yet? Start with free modules — no payment needed. Prefer to talk first? WhatsApp after login.</p>
     </div>
   </section>
 
   <section id="tracks">
     <div class="wrap">
       <h2 data-i18n="twoTracks">Two paid tracks</h2>
-      <p class="lead">Rates and Razorpay links are controlled by mentor admin (mobile 8929397949) and can change anytime in the app.</p>
+      <p class="lead">Live rates from admin — what you see below is what you pay. If your first paid session does not feel useful, tell the mentor; we make it right.</p>
       <div class="grid grid-2">
         <article class="card">
           <h3 data-i18n="career">Career &amp; AI Track</h3>
@@ -181,7 +182,7 @@
         </article>
         <article class="card">
           <h3 data-i18n="pack">Flexible Packaging Expert</h3>
-          <div class="price" data-rate-pack>₹1,299 / hour</div>
+          <div class="price" data-rate-pack>₹799 / hour</div>
           <ul>
             <li>Capacity, yield, waste, metalliser boat life</li>
             <li>5S, manpower &amp; shift design</li>
@@ -238,13 +239,22 @@
     var url = 'https://mentor-vkstech-default-rtdb.asia-southeast1.firebasedatabase.app/mentor_settings/tracks.json';
     fetch(url).then(function(r){return r.json()}).then(function(o){
       if(!o) return;
+      function setAll(sel, rate){
+        var nodes = document.querySelectorAll(sel);
+        var text = '₹' + Number(rate).toLocaleString('en-IN') + ' / hour';
+        var textShort = '₹' + Number(rate).toLocaleString('en-IN') + '/hr';
+        for(var i=0;i<nodes.length;i++){
+          var t = nodes[i].textContent || '';
+          nodes[i].textContent = (t.indexOf('/hr') !== -1 && t.indexOf('hour') === -1) ? textShort : text;
+        }
+      }
       if(o.career_ai && o.career_ai.hourlyRate){
-        var e=document.querySelector('[data-rate-career]');
-        if(e) e.textContent = '₹' + Number(o.career_ai.hourlyRate).toLocaleString('en-IN') + ' / hour';
+        setAll('[data-rate-career]', o.career_ai.hourlyRate);
+        setAll('[data-track-rate="career_ai"]', o.career_ai.hourlyRate);
       }
       if(o.packaging && o.packaging.hourlyRate){
-        var e2=document.querySelector('[data-rate-pack]');
-        if(e2) e2.textContent = '₹' + Number(o.packaging.hourlyRate).toLocaleString('en-IN') + ' / hour';
+        setAll('[data-rate-pack]', o.packaging.hourlyRate);
+        setAll('[data-track-rate="packaging"]', o.packaging.hourlyRate);
       }
     }).catch(function(){});
   })();
