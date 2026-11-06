@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.vkstech.mentor",
+    "sha256_cert_fingerprints": [
+     A5:8B:02:B0:75:DE:24:D1:E7:57:D4:17:DC:90:25:AA:48:8F:60:E1:CE:6F:03:DC:B2:1E:02:30:75:50:F7:EF
+    ]
+  }
+}]
