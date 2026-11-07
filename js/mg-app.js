@@ -102,7 +102,15 @@ MG.startApp = async function(mob) {
   MG.state.mobile = mob;
   MG.state.isMentor = false;
   MG.state.data = MG.loadUserData(MG.state.mobile); // instant from cache
-  MG.$('#mobileDisplay').textContent = '+91 ' + MG.state.mobile;
+  (function(){
+    var m = MG.state.mobile || '';
+    var masked = m.length === 10 ? (m.slice(0,2) + '••••' + m.slice(-4)) : m;
+    var full = '+91 ' + m;
+    var el = MG.$('#mobileDisplay');
+    if (el) { el.textContent = full; el.title = full; }
+    var el2 = document.getElementById('mobileDisplayMobile');
+    if (el2) { el2.textContent = masked; el2.title = full; }
+  })();
     try { MG.refreshProfileButton(); } catch (e) {}
   MG.$('#mentorBadge')?.classList.add('hidden');
   MG.$('#mentorStudentBar')?.classList.add('hidden');

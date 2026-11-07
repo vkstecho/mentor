@@ -173,8 +173,97 @@ MG.renderCatalog = function() {
   });
   try { MG.renderFreePackSection(); } catch (e) {}
   try { MG.initCategoryNav(); } catch (e2) {}
+  try { MG.loadMentorTestimonials(); } catch (e3) {}
 }
 
+// ========== In-app testimonials (GitHub shared library) ==========
+MG.loadMentorTestimonials = async function () {
+  var host = document.getElementById('mentorTestimonialsScroll');
+  if (!host) return;
+  var RAW = 'https://raw.githubusercontent.com/vkstecho/manpower/main/testimonials/';
+  var CDN = 'https://cdn.jsdelivr.net/gh/vkstecho/manpower@main/testimonials/';
+  var urls = [RAW + 'htmls/testimonials.html', CDN + 'htmls/testimonials.html'];
+  var imgBase = [
+    'https://cdn.jsdelivr.net/gh/vkstecho/manpower@main/testimonials/Images/',
+    RAW + 'Images/'
+  ];
+
+  function starsHtml(rating) {
+    var r = Math.max(0, Math.min(5, Number(rating) || 0));
+    var full = Math.floor(r);
+    var half = (r - full) >= 0.25;
+    var html = '';
+    for (var i = 1; i <= 5; i++) {
+      if (i <= full) html += '<i class="fas fa-star text-amber-400 text-[10px]"></i>';
+      else if (i === full + 1 && half) html += '<i class="fas fa-star-half-alt text-amber-400 text-[10px]"></i>';
+      else html += '<i class="far fa-star text-slate-300 text-[10px]"></i>';
+    }
+    return html;
+  }
+
+  function avatarUrl(folder) {
+    if (!folder || folder === 'placeholder') return '';
+    return imgBase[0] + encodeURIComponent(folder) + '/avatar.jpg';
+  }
+
+  function parseList(html) {
+    var m = html.match(/const\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
+    if (!m) m = html.match(/var\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
+    if (!m) return null;
+    try {
+      // eslint-disable-next-line no-new-func
+      return (new Function('return (' + m[1] + ')'))();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  var list = null;
+  for (var i = 0; i < urls.length && !list; i++) {
+    try {
+      var res = await fetch(urls[i], { cache: 'force-cache' });
+      if (!res.ok) continue;
+      list = parseList(await res.text());
+    } catch (e) {}
+  }
+  if (!list || !list.length) {
+    host.innerHTML = '<div class="shrink-0 w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-sm text-slate-500">Testimonials unavailable offline.</div>';
+    return;
+  }
+
+  // Skip pure founder featured as first, show mix; limit 10 for horizontal scroll
+  var items = list.filter(function (t) { return t && t.quote; }).slice(0, 12);
+  var sum = 0;
+  items.forEach(function (t) { sum += Number(t.stars) || 0; });
+  var avg = items.length ? (Math.round((sum / items.length) * 10) / 10) : 0;
+  var avgEl = document.getElementById('mentorTestAvg');
+  var cntEl = document.getElementById('mentorTestCount');
+  if (avgEl) avgEl.textContent = avg.toFixed(1);
+  if (cntEl) cntEl.textContent = String(items.length);
+
+  host.innerHTML = items.map(function (t) {
+    var av = avatarUrl(t.imageFolder);
+    var initial = (t.name || '?').charAt(0).toUpperCase();
+    var avHtml = av
+      ? '<img src="' + av + '" alt="" class="w-9 h-9 rounded-full object-cover bg-slate-200" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"/><span class="hidden w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-indigo-700 text-white text-xs font-bold items-center justify-center">' + initial + '</span>'
+      : '<span class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-indigo-700 text-white text-xs font-bold flex items-center justify-center">' + initial + '</span>';
+    var quote = String(t.quote || '').replace(/</g, '&lt;');
+    if (quote.length > 160) quote = quote.slice(0, 157) + '…';
+    return (
+      '<article class="mentor-t-card shrink-0 w-[85%] sm:w-72 snap-start p-4 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-sm">' +
+        '<div class="flex items-center gap-1 mb-2">' + starsHtml(t.stars) + '</div>' +
+        '<p class="text-xs sm:text-[13px] text-slate-700 dark:text-slate-200 leading-relaxed mb-3">“' + quote + '”</p>' +
+        '<div class="flex items-center gap-2.5 mt-auto">' +
+          '<div class="relative shrink-0">' + avHtml + '</div>' +
+          '<div class="min-w-0">' +
+            '<div class="text-xs font-bold text-slate-900 dark:text-white truncate">' + String(t.name || '').replace(/</g, '&lt;') + '</div>' +
+            '<div class="text-[10px] text-slate-500 truncate">' + String(t.role || '').replace(/</g, '&lt;') + (t.plant ? ' · ' + String(t.plant).replace(/</g, '&lt;') : '') + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</article>'
+    );
+  }).join('');
+};
 
 
 })(window.MG = window.MG || {});

@@ -216,6 +216,21 @@
 #authScreen h1, #authScreen .text-slate-900 { color: #0f172a !important; }
 #authScreen input { color: #0f172a; }
 </style>
+
+  <style id="mentor-home-premium">
+    /* Premium logged-in home */
+    #mobileBadge { max-width: 100%; }
+    @media (min-width: 400px) {
+      #mobileDisplayMobile { display: none !important; }
+      #mobileBadge .xs\:flex { display: flex !important; }
+    }
+    #categoryPicker .cat-btn { -webkit-tap-highlight-color: transparent; }
+    #mentorTestimonialsScroll::-webkit-scrollbar { height: 4px; }
+    #mentorTestimonialsScroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .mentor-t-card { scroll-snap-align: start; }
+    body.dark .mentor-t-card { background: rgb(30 41 59 / 0.85); }
+  </style>
+
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 font-sans">
 
@@ -346,12 +361,20 @@
 
           <!-- Center / Badge -->
           <div class="flex items-center gap-1.5 sm:gap-2">
-            <span id="mobileBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-700">
-              <i class="fas fa-check-circle text-[10px]"></i>
-              <button type="button" id="profileAvatarBtn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-600 text-white text-sm font-bold flex items-center justify-center overflow-hidden shrink-0 border-2 border-white dark:border-slate-600 shadow" title="Profile">U</button>
-              <span id="mobileDisplay" class="hidden sm:inline">••••••••••</span>
-              <button type="button" id="siteLogoutBtn" class="ml-1 text-[10px] sm:text-xs font-bold text-slate-500 hover:text-red-600 underline-offset-2 hover:underline px-1" title="Logout">Logout</button>
-            </span>
+            <div id="mobileBadge" class="inline-flex items-center gap-1.5 sm:gap-2 pl-1 pr-1.5 sm:pr-2 py-1 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-600 shadow-sm backdrop-blur">
+              <button type="button" id="profileAvatarBtn" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-brand-500 to-indigo-700 text-white text-sm font-bold flex items-center justify-center overflow-hidden shrink-0 ring-2 ring-white dark:ring-slate-700 shadow-md" title="Profile">
+                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-800 flex items-center justify-center"><i class="fas fa-check text-[7px] text-white"></i></span>
+                U
+              </button>
+              <div class="min-w-0 flex flex-col leading-tight pr-0.5 max-w-[7.5rem] sm:max-w-none">
+                <span class="text-[9px] sm:text-[10px] font-semibold text-slate-400 uppercase tracking-wider hidden sm:block">Signed in</span>
+                <span id="mobileDisplay" class="hidden sm:inline text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums tracking-wide">••••••••••</span>
+                <span id="mobileDisplayMobile" class="sm:hidden text-[11px] font-bold text-slate-700 dark:text-slate-200 tabular-nums truncate">••••</span>
+              </div>
+              <button type="button" id="siteLogoutBtn" class="ml-0.5 w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition" title="Logout" aria-label="Logout">
+                <i class="fas fa-right-from-bracket text-sm"></i>
+              </button>
+            </div>
             <span id="mentorBadge" class="hidden inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-bold border border-amber-200 dark:border-amber-700">
               <i class="fas fa-user-shield"></i> MENTOR
             </span>
@@ -383,7 +406,7 @@
       <!-- Catalog View -->
       
             <!-- PWA Install + Share (home) -->
-      <div id="mentorInstallBar" class="px-3 sm:px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
+      <div id="mentorInstallBar" class="mb-4 px-1">
         <div id="mentorInstallButtonsRow" class="flex flex-wrap items-center gap-2">
           <a id="mentorPlayStoreBtn" href="https://play.google.com/store/apps/details?id=com.vkstech.mentor" target="_blank" rel="noopener"
             class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold shadow-sm hover:bg-emerald-50 dark:hover:bg-slate-700">
@@ -404,13 +427,14 @@
           <button type="button" id="mentorInstallAndroidBtn" class="hidden" aria-hidden="true"></button>
           <button type="button" id="mentorInstallBtn" class="hidden" aria-hidden="true"></button>
         </div>
-        <p id="mentorInstallHint" class="text-[11px] text-slate-500 dark:text-slate-400 mt-2 leading-snug">Android: Play Store · iPhone/Windows: Install for home screen / desktop app</p>
+        <p id="mentorInstallHint" class="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 leading-snug px-0.5">Install Mentor · home screen access</p>
       </div>
 
       <section id="catalogView">
-        <div class="mb-6 sm:mb-8">
-          <h2 class="text-xl sm:text-2xl font-bold tracking-tight" data-i18n="choosePath">Choose Your Guidance Path</h2>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="choosePathSub">Free plant modules + paid one-to-one sessions • Recordings &amp; doubt chat</p>
+        <div class="mb-5 sm:mb-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400 mb-1">Mentor · VKS Tech</p>
+          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white" data-i18n="choosePath">Choose Your Guidance Path</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed" data-i18n="choosePathSub">Free plant modules + paid one-to-one · Recordings &amp; doubt chat</p>
         </div>
 
         <!-- Mentor Student Selector (Mentor Mode only) -->
@@ -428,31 +452,93 @@
           </div>
         </div>
 
-        <!-- Two big category buttons -->
-        <div id="categoryPicker" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <button type="button" id="catBtnPackaging" class="cat-btn text-left p-5 rounded-2xl border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/20 dark:border-orange-700 hover:shadow-lg hover:border-orange-500 transition group">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center text-xl shadow"><i class="fas fa-industry"></i></span>
-              <div>
-                <div class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">Flexible Packaging</div>
-                <div class="text-[11px] font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wide">Plant knowledge · Free + Paid · <span data-track-rate="packaging">₹799/hr</span></div>
+        <!-- Two premium path cards -->
+        <div id="categoryPicker" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+          <button type="button" id="catBtnPackaging" class="cat-btn text-left p-4 sm:p-5 rounded-2xl border border-orange-200/80 dark:border-orange-800/60 bg-gradient-to-br from-orange-50 via-amber-50/80 to-white dark:from-orange-950/40 dark:via-slate-900 dark:to-slate-900 shadow-sm hover:shadow-md hover:border-orange-400 dark:hover:border-orange-600 transition active:scale-[0.99] group">
+            <div class="flex items-start gap-3 mb-2.5">
+              <span class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center text-lg shadow-lg shadow-orange-500/25 shrink-0"><i class="fas fa-industry"></i></span>
+              <div class="min-w-0 flex-1">
+                <div class="font-extrabold text-[15px] sm:text-lg text-slate-900 dark:text-white leading-snug">Flexible Packaging</div>
+                <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200">Plant</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">Free + Paid</span>
+                  <span class="text-[11px] font-extrabold text-orange-600 dark:text-orange-300" data-track-rate="packaging">₹799/hr</span>
+                </div>
               </div>
             </div>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Free modules &amp; calculators + paid one-to-one for real plant problems (capacity, yield, metalliser, 5S, cost/sqm…).</p>
-            <div class="mt-3 text-xs font-bold text-orange-600 group-hover:underline">Open Packaging → <span data-track-rate="packaging">₹799/hr</span></div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Capacity, yield, metalliser, 5S, cost/sqm — free modules + paid 1:1 for real plant problems.</p>
+            <div class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-300 group-hover:gap-2 transition-all">Open Packaging <i class="fas fa-arrow-right text-[10px]"></i></div>
           </button>
-          <button type="button" id="catBtnCareer" class="cat-btn text-left p-5 rounded-2xl border-2 border-indigo-300 bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/30 dark:to-violet-900/20 dark:border-indigo-700 hover:shadow-lg hover:border-indigo-500 transition group">
-            <div class="flex items-center gap-3 mb-2">
-              <span class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow"><i class="fas fa-graduation-cap"></i></span>
-              <div>
-                <div class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">Career &amp; AI Guidance</div>
-                <div class="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">15 sessions · ₹699/hr</div>
+          <button type="button" id="catBtnCareer" class="cat-btn text-left p-4 sm:p-5 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60 bg-gradient-to-br from-indigo-50 via-violet-50/80 to-white dark:from-indigo-950/40 dark:via-slate-900 dark:to-slate-900 shadow-sm hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-600 transition active:scale-[0.99] group">
+            <div class="flex items-start gap-3 mb-2.5">
+              <span class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center text-lg shadow-lg shadow-indigo-500/25 shrink-0"><i class="fas fa-graduation-cap"></i></span>
+              <div class="min-w-0 flex-1">
+                <div class="font-extrabold text-[15px] sm:text-lg text-slate-900 dark:text-white leading-snug">Career &amp; AI Guidance</div>
+                <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-200">1:1</span>
+                  <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-300" data-track-rate="career_ai">₹699/hr</span>
+                </div>
               </div>
             </div>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Gemini, Claude, Grok, ChatGPT, Excel+AI, freelancing, ITR, resume, personal finance and more — one-to-one.</p>
-            <div class="mt-3 text-xs font-bold text-indigo-600 group-hover:underline">Open Career &amp; AI →</div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">ChatGPT, Gemini, Claude, Grok, Excel+AI, LinkedIn, freelancing, resume — focused hours.</p>
+            <div class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-300 group-hover:gap-2 transition-all">Open Career &amp; AI <i class="fas fa-arrow-right text-[10px]"></i></div>
           </button>
         </div>
+
+        <!-- VKS ecosystem apps -->
+        <div id="vksEcosystem" class="mb-7">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">VKS Tech ecosystem</p>
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100">More tools from the same team</h3>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <a href="https://vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-brand-400 hover:shadow-md transition group">
+              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-900 to-brand-700 text-white flex items-center justify-center text-sm font-black shadow shrink-0">VKS</span>
+              <div class="min-w-0 flex-1">
+                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600">vkstech.com</div>
+                <div class="text-[11px] text-slate-500 truncate">Training · tools · plant systems</div>
+              </div>
+              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-brand-500"></i>
+            </a>
+            <a href="https://manpower.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-emerald-400 hover:shadow-md transition group">
+              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow shrink-0"><i class="fas fa-users text-sm"></i></span>
+              <div class="min-w-0 flex-1">
+                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-600">Man Power</div>
+                <div class="text-[11px] text-slate-500 truncate">manpower.vkstech.com · roster &amp; shifts</div>
+              </div>
+              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-emerald-500"></i>
+            </a>
+            <a href="https://packlink.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-orange-400 hover:shadow-md transition group">
+              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white flex items-center justify-center shadow shrink-0"><i class="fas fa-link text-sm"></i></span>
+              <div class="min-w-0 flex-1">
+                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-orange-600">PackLink</div>
+                <div class="text-[11px] text-slate-500 truncate">packlink.vkstech.com · packaging links</div>
+              </div>
+              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-orange-500"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- In-app testimonials (shared GitHub source) -->
+        <div id="mentorTestimonials" class="mb-8">
+          <div class="flex items-end justify-between gap-3 mb-3">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Real outcomes</p>
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100">What learners say</h3>
+            </div>
+            <div id="mentorTestOverall" class="text-right hidden sm:block">
+              <div class="text-lg font-black text-slate-900 dark:text-white leading-none"><span id="mentorTestAvg">—</span><span class="text-xs font-semibold text-slate-400">/5</span></div>
+              <div class="text-[10px] text-slate-400"><span id="mentorTestCount">0</span> reviews</div>
+            </div>
+          </div>
+          <div id="mentorTestimonialsScroll" class="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory" style="scrollbar-width:thin">
+            <div class="shrink-0 w-[85%] sm:w-72 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-sm text-slate-500">Loading stories…</div>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-2">From VKS Tech mentoring library · <a class="underline hover:text-brand-600" href="https://github.com/vkstecho/manpower/tree/main/testimonials" target="_blank" rel="noopener">source</a></p>
+        </div>
+
 
         <!-- Flexible Packaging section (hidden until picked) -->
         <div id="sectionPackaging" class="hidden">

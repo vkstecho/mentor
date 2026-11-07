@@ -18,3 +18,9 @@ Deploy: upload entire mentor-app/ folder to hosting / push to GitHub.
 - Same device after logout: password or fingerprint unlock (no OTP required)
 - Profile: change device password; enable/disable fingerprint
 - Session still stays logged in until user taps Logout (`vks_site_verified`)
+
+## 2026-11-07 — Premium logged-in home
+- Header account chip: avatar + verified dot, masked mobile, icon logout (less “website”)
+- Path cards: denser app-style gradients, chips, rates
+- VKS ecosystem strip under cards: vkstech.com, Man Power, PackLink (external links)
+- Horizontal testimonials carousel loaded from GitHub `vkstecho/manpower` testimonials library

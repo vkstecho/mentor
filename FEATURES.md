@@ -11,6 +11,8 @@ Use with `AI_INDEX.md` for file paths. Logic lives in `js/mg-*.js` modules.
 - Free modules: Met Train Pro, MR Skill, SupSkill, Time Study, Excel Expert, KPI, Met Cost
 - Theme toggle, PWA install
 - Shared auth bridge with website / Resume / Man Power
+- Device remember: password + fingerprint (WebAuthn) after first OTP; survives logout
+- Profile: change device password; enable/disable fingerprint
 
 ## Mentor (admin) mode — `mg-mentor.js`
 
