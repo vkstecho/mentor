@@ -187,4 +187,175 @@ MG.doSiteLogout = function() {
 }
 
 
+
+
+// ========== Device remember: password + fingerprint (WebAuthn) ==========
+// Stored per mobile on this browser/device only. Survives logout so same
+// device can re-login without OTP (password or biometrics).
+var DEVICE_CREDS_PREFIX = 'vks_device_creds_';
+
+MG._bufToB64 = function (buf) {
+  var bytes = new Uint8Array(buf);
+  var s = '';
+  for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+MG._b64ToBuf = function (b64) {
+  b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
+  var s = atob(b64);
+  var bytes = new Uint8Array(s.length);
+  for (var i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
+  return bytes.buffer;
+};
+
+MG._sha256Hex = async function (str) {
+  var enc = new TextEncoder();
+  var hash = await crypto.subtle.digest('SHA-256', enc.encode(str));
+  return Array.from(new Uint8Array(hash)).map(function (b) {
+    return b.toString(16).padStart(2, '0');
+  }).join('');
+};
+
+MG.getDeviceCreds = function (mobile) {
+  if (!mobile) return null;
+  try {
+    var raw = localStorage.getItem(DEVICE_CREDS_PREFIX + mobile);
+    if (!raw) return null;
+    var o = JSON.parse(raw);
+    if (!o || typeof o !== 'object') return null;
+    return o;
+  } catch (e) {
+    return null;
+  }
+};
+
+MG.saveDeviceCreds = function (mobile, patch) {
+  if (!mobile) return null;
+  var cur = MG.getDeviceCreds(mobile) || {};
+  var next = Object.assign({}, cur, patch || {}, { updatedAt: Date.now() });
+  try {
+    localStorage.setItem(DEVICE_CREDS_PREFIX + mobile, JSON.stringify(next));
+  } catch (e) {}
+  return next;
+};
+
+MG.clearDeviceCreds = function (mobile) {
+  if (!mobile) return;
+  try {
+    localStorage.removeItem(DEVICE_CREDS_PREFIX + mobile);
+  } catch (e) {}
+};
+
+MG.hasDevicePassword = function (mobile) {
+  var c = MG.getDeviceCreds(mobile);
+  return !!(c && c.passwordHash && c.passwordSalt);
+};
+
+MG.hasDeviceFingerprint = function (mobile) {
+  var c = MG.getDeviceCreds(mobile);
+  return !!(c && c.webauthnEnabled && c.credentialId);
+};
+
+MG.supportsWebAuthn = function () {
+  try {
+    return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create);
+  } catch (e) {
+    return false;
+  }
+};
+
+MG.setDevicePassword = async function (mobile, password) {
+  if (!mobile || !password || String(password).length < 4) {
+    throw new Error('Password must be at least 4 characters');
+  }
+  var salt = MG._bufToB64(crypto.getRandomValues(new Uint8Array(16)));
+  var hash = await MG._sha256Hex(salt + '::' + String(password));
+  return MG.saveDeviceCreds(mobile, {
+    passwordHash: hash,
+    passwordSalt: salt,
+    passwordSetAt: Date.now()
+  });
+};
+
+MG.verifyDevicePassword = async function (mobile, password) {
+  var c = MG.getDeviceCreds(mobile);
+  if (!c || !c.passwordHash || !c.passwordSalt) return false;
+  var hash = await MG._sha256Hex(c.passwordSalt + '::' + String(password || ''));
+  return hash === c.passwordHash;
+};
+
+MG.registerFingerprint = async function (mobile) {
+  if (!MG.supportsWebAuthn()) throw new Error('Fingerprint / biometrics not supported on this device');
+  var challenge = crypto.getRandomValues(new Uint8Array(32));
+  var userId = new TextEncoder().encode('mentor-' + mobile);
+  var cred = await navigator.credentials.create({
+    publicKey: {
+      challenge: challenge,
+      rp: { name: 'Mentor by VKS Tech', id: location.hostname },
+      user: {
+        id: userId,
+        name: '+91' + mobile,
+        displayName: 'Mentor ' + mobile
+      },
+      pubKeyCredParams: [
+        { type: 'public-key', alg: -7 },
+        { type: 'public-key', alg: -257 }
+      ],
+      authenticatorSelection: {
+        authenticatorAttachment: 'platform',
+        userVerification: 'required',
+        residentKey: 'preferred'
+      },
+      timeout: 60000,
+      attestation: 'none'
+    }
+  });
+  if (!cred) throw new Error('Fingerprint registration cancelled');
+  var id = MG._bufToB64(cred.rawId);
+  MG.saveDeviceCreds(mobile, {
+    webauthnEnabled: true,
+    credentialId: id,
+    webauthnSetAt: Date.now()
+  });
+  return true;
+};
+
+MG.verifyFingerprint = async function (mobile) {
+  if (!MG.supportsWebAuthn()) return false;
+  var c = MG.getDeviceCreds(mobile);
+  if (!c || !c.credentialId || !c.webauthnEnabled) return false;
+  var challenge = crypto.getRandomValues(new Uint8Array(32));
+  try {
+    var assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: challenge,
+        allowCredentials: [{
+          type: 'public-key',
+          id: MG._b64ToBuf(c.credentialId),
+          transports: ['internal']
+        }],
+        userVerification: 'required',
+        timeout: 60000
+      }
+    });
+    return !!assertion;
+  } catch (e) {
+    return false;
+  }
+};
+
+MG.disableFingerprint = function (mobile) {
+  return MG.saveDeviceCreds(mobile, {
+    webauthnEnabled: false,
+    credentialId: null
+  });
+};
+
+/** True if this device has a quick-login method for the number (password or fingerprint). */
+MG.canQuickLogin = function (mobile) {
+  return MG.hasDevicePassword(mobile) || MG.hasDeviceFingerprint(mobile);
+};
+
 })(window.MG = window.MG || {});

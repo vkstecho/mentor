@@ -11,3 +11,10 @@ Merged fixes:
 6. WhatsApp user-facing 8929394920 (admin OTP 8929397949)
 
 Deploy: upload entire mentor-app/ folder to hosting / push to GitHub.
+
+## 2026-11-07 — Device remember + landing polish
+- Landing (`index.html`): better mobile/desktop spacing, nav, hero, grids, touch targets
+- Login: after OTP, optional device password + fingerprint setup
+- Same device after logout: password or fingerprint unlock (no OTP required)
+- Profile: change device password; enable/disable fingerprint
+- Session still stays logged in until user taps Logout (`vks_site_verified`)

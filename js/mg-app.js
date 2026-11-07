@@ -151,20 +151,78 @@ MG.bindEvents = function() {
   // ---- Firebase Phone OTP login ----
   let _pendingMobile = null;
 
+  MG.hideAllLoginSteps = function() {
+    ['#otpStepPhone', '#otpStepCode', '#otpStepQuick', '#otpStepSetup'].forEach(function (sel) {
+      var el = MG.$(sel);
+      if (el) el.classList.add('hidden');
+    });
+  };
+
   MG.showOtpStep = function(showCode) {
+    MG.hideAllLoginSteps();
     const phone = MG.$('#otpStepPhone');
     const code = MG.$('#otpStepCode');
-    if (phone) phone.classList.toggle('hidden', !!showCode);
-    if (code) code.classList.toggle('hidden', !showCode);
     if (showCode) {
+      if (code) code.classList.remove('hidden');
       MG.$('#loginTitle').textContent = 'Enter OTP';
       MG.$('#loginSub').textContent = 'OTP sent to +91 ' + _pendingMobile;
-      setTimeout(() => MG.$('#otpInput')?.focus(), 100);
+      setTimeout(function () { MG.$('#otpInput') && MG.$('#otpInput').focus(); }, 100);
     } else {
+      if (phone) phone.classList.remove('hidden');
       MG.$('#loginTitle').textContent = 'Login with Mobile OTP';
       MG.$('#loginSub').textContent = 'Enter mobile number to continue';
     }
-  }
+  };
+
+  MG.showQuickLoginStep = function(mobile) {
+    _pendingMobile = mobile;
+    MG.hideAllLoginSteps();
+    var q = MG.$('#otpStepQuick');
+    if (q) q.classList.remove('hidden');
+    MG.$('#loginTitle').textContent = 'Welcome back';
+    MG.$('#loginSub').textContent = 'Unlock +91 ' + mobile + ' on this device';
+    var fpBtn = MG.$('#quickFingerprintBtn');
+    var pwWrap = MG.$('#quickPasswordWrap');
+    if (fpBtn) {
+      if (MG.hasDeviceFingerprint(mobile) && MG.supportsWebAuthn()) {
+        fpBtn.classList.remove('hidden');
+      } else {
+        fpBtn.classList.add('hidden');
+      }
+    }
+    if (pwWrap) {
+      pwWrap.style.display = MG.hasDevicePassword(mobile) ? '' : 'none';
+    }
+    setTimeout(function () {
+      var inp = MG.$('#quickPasswordInput');
+      if (inp && MG.hasDevicePassword(mobile)) inp.focus();
+    }, 100);
+  };
+
+  MG.showDeviceSetupStep = function(mobile) {
+    _pendingMobile = mobile;
+    MG.hideAllLoginSteps();
+    var s = MG.$('#otpStepSetup');
+    if (s) s.classList.remove('hidden');
+    MG.$('#loginTitle').textContent = 'Remember this device';
+    MG.$('#loginSub').textContent = 'Optional — skip OTP next time on this phone';
+    var fpBtn = MG.$('#setupFingerprintBtn');
+    if (fpBtn) {
+      fpBtn.style.display = MG.supportsWebAuthn() ? '' : 'none';
+    }
+  };
+
+  MG.finishLogin = function(mobile, opts) {
+    opts = opts || {};
+    MG.setSiteAuth(mobile);
+    var needSetup = !MG.canQuickLogin(mobile);
+    if (opts.forceSetup || needSetup) {
+      MG.showDeviceSetupStep(mobile);
+      return;
+    }
+    MG.showToast('Login verified');
+    MG.startApp(mobile);
+  };
 
   MG.sendMentorOtp = async function() {
     const val = (MG.$('#mobileInput').value || '').trim();
@@ -175,7 +233,7 @@ MG.bindEvents = function() {
     }
     MG.$('#mobileError')?.classList.add('hidden');
     const btn = MG.$('#mobileSubmit');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Sending OTP…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Please wait…'; }
     try {
       if (!window.MentorFB || !window.MentorFB.sendPhoneOtp) {
         // Wait briefly for module
@@ -207,7 +265,7 @@ MG.bindEvents = function() {
       var err = MG.$('#mobileError');
       if (err) { err.textContent = msg; err.classList.remove('hidden'); }
     } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane mr-1.5"></i> Send OTP'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right mr-1.5"></i> Continue'; }
     }
   }
 
@@ -222,9 +280,7 @@ MG.bindEvents = function() {
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Verifying…'; }
     try {
       await window.MentorFB.verifyPhoneOtp(code);
-      MG.setSiteAuth(_pendingMobile);
-      MG.showToast('Login verified');
-      MG.startApp(_pendingMobile);
+      MG.finishLogin(_pendingMobile, { forceSetup: !MG.canQuickLogin(_pendingMobile) });
     } catch (e) {
       console.error(e);
       MG.$('#otpError').textContent = 'Invalid OTP. Please try again.';
@@ -233,11 +289,28 @@ MG.bindEvents = function() {
     } finally {
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check mr-1.5"></i> Verify & Continue'; }
     }
-  }
+  };
 
-  MG.$('#mobileSubmit')?.addEventListener('click', function () { MG.sendMentorOtp(); });
+  // After phone entered: if device remembered → quick login, else OTP
+  MG.onMobileContinue = async function() {
+    const val = (MG.$('#mobileInput').value || '').trim();
+    const m = MG.extractMobileFromString(val) || (/^[6-9]\d{9}$/.test(val) ? val : null);
+    if (!m) {
+      MG.$('#mobileError')?.classList.remove('hidden');
+      return;
+    }
+    MG.$('#mobileError')?.classList.add('hidden');
+    _pendingMobile = m;
+    if (MG.canQuickLogin(m)) {
+      MG.showQuickLoginStep(m);
+      return;
+    }
+    await MG.sendMentorOtp();
+  };
+
+  MG.$('#mobileSubmit')?.addEventListener('click', function () { MG.onMobileContinue(); });
   MG.$('#mobileInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') MG.sendMentorOtp();
+    if (e.key === 'Enter') MG.onMobileContinue();
   });
   MG.$('#otpVerifyBtn')?.addEventListener('click', function () { MG.verifyMentorOtp(); });
   MG.$('#otpInput')?.addEventListener('keydown', (e) => {
@@ -254,6 +327,102 @@ MG.bindEvents = function() {
     _pendingMobile = null;
     MG.showOtpStep(false);
     MG.$('#otpInput').value = '';
+  });
+
+  // Quick login handlers
+  MG.$('#quickPasswordBtn')?.addEventListener('click', async function () {
+    var pw = (MG.$('#quickPasswordInput').value || '');
+    var err = MG.$('#quickPasswordError');
+    var btn = MG.$('#quickPasswordBtn');
+    if (btn) { btn.disabled = true; }
+    try {
+      var ok = await MG.verifyDevicePassword(_pendingMobile, pw);
+      if (!ok) {
+        if (err) { err.classList.remove('hidden'); }
+        MG.showToast('Incorrect password');
+        return;
+      }
+      if (err) err.classList.add('hidden');
+      MG.setSiteAuth(_pendingMobile);
+      MG.showToast('Unlocked');
+      MG.startApp(_pendingMobile);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+  MG.$('#quickPasswordInput')?.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') MG.$('#quickPasswordBtn') && MG.$('#quickPasswordBtn').click();
+  });
+  MG.$('#quickFingerprintBtn')?.addEventListener('click', async function () {
+    var btn = MG.$('#quickFingerprintBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Waiting…'; }
+    try {
+      var ok = await MG.verifyFingerprint(_pendingMobile);
+      if (!ok) {
+        MG.showToast('Fingerprint failed — try password or OTP');
+        return;
+      }
+      MG.setSiteAuth(_pendingMobile);
+      MG.showToast('Unlocked');
+      MG.startApp(_pendingMobile);
+    } catch (e) {
+      MG.showToast('Fingerprint cancelled');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-fingerprint mr-1.5"></i> Unlock with fingerprint'; }
+    }
+  });
+  MG.$('#quickUseOtpBtn')?.addEventListener('click', async function () {
+    if (_pendingMobile) {
+      MG.$('#mobileInput').value = _pendingMobile;
+      await MG.sendMentorOtp();
+    }
+  });
+  MG.$('#quickChangeNumBtn')?.addEventListener('click', function () {
+    _pendingMobile = null;
+    MG.showOtpStep(false);
+  });
+
+  // First-login device setup
+  MG.$('#setupPasswordBtn')?.addEventListener('click', async function () {
+    var p1 = (MG.$('#setupPasswordInput').value || '');
+    var p2 = (MG.$('#setupPasswordConfirm').value || '');
+    var err = MG.$('#setupPasswordError');
+    if (p1.length < 4) {
+      if (err) { err.textContent = 'Password must be at least 4 characters'; err.classList.remove('hidden'); }
+      return;
+    }
+    if (p1 !== p2) {
+      if (err) { err.textContent = 'Passwords do not match'; err.classList.remove('hidden'); }
+      return;
+    }
+    if (err) err.classList.add('hidden');
+    try {
+      await MG.setDevicePassword(_pendingMobile, p1);
+      MG.showToast('Password saved for this device');
+      MG.setSiteAuth(_pendingMobile);
+      MG.startApp(_pendingMobile);
+    } catch (e) {
+      if (err) { err.textContent = (e && e.message) || 'Could not save password'; err.classList.remove('hidden'); }
+    }
+  });
+  MG.$('#setupFingerprintBtn')?.addEventListener('click', async function () {
+    var btn = MG.$('#setupFingerprintBtn');
+    if (btn) { btn.disabled = true; }
+    try {
+      await MG.registerFingerprint(_pendingMobile);
+      MG.showToast('Fingerprint enabled');
+      MG.setSiteAuth(_pendingMobile);
+      MG.startApp(_pendingMobile);
+    } catch (e) {
+      MG.showToast((e && e.message) || 'Fingerprint setup failed');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+  MG.$('#setupSkipBtn')?.addEventListener('click', function () {
+    MG.setSiteAuth(_pendingMobile);
+    MG.showToast('Login verified');
+    MG.startApp(_pendingMobile);
   });
 
   // Header

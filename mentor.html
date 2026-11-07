@@ -240,7 +240,7 @@
         </div>
         <p id="mobileError" class="text-xs text-red-500 mt-1.5 hidden">Enter a valid 10-digit Indian mobile number</p>
         <button id="mobileSubmit" class="w-full mt-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
-          <i class="fas fa-paper-plane mr-1.5"></i> Send OTP
+          <i class="fas fa-arrow-right mr-1.5"></i> Continue
         </button>
       </div>
 
@@ -281,6 +281,40 @@
         <button id="otpChangeNumBtn" type="button" class="w-full py-1 text-xs text-slate-500 hover:underline">
           Change number
         </button>
+      </div>
+
+      <!-- Step 3: Quick login (remembered device — password / fingerprint) -->
+      <div id="otpStepQuick" class="hidden">
+        <p class="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">This device is remembered. Unlock with password or fingerprint.</p>
+        <button type="button" id="quickFingerprintBtn" class="hidden w-full mb-3 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
+          <i class="fas fa-fingerprint mr-1.5"></i> Unlock with fingerprint
+        </button>
+        <div id="quickPasswordWrap">
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Device password</label>
+          <input type="password" id="quickPasswordInput" class="form-input w-full" placeholder="Enter password" autocomplete="current-password" />
+          <p id="quickPasswordError" class="text-xs text-red-500 mt-1.5 hidden">Incorrect password</p>
+          <button type="button" id="quickPasswordBtn" class="w-full mt-3 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
+            <i class="fas fa-lock mr-1.5"></i> Unlock with password
+          </button>
+        </div>
+        <button type="button" id="quickUseOtpBtn" class="w-full mt-3 py-2 text-sm text-brand-600 hover:underline">Use OTP instead</button>
+        <button type="button" id="quickChangeNumBtn" type="button" class="w-full py-1 text-xs text-slate-500 hover:underline">Change number</button>
+      </div>
+
+      <!-- Step 4: After first OTP — set password / fingerprint for this device -->
+      <div id="otpStepSetup" class="hidden">
+        <p class="text-sm text-slate-600 dark:text-slate-300 text-center mb-3">Remember this device? Next time you can login without OTP.</p>
+        <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Create device password</label>
+        <input type="password" id="setupPasswordInput" class="form-input w-full mb-2" placeholder="Min 4 characters" autocomplete="new-password" />
+        <input type="password" id="setupPasswordConfirm" class="form-input w-full mb-2" placeholder="Confirm password" autocomplete="new-password" />
+        <p id="setupPasswordError" class="text-xs text-red-500 mt-1 hidden"></p>
+        <button type="button" id="setupPasswordBtn" class="w-full mt-2 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
+          <i class="fas fa-key mr-1.5"></i> Save password
+        </button>
+        <button type="button" id="setupFingerprintBtn" class="w-full mt-2 py-3 rounded-xl border border-emerald-500 text-emerald-700 dark:text-emerald-300 font-semibold hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition">
+          <i class="fas fa-fingerprint mr-1.5"></i> Enable fingerprint
+        </button>
+        <button type="button" id="setupSkipBtn" class="w-full mt-3 py-2 text-sm text-slate-500 hover:underline">Skip for now</button>
       </div>
 
       <div id="recaptcha-container" class="flex justify-center items-center w-full mt-3 mb-1" style="min-height:78px;overflow:visible;"></div>

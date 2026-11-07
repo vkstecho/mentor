@@ -66,6 +66,20 @@ MG.openProfileModal = function () {
     '</div>' +
     '<label class="block text-xs font-semibold mb-1">Email</label>' +
     '<input id="pfEmail" type="email" class="form-input w-full mb-4" value="' + (p.email || '').replace(/"/g, '&quot;') + '" placeholder="optional@email.com"/>' +
+    '<div class="border-t border-slate-200 dark:border-slate-600 pt-4 mt-2 mb-3">' +
+    '<h4 class="text-xs font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">Device security</h4>' +
+    '<p class="text-[11px] text-slate-500 mb-2">Password &amp; fingerprint work only on this device after first OTP login.</p>' +
+    '<label class="block text-xs font-semibold mb-1">Change device password</label>' +
+    '<input id="pfNewPass" type="password" class="form-input w-full mb-2" placeholder="New password (min 4)" autocomplete="new-password"/>' +
+    '<input id="pfNewPass2" type="password" class="form-input w-full mb-2" placeholder="Confirm new password" autocomplete="new-password"/>' +
+    '<button type="button" id="pfSavePassBtn" class="w-full mb-3 py-2 rounded-xl border border-brand-500 text-brand-700 dark:text-brand-300 text-sm font-semibold hover:bg-brand-50 dark:hover:bg-brand-900/30">Update password</button>' +
+    '<div class="flex items-center justify-between gap-2 mb-1">' +
+    '<span class="text-xs font-semibold">Fingerprint login</span>' +
+    '<span id="pfFpStatus" class="text-[11px] text-slate-500">—</span></div>' +
+    '<div class="flex gap-2">' +
+    '<button type="button" id="pfEnableFpBtn" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Enable</button>' +
+    '<button type="button" id="pfDisableFpBtn" class="flex-1 py-2 rounded-xl border border-slate-300 dark:border-slate-500 text-xs font-semibold">Disable</button>' +
+    '</div></div>' +
     '<button type="button" id="profileSaveBtn" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold">Save profile</button>' +
     '</div>';
   document.body.appendChild(modal);
@@ -96,6 +110,47 @@ MG.openProfileModal = function () {
     };
     reader.readAsDataURL(f);
   });
+
+  function refreshFpStatus() {
+    var st = document.getElementById('pfFpStatus');
+    if (!st) return;
+    if (MG.hasDeviceFingerprint(mobile)) st.textContent = 'On';
+    else if (!MG.supportsWebAuthn()) st.textContent = 'Not supported';
+    else st.textContent = 'Off';
+  }
+  refreshFpStatus();
+  var savePassBtn = document.getElementById('pfSavePassBtn');
+  if (savePassBtn) savePassBtn.onclick = async function () {
+    var p1 = (document.getElementById('pfNewPass').value || '');
+    var p2 = (document.getElementById('pfNewPass2').value || '');
+    if (p1.length < 4) { MG.showToast('Password min 4 characters'); return; }
+    if (p1 !== p2) { MG.showToast('Passwords do not match'); return; }
+    try {
+      await MG.setDevicePassword(mobile, p1);
+      document.getElementById('pfNewPass').value = '';
+      document.getElementById('pfNewPass2').value = '';
+      MG.showToast('Device password updated');
+    } catch (e) {
+      MG.showToast((e && e.message) || 'Could not update password');
+    }
+  };
+  var enFp = document.getElementById('pfEnableFpBtn');
+  if (enFp) enFp.onclick = async function () {
+    try {
+      await MG.registerFingerprint(mobile);
+      refreshFpStatus();
+      MG.showToast('Fingerprint enabled');
+    } catch (e) {
+      MG.showToast((e && e.message) || 'Fingerprint setup failed');
+    }
+  };
+  var disFp = document.getElementById('pfDisableFpBtn');
+  if (disFp) disFp.onclick = function () {
+    MG.disableFingerprint(mobile);
+    refreshFpStatus();
+    MG.showToast('Fingerprint disabled');
+  };
+
   document.getElementById('profileSaveBtn').onclick = async function () {
     var profile = {
       name: (document.getElementById('pfName').value || '').trim(),
