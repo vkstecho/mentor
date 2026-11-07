@@ -278,12 +278,18 @@ MG.initMentorPwaUi = function() {
   var hasPrompt = !!( _mentorDeferredPrompt || window.__mentorDeferredPrompt );
   var isInstalled = (typeof MG._mentorIsInstalledApp === 'function' ? MG._mentorIsInstalledApp() : MG._mentorIsStandalone()) && !hasPrompt;
   if (isInstalled) {
-    var hint = document.getElementById('mentorInstallHint');
-    if (hint) hint.textContent = 'Running as installed Mentor app.';
-    ['mentorInstallDesktopBtn','mentorInstallAndroidBtn'].forEach(function(id){
+    // Installed PWA: keep home clean — hide install chips, keep Share only
+    ['mentorInstallDesktopBtn','mentorInstallAndroidBtn','mentorInstallIosBtn','mentorPlayStoreBtn','mentorInstallBtn'].forEach(function(id){
       var el = document.getElementById(id);
       if (el) el.classList.add('hidden');
     });
+    var hint = document.getElementById('mentorInstallHint');
+    if (hint) { hint.classList.add('hidden'); hint.textContent = ''; }
+    var share = document.getElementById('mentorShareBtn');
+    if (share) {
+      share.classList.remove('hidden');
+      share.className = 'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-[11px] font-semibold';
+    }
   } else {
     var desk = document.getElementById('mentorInstallDesktopBtn');
     if (desk) desk.classList.remove('hidden');

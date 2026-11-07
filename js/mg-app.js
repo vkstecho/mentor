@@ -446,6 +446,14 @@ MG.bindEvents = function() {
         catalog.classList.remove('hidden');
         return;
       }
+      // Inside Packaging / Career path → back to path picker
+      var secP = document.getElementById('sectionPackaging');
+      var secC = document.getElementById('sectionCareer');
+      var inPath = (secP && !secP.classList.contains('hidden')) || (secC && !secC.classList.contains('hidden'));
+      if (inPath && typeof MG.showCategory === 'function') {
+        MG.showCategory(null);
+        return;
+      }
     } catch (e0) {}
     var canBack = false;
     try { canBack = window.history.length > 1; } catch (e1) {}

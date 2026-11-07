@@ -58,16 +58,37 @@ MG.showCategory = function(cat) {
   var picker = document.getElementById('categoryPicker');
   var secP = document.getElementById('sectionPackaging');
   var secC = document.getElementById('sectionCareer');
+  var eco = document.getElementById('vksEcosystem');
+  var testi = document.getElementById('mentorTestimonials');
+  var homeOnly = !cat;
   if (picker) picker.classList.toggle('hidden', !!cat);
+  // Home-only blocks must hide when a path is open (was leaving empty-looking home)
+  if (eco) eco.classList.toggle('hidden', !!cat);
+  if (testi) testi.classList.toggle('hidden', !!cat);
   if (secP) secP.classList.toggle('hidden', cat !== 'packaging');
   if (secC) secC.classList.toggle('hidden', cat !== 'career');
   if (cat === 'packaging') {
     try { MG.renderFreePackSection(); } catch (e) {}
   }
+  // Ensure topic grids are filled when opening a path (without re-binding nav)
+  if (cat === 'packaging' || cat === 'career') {
+    try {
+      var gridCareer = MG.$('#topicsGrid');
+      var gridPack = document.getElementById('topicsGridPackaging');
+      var need = (cat === 'career' && gridCareer && !gridCareer.children.length) ||
+                 (cat === 'packaging' && gridPack && !gridPack.children.length);
+      if (need && typeof MG.renderCatalog === 'function') MG.renderCatalog();
+    } catch (e3) {}
+  }
+  // Keep catalog intro visible only on home
+  var intro = document.getElementById('catalogIntro');
+  if (intro) intro.classList.toggle('hidden', !!cat);
   try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e2) {}
 };
 
 MG.initCategoryNav = function() {
+  if (MG._categoryNavBound) return;
+  MG._categoryNavBound = true;
   var bp = document.getElementById('catBtnPackaging');
   var bc = document.getElementById('catBtnCareer');
   if (bp) bp.addEventListener('click', function () { MG.showCategory('packaging'); });
@@ -232,7 +253,7 @@ MG.loadMentorTestimonials = async function () {
   }
 
   // Skip pure founder featured as first, show mix; limit 10 for horizontal scroll
-  var items = list.filter(function (t) { return t && t.quote; }).slice(0, 12);
+  var items = list.filter(function (t) { return t && t.quote; });
   var sum = 0;
   items.forEach(function (t) { sum += Number(t.stars) || 0; });
   var avg = items.length ? (Math.round((sum / items.length) * 10) / 10) : 0;

@@ -24,3 +24,14 @@ Deploy: upload entire mentor-app/ folder to hosting / push to GitHub.
 - Path cards: denser app-style gradients, chips, rates
 - VKS ecosystem strip under cards: vkstech.com, Man Power, PackLink (external links)
 - Horizontal testimonials carousel loaded from GitHub `vkstecho/manpower` testimonials library
+
+## 2026-11-07 — Real ecosystem logos + denser home
+- VKS Tech / Man Power / PackLink cards use real icons from vkstech.com assets
+- Install row compacted to chip pills; hidden when already installed as PWA
+- Catalog title shortened; less marketing copy on home
+
+## 2026-11-07 — Path navigation + logo + testimonials UX
+- Opening Flexible Packaging / Career no longer leaves home blocks visible (ecosystem + testimonials hide)
+- Fixed duplicate category click listeners; back button returns to path picker
+- Header Mentor logo no longer cropped by account chip
+- Removed public GitHub "source" link under testimonials; show all quotes
