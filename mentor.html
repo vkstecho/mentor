@@ -342,7 +342,7 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
       <div class="max-w-7xl mx-auto px-3 sm:px-6">
-        <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
+        <div class="flex items-center justify-between h-13 sm:h-14 gap-1.5 min-h-[52px]">
           <!-- Left -->
           <div class="flex items-center gap-2 sm:gap-3 min-w-0">
             <button id="backBtn" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition shrink-0" title="Back">
@@ -402,39 +402,38 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 py-5 sm:py-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-5 py-3 sm:py-5">
       <!-- Catalog View -->
       
             <!-- PWA Install + Share (home) -->
-      <div id="mentorInstallBar" class="mb-4 px-1">
-        <div id="mentorInstallButtonsRow" class="flex flex-wrap items-center gap-2">
+      <div id="mentorInstallBar" class="mb-3">
+        <div id="mentorInstallButtonsRow" class="flex items-center gap-1.5 overflow-x-auto pb-0.5" style="scrollbar-width:none">
           <a id="mentorPlayStoreBtn" href="https://play.google.com/store/apps/details?id=com.vkstech.mentor" target="_blank" rel="noopener"
-            class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold shadow-sm hover:bg-emerald-50 dark:hover:bg-slate-700">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-900/40"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" aria-hidden="true"><path fill="#00A0FF" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/><path fill="#00F076" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z"/><path fill="#FFD500" d="M104.6 13L325.3 234.3 385.4 174.2 465.3 128 104.6 13z"/><path fill="#FF3A44" d="M104.6 499l360.7-115.2-79.9-46.1-60.1 60.1L104.6 499z"/><path fill="#00D6FF" d="M104.6 13v486L325.3 256 104.6 13z"/></svg></span>
-            <span>Play Store · Android</span>
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-semibold shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 512 512" aria-hidden="true"><path fill="#00A0FF" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/><path fill="#00F076" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z"/><path fill="#FFD500" d="M104.6 13L325.3 234.3 385.4 174.2 465.3 128 104.6 13z"/><path fill="#FF3A44" d="M104.6 499l360.7-115.2-79.9-46.1-60.1 60.1L104.6 499z"/></svg>
+            Play
           </a>
-          <button type="button" id="mentorInstallIosBtn" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 15 2.94 10.53 4.7 7.5c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg></span>
-            <span>iPhone / iPad</span>
+          <button type="button" id="mentorInstallIosBtn" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-semibold shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 15 2.94 10.53 4.7 7.5c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            iOS
           </button>
-          <button type="button" id="mentorInstallDesktopBtn" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-sky-200 dark:border-sky-900 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold shadow-sm hover:bg-sky-50 dark:hover:bg-slate-700">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-900/40"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#0078D4" d="M3 5.1L10.5 4v7.2H3V5.1zm0 13.8v-6.3h7.5V20L3 18.9zM11.4 4L21 2.7v8.5h-9.6V4zM21 21.3L11.4 20v-7.2H21v8.5z"/></svg></span>
-            <span>Windows / Desktop</span>
+          <button type="button" id="mentorInstallDesktopBtn" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-semibold shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="#0078D4" d="M3 5.1L10.5 4v7.2H3V5.1zm0 13.8v-6.3h7.5V20L3 18.9zM11.4 4L21 2.7v8.5h-9.6V4zM21 21.3L11.4 20v-7.2H21v8.5z"/></svg>
+            Desktop
           </button>
-          <button type="button" id="mentorShareBtn" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-100">
-            <i class="fas fa-share-nodes"></i> Share
+          <button type="button" id="mentorShareBtn" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-semibold shrink-0">
+            <i class="fas fa-share-nodes text-[10px]"></i> Share
           </button>
           <button type="button" id="mentorInstallAndroidBtn" class="hidden" aria-hidden="true"></button>
           <button type="button" id="mentorInstallBtn" class="hidden" aria-hidden="true"></button>
         </div>
-        <p id="mentorInstallHint" class="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 leading-snug px-0.5">Install Mentor · home screen access</p>
+        <p id="mentorInstallHint" class="hidden text-[10px] text-slate-400 mt-1">Install for home screen</p>
       </div>
 
       <section id="catalogView">
-        <div class="mb-5 sm:mb-6">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400 mb-1">Mentor · VKS Tech</p>
-          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white" data-i18n="choosePath">Choose Your Guidance Path</h2>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed" data-i18n="choosePathSub">Free plant modules + paid one-to-one · Recordings &amp; doubt chat</p>
+        <div class="mb-4 sm:mb-5">
+          <h2 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white" data-i18n="choosePath">Choose your path</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="choosePathSub">Free modules · paid 1:1 · recordings &amp; doubt chat</p>
         </div>
 
         <!-- Mentor Student Selector (Mentor Mode only) -->
@@ -486,37 +485,35 @@
         </div>
 
         <!-- VKS ecosystem apps -->
-        <div id="vksEcosystem" class="mb-7">
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <div>
-              <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">VKS Tech ecosystem</p>
-              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100">More tools from the same team</h3>
-            </div>
+        <div id="vksEcosystem" class="mb-6">
+          <div class="mb-2.5 px-0.5">
+            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">VKS Tech ecosystem</p>
+            <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">More tools from the same team</h3>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <a href="https://vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-brand-400 hover:shadow-md transition group">
-              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-900 to-brand-700 text-white flex items-center justify-center text-sm font-black shadow shrink-0">VKS</span>
+          <div class="grid grid-cols-1 gap-2">
+            <a href="https://vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm hover:border-brand-400 hover:shadow-md active:scale-[0.99] transition group">
+              <img src="icons/logo-vks.png" alt="VKS Tech" width="44" height="44" class="w-11 h-11 rounded-xl object-cover shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-600 shrink-0 bg-white" onerror="this.onerror=null;this.src='icons/logo-vks-192.png'"/>
               <div class="min-w-0 flex-1">
-                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600">vkstech.com</div>
-                <div class="text-[11px] text-slate-500 truncate">Training · tools · plant systems</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white">VKS Tech</div>
+                <div class="text-[11px] text-slate-500 truncate">vkstech.com · training, tools &amp; plant systems</div>
               </div>
-              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-brand-500"></i>
+              <i class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-brand-500"></i>
             </a>
-            <a href="https://manpower.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-emerald-400 hover:shadow-md transition group">
-              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow shrink-0"><i class="fas fa-users text-sm"></i></span>
+            <a href="https://manpower.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm hover:border-emerald-400 hover:shadow-md active:scale-[0.99] transition group">
+              <img src="icons/logo-manpower.png" alt="Man Power" width="44" height="44" class="w-11 h-11 rounded-xl object-cover shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-600 shrink-0 bg-slate-950" onerror="this.onerror=null;this.src='icons/logo-manpower-alt.png'"/>
               <div class="min-w-0 flex-1">
-                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-600">Man Power</div>
-                <div class="text-[11px] text-slate-500 truncate">manpower.vkstech.com · roster &amp; shifts</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white">Man Power</div>
+                <div class="text-[11px] text-slate-500 truncate">manpower.vkstech.com · roster, shifts &amp; leave</div>
               </div>
-              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-emerald-500"></i>
+              <i class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-emerald-500"></i>
             </a>
-            <a href="https://packlink.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-orange-400 hover:shadow-md transition group">
-              <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 text-white flex items-center justify-center shadow shrink-0"><i class="fas fa-link text-sm"></i></span>
+            <a href="https://packlink.vkstech.com" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm hover:border-orange-400 hover:shadow-md active:scale-[0.99] transition group">
+              <img src="icons/logo-packlink.png" alt="PackLink" width="44" height="44" class="w-11 h-11 rounded-xl object-cover shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-600 shrink-0 bg-white" onerror="this.onerror=null;this.src='icons/logo-packlink-alt.png'"/>
               <div class="min-w-0 flex-1">
-                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-orange-600">PackLink</div>
-                <div class="text-[11px] text-slate-500 truncate">packlink.vkstech.com · packaging links</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white">PackLink</div>
+                <div class="text-[11px] text-slate-500 truncate">packlink.vkstech.com · packaging network</div>
               </div>
-              <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-300 group-hover:text-orange-500"></i>
+              <i class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-orange-500"></i>
             </a>
           </div>
         </div>
