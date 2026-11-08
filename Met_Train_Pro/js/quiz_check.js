@@ -231,9 +231,9 @@ function rCheck(pg){
     else if(data && checked > 0) statusClass = ' partial';
     var activeClass = (ds === ckViewDate) ? ' active' : '';
     dateStripH += '<button type="button" class="ck-date-chip'+activeClass+statusClass+'" onclick="switchCKDate(\''+ds+'\')">'
-      +'<span class="ck-dow">'+info.day+'</span>'
-      +'<span class="ck-dom">'+info.date+'</span>'
-      +'<span class="ck-moy">'+info.month+'</span>'
+      +'<div class="ck-date-day">'+info.day+'</div>'
+      +'<div class="ck-date-num">'+info.date+'</div>'
+      +'<div class="ck-date-mon">'+info.month+'</div>'
       +'</button>';
   }
 
@@ -248,15 +248,15 @@ function rCheck(pg){
         var key = ci+'_'+ii;
         var on = !!(viewData.items && viewData.items[key]);
         var dis = isToday ? '' : ' disabled';
-        itemsH += '<label class="ck-item'+(on?' on':'')+dis+'">'
-          +'<input type="checkbox"'+(on?' checked':'')+(isToday?'':' disabled')+' onchange="toggleCK(\''+key+'\')"/>'
-          +'<span>'+item+'</span></label>';
+        itemsH += '<div class="cli'+(on?' chk':'')+(isToday?'':' readonly')+'" onclick="'+(isToday?("toggleCK(\''+key+'\')"):'')+'">'
+          +'<div class="clbox">'+(on?'✓':'')+'</div>'
+          +'<div class="cltxt">'+item+'</div></div>';
       });
-      catH += '<div class="ck-cat"><div class="ck-cat-title">'+cat.cat+'</div>'+itemsH+'</div>';
+      catH += '<div class="cb" style="margin-bottom:12px"><div class="cb-h open"><div class="cb-title">'+cat.cat+'</div></div><div class="cb-body open" style="display:block;padding:4px 12px 8px">'+itemsH+'</div></div>';
     });
 
     var curShift = viewData.shift || 'A';
-    var shiftH = '<div class="ck-shift-row">'
+    var shiftH = '<div class="ck-shift-wrap">'
       +'<span class="ck-shift-label">'+(hi?'शिफ्ट:':'Shift:')+'</span>'
       +'<button class="ck-shift-btn'+(curShift==='A'?' on':'')+'" onclick="setCKShift(\'A\')">'+(hi?'A शिफ्ट':'A Shift')+'</button>'
       +'<button class="ck-shift-btn'+(curShift==='B'?' on':'')+'" onclick="setCKShift(\'B\')">'+(hi?'B शिफ्ट':'B Shift')+'</button>'

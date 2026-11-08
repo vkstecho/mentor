@@ -8,7 +8,7 @@
 <link rel="icon" href="../icons/mentor-icon.jpg"/>
 <style>
 :root{
-  --bg:#eef2f7; --card:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+  --bg:#e8edf5; --card:#fff; --text:#0f172a; --muted:#475569; --line:#cbd5e1;
   --navy:#0f172a; --blue:#1e3a8a; --teal:#0d9488; --orange:#e85d26;
   --ok:#166534; --okbg:#dcfce7;
 }
@@ -17,7 +17,7 @@ body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;b
 header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:30}
 header a{color:#fff;text-decoration:none;font-weight:700;font-size:14px}
 header .mid{flex:1;text-align:center;font-size:13px;font-weight:600;opacity:.95}
-main{max-width:920px;margin:0 auto;padding:16px 14px 64px}
+main{max-width:960px;margin:0 auto;padding:16px 14px 64px}
 .badge{display:inline-block;background:var(--okbg);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
 h1{font-size:1.35rem;margin:10px 0 6px}
 .lead{color:var(--muted);margin:0 0 14px;font-size:15px}
@@ -48,41 +48,115 @@ textarea{min-height:64px;resize:vertical;font-weight:500}
 .note{font-size:12px;color:var(--muted);margin-top:10px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px}
 .hint{font-size:12px;color:#64748b}
 
-/* Horizontal 16:9 deck */
-.deck{margin-top:16px;display:flex;flex-direction:column;gap:20px;align-items:center}
+/* ===== Standard PPT 16:9 slides ===== */
+.deck{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:24px;
+}
+/* Widescreen PPT ratio: 13.333" x 7.5" → 16:9 */
 .slide{
-  width:100%;max-width:880px;aspect-ratio:16/9;
-  background:#fff;border:1px solid #cbd5e1;border-radius:6px;
-  padding:22px 28px;box-shadow:0 10px 32px rgba(15,23,42,.1);
-  position:relative;overflow:hidden;page-break-after:always;
+  width:min(100%, 880px);
+  aspect-ratio:16 / 9;
+  background:#fff;
+  border:1px solid #94a3b8;
+  border-radius:4px;
+  box-shadow:0 12px 36px rgba(15,23,42,.12);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  page-break-after:always;
+  page-break-inside:avoid;
 }
-@media(max-width:700px){
-  .slide{aspect-ratio:auto;min-height:280px;padding:16px}
+.slide-pad{
+  flex:1;
+  min-height:0;
+  padding:20px 28px 36px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
-.slide-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #0f172a}
-.logo-ph{width:56px;height:56px;border:2px dashed #94a3b8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#64748b;text-align:center;line-height:1.2;background:#f8fafc;flex-shrink:0;overflow:hidden}
+.slide-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding-bottom:10px;
+  margin-bottom:12px;
+  border-bottom:2.5px solid #0f172a;
+  flex-shrink:0;
+}
+.logo-ph{
+  width:52px;height:52px;
+  border:2px dashed #94a3b8;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:#64748b;text-align:center;line-height:1.2;
+  background:#f8fafc;flex-shrink:0;overflow:hidden;
+}
 .logo-ph img{width:100%;height:100%;object-fit:contain}
-.slide-brand{text-align:right}
-.slide-brand .co{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
-.slide-brand .title{font-size:16px;font-weight:900;color:#0f172a}
-.slide-brand .sub{font-size:11px;color:#64748b}
-.slide h3{margin:0 0 8px;font-size:14px;color:#0f172a;border-left:4px solid #0d9488;padding-left:10px}
-.slide .body{font-size:13px;color:#334155;line-height:1.45}
-.slide .foot{position:absolute;left:28px;right:28px;bottom:12px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;font-weight:600}
-table.kpi{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}
-table.kpi th{background:#0f172a;color:#fff;text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
-table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:560px){.two{grid-template-columns:1fr}}
-.cover-center{text-align:center;margin-top:28px}
-.cover-center .big{font-size:26px;font-weight:900;color:#0f172a;letter-spacing:.02em}
-.cover-center .per{font-size:14px;color:#64748b;margin-top:8px;font-weight:600}
+.slide-brand{text-align:right;min-width:0}
+.slide-brand .co{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#64748b}
+.slide-brand .title{font-size:15px;font-weight:900;color:#0f172a;line-height:1.2;margin-top:2px}
+.slide-brand .sub{font-size:11px;color:#64748b;margin-top:2px}
+.slide h3{
+  margin:0 0 8px;font-size:13px;color:#0f172a;
+  border-left:4px solid #0d9488;padding-left:10px;
+  flex-shrink:0;
+}
+.slide .body{
+  font-size:12.5px;color:#334155;line-height:1.45;
+  flex:1;min-height:0;overflow:hidden;
+  white-space:pre-wrap;
+}
+.slide .foot{
+  position:absolute;left:0;right:0;bottom:0;
+  height:28px;
+  padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:9px;color:#94a3b8;font-weight:600;
+  background:linear-gradient(to top,#fff 70%,transparent);
+  border-top:1px solid #e2e8f0;
+}
+.cover-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cover-center .big{font-size:26px;font-weight:900;color:#0f172a;letter-spacing:.02em;line-height:1.15}
+.cover-center .per{font-size:14px;color:#64748b;margin-top:10px;font-weight:600}
+.cover-center .meta{margin-top:22px;font-size:13px;color:#334155;line-height:1.6}
+table.kpi{width:100%;border-collapse:collapse;font-size:12px;margin:4px 0 8px}
+table.kpi th{background:#0f172a;color:#fff;text-align:left;padding:7px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.kpi td{border-bottom:1px solid #e2e8f0;padding:7px 10px;font-weight:600;vertical-align:top}
+table.kpi tr:last-child td{border-bottom:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0}
+.two > div{min-width:0}
+.ask-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-weight:700;font-size:12.5px;color:#0f172a}
+.agenda-list{margin:0;padding-left:20px;font-weight:600;line-height:1.75;font-size:12.5px;columns:2;column-gap:20px}
+@media(max-width:640px){
+  .agenda-list{columns:1}
+  .slide{aspect-ratio:auto;min-height:320px}
+  .slide-pad{padding:14px 14px 32px}
+  .cover-center .big{font-size:20px}
+  .slide-brand .title{font-size:13px}
+  .two{grid-template-columns:1fr;gap:10px}
+}
+
 @media print{
   header,.nav-pills,.actions,.no-print,.badge,.lead,h1,#panel-params,#panel-calc{display:none!important}
   body{background:#fff}
-  main{max-width:none;padding:0}
+  main{max-width:none;padding:0;margin:0}
   .panel{display:block!important}
-  .slide{box-shadow:none;max-width:none;width:100%;height:100vh;aspect-ratio:auto;page-break-after:always}
+  .deck{gap:0}
+  .slide{
+    width:100%;
+    max-width:none;
+    height:100vh;
+    aspect-ratio:auto;
+    box-shadow:none;
+    border:none;
+    border-radius:0;
+    page-break-after:always;
+  }
 }
 </style>
 </head>
@@ -95,7 +169,7 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
 <main>
   <span class="badge">FREE · Self-study</span>
   <h1>MR Skill — Monthly review for management</h1>
-  <p class="lead">Nine improvement parameters management expects, plus an 11-slide horizontal presentation format you fill before the meeting. No file uploads.</p>
+  <p class="lead">Nine improvement parameters management expects, plus an 11-slide widescreen (16:9) presentation you fill before the meeting. No file uploads.</p>
 
   <div class="nav-pills no-print">
     <button type="button" class="on" data-panel="params">Management expectations</button>
@@ -126,9 +200,9 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
 
   <div class="panel" id="panel-deck">
     <div class="card no-print">
-      <div class="sec-tag">Dummy deck · 11 horizontal slides (16:9)</div>
+      <div class="sec-tag">Dummy deck · 11 slides · standard 16:9 widescreen</div>
       <h2>Professional presentation format</h2>
-      <p>Fill fields — slides update live. Optional company logo on every slide. Print or Save as PDF for the meeting.</p>
+      <p>Same ratio as PowerPoint widescreen (13.33&quot; × 7.5&quot;). Fill fields — slides update live. Optional company logo. Print or Save as PDF.</p>
       <div class="row">
         <div><label>Company name</label><input id="f_company" value="Your Company Name"/></div>
         <div><label>Department</label><input id="f_dept" value="Metalliser / Production"/></div>
@@ -139,9 +213,8 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
       </div>
       <div class="row">
         <div><label>Meeting date</label><input id="f_date" type="date"/></div>
-        <div><label>Company logo</label><input id="f_logo" type="file" accept="image/*"/><div class="hint">Optional — shown on every slide</div></div>
+        <div><label>Company logo</label><input id="f_logo" type="file" accept="image/*"/><div class="hint">Optional — top-left on every slide</div></div>
       </div>
-
       <h2 style="margin-top:14px;font-size:.95rem">Headline KPIs</h2>
       <div class="row3">
         <div><label>Output — Plan</label><input id="k1p" value="800 MT"/></div>
@@ -163,8 +236,7 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
         <div><label>Utilisation — Actual</label><input id="k4a" value="81%"/></div>
         <div><label>Utilisation — Gap</label><input id="k4g" value="-4 pp"/></div>
       </div>
-
-      <h2 style="margin-top:14px;font-size:.95rem">Parameter notes (one line each is fine)</h2>
+      <h2 style="margin-top:14px;font-size:.95rem">Parameter notes</h2>
       <div class="row"><div><label>1. Output story</label><textarea id="n1">Plan 800 MT, actual 765 MT (−4.4%). Lost volume mainly from boat-change downtime and material wait.</textarea></div>
       <div><label>2. Yield / quality</label><textarea id="n2">Yield 96.8% vs 97.5% target. Two OD variation complaints. B-grade 0.4%.</textarea></div></div>
       <div class="row"><div><label>3. Conversion cost</label><textarea id="n3">Actual ₹13.20/kg vs target ₹12.50. Power and mix difficulty (AlOx) drove the gap. Equivalent cost closer to target.</textarea></div>
@@ -179,45 +251,44 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
 2. Power baseline on M-1 — Owner: Maint — 20 Nov
 3. AlOx start-up checklist — Owner: Process — 15 Nov</textarea></div>
       <div><label>Decision / support needed</label><textarea id="n_ask">Approval for one spare boat set (CAPEX) and overtime for SMED trials on night shift.</textarea></div></div>
-
       <div class="actions">
         <button type="button" class="btn btn-p" onclick="window.print()">Print / Save PDF</button>
         <button type="button" class="btn btn-g" onclick="document.getElementById('deckPreview').scrollIntoView({behavior:'smooth'})">Preview slides</button>
       </div>
-      <p class="note">11 horizontal (16:9) slides: cover · agenda · KPIs · then one slide per parameter (1–9) with your notes · final ask. Replace sample numbers with plant data.</p>
+      <p class="note">11 slides in true 16:9 widescreen (same as PPT). Footer stays clear of body text. Replace sample numbers with plant data.</p>
     </div>
 
     <div class="deck" id="deckPreview">
       <!-- 1 Cover -->
-      <div class="slide" data-n="1">
-        <div class="slide-top">
-          <div class="logo-ph" id="logo1"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
-          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Monthly Review Meeting</div><div class="sub"><span data-f="dept">Dept</span> · <span data-f="period">Period</span></div></div>
-        </div>
-        <div class="cover-center">
-          <div class="big">Department Performance Review</div>
-          <div class="per" data-f="period">November 2026</div>
-          <div class="body" style="margin-top:20px"><b>Presented by:</b> <span data-f="by">—</span><br/><b>Date:</b> <span data-f="date">—</span></div>
+      <div class="slide">
+        <div class="slide-pad">
+          <div class="slide-top">
+            <div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+            <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Monthly Review Meeting</div><div class="sub"><span data-f="dept">Dept</span> · <span data-f="period">Period</span></div></div>
+          </div>
+          <div class="cover-center">
+            <div class="big">Department Performance Review</div>
+            <div class="per" data-f="period">November 2026</div>
+            <div class="meta"><b>Presented by:</b> <span data-f="by">—</span><br/><b>Date:</b> <span data-f="date">—</span></div>
+          </div>
         </div>
         <div class="foot"><span>Confidential — Internal use</span><span>1 / 11</span></div>
       </div>
 
       <!-- 2 Agenda -->
-      <div class="slide" data-n="2">
-        <div class="slide-top">
-          <div class="logo-ph" id="logo2"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
-          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Agenda</div><div class="sub" data-f="period">Period</div></div>
-        </div>
-        <h3>What we will cover</h3>
-        <div class="body two">
-          <ol style="margin:0;padding-left:18px;font-weight:600;line-height:1.7">
+      <div class="slide">
+        <div class="slide-pad">
+          <div class="slide-top">
+            <div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+            <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Agenda</div><div class="sub" data-f="period">Period</div></div>
+          </div>
+          <h3>What we will cover</h3>
+          <ol class="agenda-list">
             <li>Headline KPIs — plan vs actual</li>
             <li>Output vs plan</li>
             <li>Yield / quality</li>
             <li>Conversion / process cost</li>
             <li>Utilisation &amp; downtime</li>
-          </ol>
-          <ol start="6" style="margin:0;padding-left:18px;font-weight:600;line-height:1.7">
             <li>Safety &amp; compliance</li>
             <li>People &amp; skill</li>
             <li>Customer &amp; delivery</li>
@@ -229,40 +300,50 @@ table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
       </div>
 
       <!-- 3 KPIs -->
-      <div class="slide" data-n="3">
-        <div class="slide-top">
-          <div class="logo-ph" id="logo3"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
-          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Headline KPIs</div><div class="sub" data-f="period">Period</div></div>
+      <div class="slide">
+        <div class="slide-pad">
+          <div class="slide-top">
+            <div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+            <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Headline KPIs</div><div class="sub" data-f="period">Period</div></div>
+          </div>
+          <h3>Plan vs actual</h3>
+          <table class="kpi">
+            <thead><tr><th>Parameter</th><th>Target / Plan</th><th>Actual</th><th>Gap</th></tr></thead>
+            <tbody>
+              <tr><td>Output</td><td id="pk1p">—</td><td id="pk1a">—</td><td id="pk1g">—</td></tr>
+              <tr><td>Yield</td><td id="pk2p">—</td><td id="pk2a">—</td><td id="pk2g">—</td></tr>
+              <tr><td>Conversion cost</td><td id="pk3p">—</td><td id="pk3a">—</td><td id="pk3g">—</td></tr>
+              <tr><td>Utilisation</td><td id="pk4p">—</td><td id="pk4a">—</td><td id="pk4g">—</td></tr>
+            </tbody>
+          </table>
+          <p class="body" style="flex:0;margin-top:6px">State the single number you want management to remember from this slide.</p>
         </div>
-        <h3>Plan vs actual</h3>
-        <table class="kpi">
-          <thead><tr><th>Parameter</th><th>Target / Plan</th><th>Actual</th><th>Gap</th></tr></thead>
-          <tbody>
-            <tr><td>Output</td><td id="pk1p">—</td><td id="pk1a">—</td><td id="pk1g">—</td></tr>
-            <tr><td>Yield</td><td id="pk2p">—</td><td id="pk2a">—</td><td id="pk2g">—</td></tr>
-            <tr><td>Conversion cost</td><td id="pk3p">—</td><td id="pk3a">—</td><td id="pk3g">—</td></tr>
-            <tr><td>Utilisation</td><td id="pk4p">—</td><td id="pk4a">—</td><td id="pk4g">—</td></tr>
-          </tbody>
-        </table>
-        <p class="body" style="margin-top:8px">State the single number you want management to remember from this slide.</p>
         <div class="foot"><span data-f="dept">Dept</span><span>3 / 11</span></div>
       </div>
 
-      <!-- 4-12 parameter slides -->
-      <div class="slide" data-n="4"><div class="slide-top"><div class="logo-ph" id="logo4"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">1 · Output vs plan</div><div class="sub" data-f="period">Period</div></div></div><h3>Volume against commitment</h3><div class="body" id="pn1" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>4 / 11</span></div></div>
-      <div class="slide" data-n="5"><div class="slide-top"><div class="logo-ph" id="logo5"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">2 · Yield / quality</div><div class="sub" data-f="period">Period</div></div></div><h3>Good output, scrap, complaints</h3><div class="body" id="pn2" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>5 / 11</span></div></div>
-      <div class="slide" data-n="6"><div class="slide-top"><div class="logo-ph" id="logo6"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">3 · Conversion / process cost</div><div class="sub" data-f="period">Period</div></div></div><h3>₹/kg drivers — wire, boat, power, mix</h3><div class="body" id="pn3" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>6 / 11</span></div></div>
-      <div class="slide" data-n="7"><div class="slide-top"><div class="logo-ph" id="logo7"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">4 · Utilisation &amp; downtime</div><div class="sub" data-f="period">Period</div></div></div><h3>Hours lost — top reasons</h3><div class="body" id="pn4" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>7 / 11</span></div></div>
-      <div class="slide" data-n="8"><div class="slide-top"><div class="logo-ph" id="logo8"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">5 · Safety &amp; compliance</div><div class="sub" data-f="period">Period</div></div></div><h3>Zero-harm and audit discipline</h3><div class="body" id="pn5" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>8 / 11</span></div></div>
-      <div class="slide" data-n="9"><div class="slide-top"><div class="logo-ph" id="logo9"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">6 · People &amp; skill</div><div class="sub" data-f="period">Period</div></div></div><h3>Attendance, OT, training, gaps</h3><div class="body" id="pn6" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>9 / 11</span></div></div>
-      <div class="slide" data-n="10"><div class="slide-top"><div class="logo-ph" id="logo10"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">7 · Customer &amp; delivery</div><div class="sub" data-f="period">Period</div></div></div><h3>OTIF, complaints, claims</h3><div class="body" id="pn7" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>10 / 11</span></div></div>
-      <div class="slide" data-n="11"><div class="slide-top"><div class="logo-ph" id="logo11"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">8–9 · Actions &amp; management ask</div><div class="sub" data-f="period">Period</div></div></div>
-        <div class="two">
-          <div><h3>Last review — status</h3><div class="body" id="pn8" style="white-space:pre-wrap"></div></div>
-          <div><h3>Next month — top 3</h3><div class="body" id="pn9" style="white-space:pre-wrap"></div></div>
+      <!-- 4-10 parameter slides -->
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">1 · Output vs plan</div><div class="sub" data-f="period">Period</div></div></div><h3>Volume against commitment</h3><div class="body" id="pn1"></div></div><div class="foot"><span data-f="dept">Dept</span><span>4 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">2 · Yield / quality</div><div class="sub" data-f="period">Period</div></div></div><h3>Good output, scrap, complaints</h3><div class="body" id="pn2"></div></div><div class="foot"><span data-f="dept">Dept</span><span>5 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">3 · Conversion / process cost</div><div class="sub" data-f="period">Period</div></div></div><h3>₹/kg drivers — wire, boat, power, mix</h3><div class="body" id="pn3"></div></div><div class="foot"><span data-f="dept">Dept</span><span>6 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">4 · Utilisation &amp; downtime</div><div class="sub" data-f="period">Period</div></div></div><h3>Hours lost — top reasons</h3><div class="body" id="pn4"></div></div><div class="foot"><span data-f="dept">Dept</span><span>7 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">5 · Safety &amp; compliance</div><div class="sub" data-f="period">Period</div></div></div><h3>Zero-harm and audit discipline</h3><div class="body" id="pn5"></div></div><div class="foot"><span data-f="dept">Dept</span><span>8 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">6 · People &amp; skill</div><div class="sub" data-f="period">Period</div></div></div><h3>Attendance, OT, training, gaps</h3><div class="body" id="pn6"></div></div><div class="foot"><span data-f="dept">Dept</span><span>9 / 11</span></div></div>
+      <div class="slide"><div class="slide-pad"><div class="slide-top"><div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">7 · Customer &amp; delivery</div><div class="sub" data-f="period">Period</div></div></div><h3>OTIF, complaints, claims</h3><div class="body" id="pn7"></div></div><div class="foot"><span data-f="dept">Dept</span><span>10 / 11</span></div></div>
+
+      <!-- 11 Actions + ask -->
+      <div class="slide">
+        <div class="slide-pad">
+          <div class="slide-top">
+            <div class="logo-ph"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+            <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">8–9 · Actions &amp; management ask</div><div class="sub" data-f="period">Period</div></div>
+          </div>
+          <div class="two">
+            <div><h3>Last review — status</h3><div class="body" id="pn8"></div></div>
+            <div><h3>Next month — top 3</h3><div class="body" id="pn9"></div></div>
+          </div>
+          <h3 style="margin-top:10px">Decision needed</h3>
+          <div class="ask-box" id="pn_ask"></div>
         </div>
-        <h3 style="margin-top:10px">Decision needed</h3>
-        <div class="body" id="pn_ask" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:700"></div>
         <div class="foot"><span data-f="dept">Dept</span><span>11 / 11</span></div>
       </div>
     </div>
