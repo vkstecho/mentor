@@ -174,6 +174,36 @@ document.addEventListener('keydown', function(e){
 // v6 — SOS EMERGENCY PANEL
 // ══════════════════════════════════════════════════════
 var _sosOpen = false;
+
+// Build SOS panel labels from current LANG (no hardcoded Hindi in EN)
+function renderSOS(){
+  var hi = (typeof LANG !== 'undefined' && LANG === 'hi');
+  var title = document.getElementById('sosTitle');
+  var box = document.getElementById('sosItems');
+  if(title) title.textContent = hi ? '⚠️ आपातकालीन सुरक्षा' : '⚠️ Emergency safety';
+  if(!box) return;
+  var items = hi ? [
+    {fn:"nav('safety');closeSOS()", ico:'🦺', t:'PPE एवं सुरक्षा नियम'},
+    {fn:"nav('safety');closeSOS()", ico:'⛔', t:'Moving Parts सुरक्षा'},
+    {fn:"showSOPDetail('WI-14');closeSOS()", ico:'🌫️', t:'Al Dust खतरे'},
+    {fn:"showSOPDetail('SOP-10');closeSOS()", ico:'🗑️', t:'Al Dust निपटान'},
+    {fn:"showSOPDetail('WI-06');closeSOS()", ico:'🧪', t:'Caustic Soda / Acetone'},
+    {fn:"nav('check');closeSOS()", ico:'✅', t:'प्री-स्टार्ट चेकलिस्ट'}
+  ] : [
+    {fn:"nav('safety');closeSOS()", ico:'🦺', t:'PPE & safety rules'},
+    {fn:"nav('safety');closeSOS()", ico:'⛔', t:'Moving parts safety'},
+    {fn:"showSOPDetail('WI-14');closeSOS()", ico:'🌫️', t:'Al dust hazards'},
+    {fn:"showSOPDetail('SOP-10');closeSOS()", ico:'🗑️', t:'Al dust disposal'},
+    {fn:"showSOPDetail('WI-06');closeSOS()", ico:'🧪', t:'Caustic soda / Acetone'},
+    {fn:"nav('check');closeSOS()", ico:'✅', t:'Pre-start checklist'}
+  ];
+  box.innerHTML = items.map(function(it){
+    return '<div class="sos-item" onclick="'+it.fn+'">'+it.ico+' '+it.t+'</div>';
+  }).join('');
+  var btn = document.getElementById('sosBtn');
+  if(btn) btn.title = hi ? 'आपातकालीन सुरक्षा' : 'Emergency safety';
+}
+
 function toggleSOS(){
   _sosOpen = !_sosOpen;
   document.getElementById('sosPanel').classList.toggle('open', _sosOpen);
@@ -385,6 +415,7 @@ nav = function(id){
   _navV6(id);
   trackModuleVisit(id);
   updateSOSVisibility();
+if(typeof renderSOS==='function') renderSOS();
   if(id !== 'landing'){
     startStudyTimer();
   }
@@ -477,12 +508,15 @@ showSOPDetail = function(code){
 
 // Hide SOS on landing initially
 updateSOSVisibility();
+if(typeof renderSOS==='function') renderSOS();
 
 // Welcome toast
 setTimeout(function(){
   var visited = Object.keys(window._visitedModules || {}).length;
   if(visited > 0){
-    showToast('वापसी पर स्वागत! ' + visited + ' मॉड्यूल पढ़े हैं।', 'info', 3000);
+    showToast((typeof LANG!=='undefined' && LANG==='hi')
+      ? ('वापसी पर स्वागत! ' + visited + ' मॉड्यूल पढ़े हैं।')
+      : ('Welcome back! You have studied ' + visited + ' module(s).'), 'info', 3000);
   }
 }, 800);
 

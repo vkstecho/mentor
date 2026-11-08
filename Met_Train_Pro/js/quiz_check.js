@@ -62,7 +62,7 @@ function rQuiz(pg){
   qState={q:0,score:0,set:set};
   pg.innerHTML=
     '<div class="ph"><div class="ph-code">मूल्यांकन — ज्ञान परीक्षा</div>'
-    +'<div class="ph-title">ज्ञान <span>परीक्षा</span></div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'ज्ञान <span>परीक्षा</span>':'Knowledge <span>Check</span>')+'</div>'
     +'<div class="ph-desc">'+set.length+' प्रश्न — मेटलाइज़ेशन, स्लिटिंग, सुरक्षा, 5S, TPM, Kaizen, KPI और औद्योगिक शब्दावली। उत्तीर्णांक: 70%।</div></div>'
     +'<div class="quiz-wrap">'
     +'<div id="qprog" style="margin-bottom:12px">'
@@ -321,7 +321,7 @@ function rCheck(pg){
   var dateInfo = formatDateHindi(ckViewDate);
   pg.innerHTML=
     '<div class="ph"><div class="ph-code">मूल्यांकन — प्री-स्टार्ट ऑपरेटर चेकलिस्ट</div>'
-    +'<div class="ph-title">प्री-स्टार्ट <span>चेकलिस्ट</span></div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'प्री-स्टार्ट <span>चेकलिस्ट</span>':'Pre-Start <span>Checklist</span>')+'</div>'
     +'<div class="ph-desc">हर Metalliser Cycle शुरू करने से पहले पूरा करें। '+total+' बिंदु — सुरक्षा, मशीन, मटेरियल और सेटअप।<br>'
     +'<span style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--gold)">📅 तारीख चुनें → पुरानी चेकलिस्ट देखें</span></div></div>'
     +'<div class="ck-date-strip" id="ckDateStrip">'+dateStripH+'</div>'

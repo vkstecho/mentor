@@ -135,30 +135,24 @@ try{
 </div>
 
 <!-- SOS EMERGENCY BUTTON -->
-<div class="sos-btn" id="sosBtn" onclick="toggleSOS()" title="आपातकालीन सुरक्षा">🆘</div>
+<div class="sos-btn" id="sosBtn" onclick="toggleSOS()" title="Emergency safety">🆘</div>
 <div class="sos-panel" id="sosPanel">
-  <div class="sos-panel-title">⚠️ आपातकालीन सुरक्षा</div>
-  <div class="sos-item" onclick="nav('safety');closeSOS()">🦺 PPE एवं सुरक्षा नियम</div>
-  <div class="sos-item" onclick="showSOPDetail('WI-05');closeSOS()">⛔ Moving Parts सुरक्षा</div>
-  <div class="sos-item" onclick="showSOPDetail('WI-14');closeSOS()">🌫️ Al Dust खतरे</div>
-  <div class="sos-item" onclick="showSOPDetail('SOP-10');closeSOS()">🗑️ Al Dust निपटान</div>
-  <div class="sos-item" onclick="showSOPDetail('WI-06');closeSOS()">🧪 Caustic Soda / Acetone</div>
-  <div class="sos-item" onclick="nav('check');closeSOS()">✅ प्री-स्टार्ट चेकलिस्ट</div>
+  <div class="sos-panel-title" id="sosTitle">⚠️ Emergency safety</div>
+  <div id="sosItems"></div>
 </div>
-
 <!-- CERTIFICATE MODAL -->
 <div class="cert-modal" id="certModal" onclick="if(event.target===this)closeCert()">
   <div class="cert-card">
     <div class="cert-crown">🏆</div>
-    <div class="cert-title">प्रमाण पत्र</div>
+    <div class="cert-title">Certificate</div>
     <div class="cert-sub">Certificate of Completion — Met Train PRO</div>
-    <input class="cert-name-input" id="certNameInput" placeholder="अपना नाम लिखें..." maxlength="50">
+    <input class="cert-name-input" id="certNameInput" placeholder="Enter your name..." maxlength="50">
     <div class="cert-score-val" id="certScoreVal"></div>
     <div class="cert-detail" id="certDetail"></div>
     <div class="cert-date" id="certDate"></div>
     <div class="cert-actions">
-      <button class="btn btn-p" onclick="downloadCert()">📥 डाउनलोड करें</button>
-      <button class="btn btn-s" onclick="closeCert()">बंद करें</button>
+      <button class="btn btn-p" onclick="downloadCert()">📥 Download</button>
+      <button class="btn btn-s" onclick="closeCert()">Close</button>
     </div>
   </div>
 </div>
@@ -182,18 +176,27 @@ try{
 // Boot after all Met_Train_Pro modules are loaded
 (function bootMetTrain(){
   try {
-    // Inherit Mentor language/theme BEFORE first paint of landing
-    if (typeof mtInheritFromMentor === 'function') mtInheritFromMentor();
-    // Re-read lang in case inherit updated storage
+    // Prefer Mentor language over a sticky mt_lang (fixes Hindi leftover in EN mentor)
     try {
-      var L = localStorage.getItem('mt_lang') || localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang');
-      if (L) {
-        L = String(L).toLowerCase();
-        if (L === 'hindi' || L === 'hin') L = 'hi';
-        if (typeof setLang === 'function') setLang(L, true);
-        else if (typeof LANG !== 'undefined') LANG = L || 'en';
+      var mentorL = localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang');
+      if (mentorL) {
+        mentorL = String(mentorL).toLowerCase();
+        if (mentorL === 'hindi' || mentorL === 'hin') mentorL = 'hi';
+        if (mentorL === 'en' || mentorL === 'english') mentorL = 'en';
+        localStorage.setItem('mt_lang', mentorL);
+        if (typeof LANG !== 'undefined') LANG = mentorL;
       }
+    } catch (e0) {}
+    if (typeof mtInheritFromMentor === 'function') mtInheritFromMentor();
+    try {
+      var L = localStorage.getItem('mentor_lang') || localStorage.getItem('mt_lang') || localStorage.getItem('mp_lang') || 'en';
+      L = String(L).toLowerCase();
+      if (L === 'hindi' || L === 'hin') L = 'hi';
+      if (L === 'english') L = 'en';
+      if (typeof setLang === 'function') setLang(L, true);
+      else if (typeof LANG !== 'undefined') LANG = L || 'en';
     } catch (e) {}
+    if (typeof renderSOS === 'function') renderSOS();
     if (typeof renderSB === 'function') renderSB();
     if (typeof renderMobNav === 'function') renderMobNav();
     if (typeof nav === 'function') nav('landing');

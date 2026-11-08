@@ -3,6 +3,73 @@
 // SAFETY — HINDI
 // ══════════════════════════════════════════════════════
 function rSafety(pg){
+  var hi = (typeof LANG !== 'undefined' && LANG === 'hi');
+  if(!hi){
+    pg.innerHTML=
+      '<div class="ph"><div class="ph-code">Module 3 — Safety & GMP</div>'
+      +'<div class="ph-title">Safety & <span>GMP</span></div>'
+      +'<div class="ph-desc">PPE, machine safety, aluminium dust hazards and GMP hygiene — mandatory for every employee.</div>'
+      +'<div class="tags"><span class="tag r">WI-05 / WI-14</span><span class="tag a">SOP-10</span><span class="tag c">GMP F-10</span></div></div>'
+      +Al('d','⛔','CRITICAL: Al dust + water = fire / explosion risk. Do not run containers in rain. Do not store in open areas.')
+      +Al('d','⛔','PPE mandatory: helmet + safety shoes + gloves + mask. No entry to work area without PPE.')
+      +CB('🦺','PPE requirements','Mandatory',
+        '<table class="t"><thead><tr><th>PPE item</th><th>When to wear</th><th>Standard</th></tr></thead><tbody>'
+        +'<tr><td>Safety Helmet</td><td>Crane operation, roll handling</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Safety Shoes</td><td>Always in production area</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Rubber gloves</td><td>Caustic soda, chemical work</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Respiratory Mask</td><td>Vacuum chamber, Al dust</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Safety Goggles</td><td>Chamber cleaning, Al dust</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Cut-Resistant Gloves</td><td>Any blade work</td><td class="tv g">Mandatory</td></tr>'
+        +'<tr><td>Ear Plugs</td><td>While machine is running</td><td class="tv">Required</td></tr>'
+        +'</tbody></table>',true)
+      +CB('⚙️','Working near moving parts','WI-05',
+        '<ul class="steps">'
+        +S(1,'Never remove guards/grids while the machine is running.')
+        +S(2,'Never touch rotating rolls — severe finger-trap injury risk.')
+        +S(3,'Always stop rotating parts before maintenance.')
+        +S(4,'Never work with loose clothing — it can catch in moving parts.')
+        +S(5,'Use LOTO (Lock Out Tag Out) before any intervention inside the machine.')
+        +'</ul>',true)
+      +CB('🌫️','Aluminium dust hazards','WI-14',
+        '<ul class="steps">'
+        +S(1,'Al dust is combustible. Keep away from water and open flame.')
+        +S(2,'Use assigned metal containers only — never plastic bags for hot scrap.')
+        +S(3,'When cleaning chamber and winding: mask + gloves + goggles always.')
+        +S(4,'Collect all Al scrap. Must not contact water.')
+        +S(5,'If Al scrap gets wet — dry completely before packing or moving.')
+        +S(6,'Transfer Al dust containers to stores weekly.')
+        +S(7,'No bare hands on hot parts. Report abnormal sounds to maintenance.')
+        +'</ul>',true)
+      +CB('🗑️','Al dust disposal','SOP-10',
+        '<ul class="steps">'
+        +S(1,'Scrape Al dust from Metalliser-1 and Metalliser-2 source section with scrapping tools.')
+        +S(2,'Collect in 20-litre metal container during setup time.')
+        +S(3,'After setup: transfer from 20L to 500L container near Metalliser-2.')
+        +S(4,'When 500L jumbo bag is full — forklift to scrap yard.')
+        +'</ul>'
+        +Al('d','⛔','Do not move Al containers in rain. Never store in open area. Water contact = fire risk.'),true)
+      +CB('🧼','GMP — personal hygiene','GMP F-10',
+        '<ul class="steps">'
+        +S(1,'Always wear proper uniform and safety shoes in the production area.')
+        +S(2,'Hair always covered with the issued cap.')
+        +S(3,'Nails: short, clean, no polish. No artificial nails.')
+        +S(4,'No jewellery in the plant (rings, chains, bangles).')
+        +S(5,'Wash and sanitise hands frequently and at critical control points.')
+        +S(6,'Cover cuts with a bandage and wear a disposable glove.')
+        +S(7,'No eating, drinking, chewing, smoking or tobacco anywhere in the plant.')
+        +'</ul>',true)
+      +CB('🏭','5S housekeeping','WI-21',
+        Al('i','🏆','5S every day — not only for audits.')
+        +'<ul class="steps">'
+        +S(1,'Sort, Set in Order, Shine, Standardise, Sustain — daily discipline.')
+        +S(2,'Keep floor, machine and surroundings in shining condition.')
+        +S(3,'Fill Daily 5S Check Sheet — shift supervisor verifies.')
+        +S(4,'Do not leave dust, tape pieces or bare bags on the floor.')
+        +'</ul>',true);
+    if(typeof applyBilingualContent==='function') applyBilingualContent(pg);
+    return;
+  }
+  // Hindi (original)
   pg.innerHTML=
     '<div class="ph"><div class="ph-code">मॉड्यूल 3 — सुरक्षा एवं GMP</div>'
     +'<div class="ph-title">सुरक्षा एवं <span>GMP</span></div>'
@@ -72,6 +139,8 @@ function rSafety(pg){
       +S(3,'Daily 5S Check Sheet भरें — Shift Supervisor जांचें।')
       +S(4,'फर्श पर धूल, टेप के टुकड़े या बेयर बैग न छोड़ें।')
       +'</ul>');
+
+  if(typeof applyBilingualContent==='function') applyBilingualContent(pg);
 }
 
 // ══════════════════════════════════════════════════════

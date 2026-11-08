@@ -3,9 +3,11 @@
 var MODE='free', CUR='home';
 var LANG=(function(){
   try{
-    var L = localStorage.getItem('mt_lang') || localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang') || 'en';
+    // Mentor preference wins over sticky mt_lang
+    var L = localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang') || localStorage.getItem('mt_lang') || 'en';
     L = String(L).toLowerCase();
     if(L==='hindi'||L==='hin') L='hi';
+    if(L==='english') L='en';
     return L || 'en';
   }catch(e){ return 'en'; }
 })();
@@ -212,6 +214,7 @@ function setLang(l, silent){
   LANG=l;
   mtSetLang(l);
   applyLangChrome();
+  if(typeof renderSOS==='function') renderSOS();
   renderLangButtons();
   clearR();
   if(CUR){ nav(CUR); }

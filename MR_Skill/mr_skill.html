@@ -8,173 +8,145 @@
 <link rel="icon" href="../icons/mentor-icon.jpg"/>
 <style>
 :root{
-  --bg:#f1f5f9; --card:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
-  --navy:#0f172a; --blue:#1e3a8a; --teal:#0d9488; --orange:#e85d26; --amber:#d97706;
+  --bg:#eef2f7; --card:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+  --navy:#0f172a; --blue:#1e3a8a; --teal:#0d9488; --orange:#e85d26;
   --ok:#166534; --okbg:#dcfce7;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
 header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:30}
-header a{color:#fff;text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:14px}
 header .mid{flex:1;text-align:center;font-size:13px;font-weight:600;opacity:.95}
-main{max-width:820px;margin:0 auto;padding:16px 14px 64px}
+main{max-width:920px;margin:0 auto;padding:16px 14px 64px}
 .badge{display:inline-block;background:var(--okbg);color:var(--ok);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
-h1{font-size:1.35rem;margin:10px 0 6px;line-height:1.25}
+h1{font-size:1.35rem;margin:10px 0 6px}
 .lead{color:var(--muted);margin:0 0 14px;font-size:15px}
-.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(15,23,42,.06);border:1px solid var(--line)}
-.card h2{font-size:1.05rem;margin:0 0 10px;color:var(--navy)}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0;border:1px solid var(--line);box-shadow:0 1px 3px rgba(15,23,42,.06)}
+.card h2{font-size:1.05rem;margin:0 0 10px}
 .card p{margin:0 0 8px;color:var(--muted);font-size:14px}
 .sec-tag{font-size:11px;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
 .param{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;margin-bottom:8px}
 .param .num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0d9488,#1e3a8a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
-.param b{display:block;font-size:14px;color:var(--text);margin-bottom:2px}
+.param b{display:block;font-size:14px;margin-bottom:2px}
 .param span{font-size:13px;color:var(--muted)}
 .nav-pills{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .nav-pills button{border:1.5px solid var(--line);background:#fff;color:var(--text);font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer}
 .nav-pills button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.panel{display:none}
-.panel.on{display:block}
+.panel{display:none}.panel.on{display:block}
 label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 0 4px}
-input,textarea,select{width:100%;padding:10px 11px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-weight:600;color:var(--text);background:#fff;font-family:inherit}
-textarea{min-height:72px;resize:vertical;font-weight:500;line-height:1.45}
-input:focus,textarea:focus{outline:2px solid rgba(13,148,136,.3);border-color:var(--teal)}
+input,textarea{width:100%;padding:10px 11px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-weight:600;color:var(--text);background:#fff;font-family:inherit}
+textarea{min-height:64px;resize:vertical;font-weight:500}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-@media(max-width:560px){.row{grid-template-columns:1fr}}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
-@media(max-width:640px){.row3{grid-template-columns:1fr 1fr}}
-@media(max-width:420px){.row3{grid-template-columns:1fr}}
-
-/* Presentation slides */
-.deck{margin-top:14px}
-.slide{
-  background:#fff;border:1px solid #cbd5e1;border-radius:4px;padding:28px 32px;margin:0 auto 18px;
-  max-width:720px;min-height:405px;box-shadow:0 8px 28px rgba(15,23,42,.08);
-  position:relative;page-break-after:always;
-}
-.slide-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #0f172a}
-.logo-ph{
-  width:72px;height:72px;border:2px dashed #94a3b8;border-radius:12px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#64748b;text-align:center;line-height:1.25;background:#f8fafc;flex-shrink:0;
-}
-.logo-ph input[type=file]{display:none}
-.logo-ph img{width:100%;height:100%;object-fit:contain;border-radius:10px}
-.slide-brand{text-align:right}
-.slide-brand .co{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
-.slide-brand .title{font-size:18px;font-weight:900;color:#0f172a;margin-top:2px}
-.slide-brand .sub{font-size:12px;color:#64748b;margin-top:2px}
-.slide h3{margin:0 0 12px;font-size:16px;color:#0f172a;border-left:4px solid #0d9488;padding-left:10px}
-.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13px;margin-bottom:12px}
-.kv .k{color:#64748b;font-weight:700}
-.kv .v{color:#0f172a;font-weight:700}
-table.kpi{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 12px}
-table.kpi th{background:#0f172a;color:#fff;text-align:left;padding:8px 10px;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
-table.kpi td{border-bottom:1px solid #e2e8f0;padding:8px 10px;font-weight:600}
-table.kpi tr:last-child td{border-bottom:none}
-.slide .foot{position:absolute;left:32px;right:32px;bottom:16px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;font-weight:600}
+@media(max-width:640px){.row,.row3{grid-template-columns:1fr}}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .btn{border:none;border-radius:10px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer}
 .btn-p{background:var(--orange);color:#fff}
-.btn-s{background:var(--navy);color:#fff}
 .btn-g{background:#e2e8f0;color:#0f172a}
-.calc-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:420px;margin:8px 0;
-  padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;
-  text-decoration:none;font-weight:800;font-size:15px;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(15,23,42,.2);
-}
-.calc-btn span{font-size:12px;font-weight:600;opacity:.85;display:block}
+.calc-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;max-width:420px;margin:8px 0;padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;text-decoration:none;font-weight:800;font-size:15px}
+.calc-btn span{font-size:12px;font-weight:600;opacity:.85}
 .note{font-size:12px;color:var(--muted);margin-top:10px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px}
-.hint{font-size:12px;color:#64748b;margin-top:4px}
+.hint{font-size:12px;color:#64748b}
+
+/* Horizontal 16:9 deck */
+.deck{margin-top:16px;display:flex;flex-direction:column;gap:20px;align-items:center}
+.slide{
+  width:100%;max-width:880px;aspect-ratio:16/9;
+  background:#fff;border:1px solid #cbd5e1;border-radius:6px;
+  padding:22px 28px;box-shadow:0 10px 32px rgba(15,23,42,.1);
+  position:relative;overflow:hidden;page-break-after:always;
+}
+@media(max-width:700px){
+  .slide{aspect-ratio:auto;min-height:280px;padding:16px}
+}
+.slide-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #0f172a}
+.logo-ph{width:56px;height:56px;border:2px dashed #94a3b8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#64748b;text-align:center;line-height:1.2;background:#f8fafc;flex-shrink:0;overflow:hidden}
+.logo-ph img{width:100%;height:100%;object-fit:contain}
+.slide-brand{text-align:right}
+.slide-brand .co{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
+.slide-brand .title{font-size:16px;font-weight:900;color:#0f172a}
+.slide-brand .sub{font-size:11px;color:#64748b}
+.slide h3{margin:0 0 8px;font-size:14px;color:#0f172a;border-left:4px solid #0d9488;padding-left:10px}
+.slide .body{font-size:13px;color:#334155;line-height:1.45}
+.slide .foot{position:absolute;left:28px;right:28px;bottom:12px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;font-weight:600}
+table.kpi{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}
+table.kpi th{background:#0f172a;color:#fff;text-align:left;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+table.kpi td{border-bottom:1px solid #e2e8f0;padding:6px 8px;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.cover-center{text-align:center;margin-top:28px}
+.cover-center .big{font-size:26px;font-weight:900;color:#0f172a;letter-spacing:.02em}
+.cover-center .per{font-size:14px;color:#64748b;margin-top:8px;font-weight:600}
 @media print{
   header,.nav-pills,.actions,.no-print,.badge,.lead,h1,#panel-params,#panel-calc{display:none!important}
   body{background:#fff}
   main{max-width:none;padding:0}
   .panel{display:block!important}
-  .slide{box-shadow:none;border:1px solid #cbd5e1;margin-bottom:0;min-height:100vh}
+  .slide{box-shadow:none;max-width:none;width:100%;height:100vh;aspect-ratio:auto;page-break-after:always}
 }
 </style>
 </head>
 <body>
 <header>
-  <a href="../mentor.html" id="backLink">&larr; Mentor</a>
+  <a href="../mentor.html">&larr; Mentor</a>
   <div class="mid">Flexible Packaging · Free module</div>
   <span style="width:52px"></span>
 </header>
 <main>
   <span class="badge">FREE · Self-study</span>
   <h1>MR Skill — Monthly review for management</h1>
-  <p class="lead">What management expects from a department review, plus a professional dummy presentation you fill before the meeting. No file uploads.</p>
+  <p class="lead">Nine improvement parameters management expects, plus an 11-slide horizontal presentation format you fill before the meeting. No file uploads.</p>
 
   <div class="nav-pills no-print">
-    <button type="button" class="on" data-panel="params" id="tabParams">Management expectations</button>
-    <button type="button" data-panel="deck" id="tabDeck">Presentation format</button>
-    <button type="button" data-panel="calc" id="tabCalc">Calculators</button>
+    <button type="button" class="on" data-panel="params">Management expectations</button>
+    <button type="button" data-panel="deck">Presentation format (11 slides)</button>
+    <button type="button" data-panel="calc">Calculators</button>
   </div>
 
-  <!-- 1. Management parameters -->
   <div class="panel on" id="panel-params">
     <div class="card">
       <div class="sec-tag">Department improvement</div>
       <h2>What management expects in a department review</h2>
-      <p>In a monthly review meeting (MRM), leadership is not looking for a data dump. They want a clear story: where the department stands, what improved, what slipped, and what you will do next — with numbers that can be checked.</p>
+      <p>Leadership wants a clear story with checkable numbers — not a data dump: where you stand, what improved, what slipped, and what you will do next.</p>
     </div>
     <div class="card">
-      <h2>Core improvement parameters</h2>
+      <h2>Nine core improvement parameters</h2>
       <div class="param"><div class="num">1</div><div><b>Output vs plan</b><span>Actual production (MT / rolls / jobs) against the committed plan. State the gap in % and absolute units.</span></div></div>
       <div class="param"><div class="num">2</div><div><b>Yield / quality</b><span>Good output ÷ input. Scrap, B-grade, and customer complaints. Trend vs last month and vs target.</span></div></div>
-      <div class="param"><div class="num">3</div><div><b>Conversion / process cost</b><span>₹/kg or ₹/unit cost to process — wire, boat, power, wastage, manpower. Prefer Actual and Equivalent where mix changes.</span></div></div>
+      <div class="param"><div class="num">3</div><div><b>Conversion / process cost</b><span>₹/kg or ₹/unit — wire, boat, power, wastage, manpower. Prefer Actual and Equivalent where mix changes.</span></div></div>
       <div class="param"><div class="num">4</div><div><b>Machine utilisation &amp; downtime</b><span>Running hours vs available hours. Top 3 stoppage reasons with hours and actions.</span></div></div>
-      <div class="param"><div class="num">5</div><div><b>Safety &amp; compliance</b><span>Incidents, near-misses, 5S / audit scores. Zero-harm is non-negotiable in the review.</span></div></div>
+      <div class="param"><div class="num">5</div><div><b>Safety &amp; compliance</b><span>Incidents, near-misses, 5S / audit scores. Zero-harm is non-negotiable.</span></div></div>
       <div class="param"><div class="num">6</div><div><b>People &amp; skill</b><span>Attendance, overtime, training completed, critical skill gaps on the line.</span></div></div>
       <div class="param"><div class="num">7</div><div><b>Customer &amp; delivery</b><span>On-time delivery %, quality complaints, claims. Link shop-floor actions to customer impact.</span></div></div>
       <div class="param"><div class="num">8</div><div><b>Actions from last review</b><span>Closed / open / delayed. Management tracks whether commitments were kept.</span></div></div>
       <div class="param"><div class="num">9</div><div><b>Next-month priorities</b><span>Maximum 3 focus items with owner and date. Vague lists lose attention.</span></div></div>
-      <p class="note">Tip: Lead with the one number management cares about most for your department (often cost, yield, or OTIF), then support it with 2–3 drivers. End with decisions you need from them.</p>
+      <p class="note">Tip: Lead with the one number management cares about most (often cost, yield, or OTIF), support with 2–3 drivers, end with decisions you need from them.</p>
     </div>
   </div>
 
-  <!-- 2. Presentation deck -->
   <div class="panel" id="panel-deck">
     <div class="card no-print">
-      <div class="sec-tag">Dummy deck</div>
+      <div class="sec-tag">Dummy deck · 11 horizontal slides (16:9)</div>
       <h2>Professional presentation format</h2>
-      <p>Fill the fields below. The slides update live. Add your company logo, then print or use Print → Save as PDF for the meeting.</p>
+      <p>Fill fields — slides update live. Optional company logo on every slide. Print or Save as PDF for the meeting.</p>
       <div class="row">
-        <div>
-          <label>Company name</label>
-          <input id="f_company" value="Your Company Name" />
-        </div>
-        <div>
-          <label>Department</label>
-          <input id="f_dept" value="Metalliser / Production" />
-        </div>
+        <div><label>Company name</label><input id="f_company" value="Your Company Name"/></div>
+        <div><label>Department</label><input id="f_dept" value="Metalliser / Production"/></div>
       </div>
       <div class="row">
-        <div>
-          <label>Review period</label>
-          <input id="f_period" value="November 2026" />
-        </div>
-        <div>
-          <label>Presented by</label>
-          <input id="f_by" value="Department Head" />
-        </div>
+        <div><label>Review period</label><input id="f_period" value="November 2026"/></div>
+        <div><label>Presented by</label><input id="f_by" value="Department Head"/></div>
       </div>
       <div class="row">
-        <div>
-          <label>Meeting date</label>
-          <input id="f_date" type="date" />
-        </div>
-        <div>
-          <label>Company logo</label>
-          <input id="f_logo" type="file" accept="image/*" />
-          <div class="hint">Optional — shown on every slide header</div>
-        </div>
+        <div><label>Meeting date</label><input id="f_date" type="date"/></div>
+        <div><label>Company logo</label><input id="f_logo" type="file" accept="image/*"/><div class="hint">Optional — shown on every slide</div></div>
       </div>
 
-      <h2 style="margin-top:16px;font-size:.95rem">Slide 2 — Headline KPIs</h2>
+      <h2 style="margin-top:14px;font-size:.95rem">Headline KPIs</h2>
       <div class="row3">
         <div><label>Output — Plan</label><input id="k1p" value="800 MT"/></div>
         <div><label>Output — Actual</label><input id="k1a" value="765 MT"/></div>
-        <div><label>Output — Gap %</label><input id="k1g" value="-4.4%"/></div>
+        <div><label>Output — Gap</label><input id="k1g" value="-4.4%"/></div>
       </div>
       <div class="row3">
         <div><label>Yield — Target</label><input id="k2p" value="97.5%"/></div>
@@ -192,85 +164,75 @@ table.kpi tr:last-child td{border-bottom:none}
         <div><label>Utilisation — Gap</label><input id="k4g" value="-4 pp"/></div>
       </div>
 
-      <h2 style="margin-top:16px;font-size:.95rem">Slide 3 — Highlights &amp; lowlights</h2>
-      <div class="row">
-        <div><label>Key wins (one per line)</label><textarea id="f_wins">Boat life improved 10.2 → 11.4 h
-Zero lost-time injury
-OTIF 98.2%</textarea></div>
-        <div><label>Gaps / concerns (one per line)</label><textarea id="f_gaps">Power ₹/kg above target
-AlOx mix raised actual conversion cost
-2 customer complaints (OD variation)</textarea></div>
-      </div>
-
-      <h2 style="margin-top:16px;font-size:.95rem">Slide 4 — Top stoppages</h2>
-      <div class="row3">
-        <div><label>Reason 1</label><input id="s1r" value="Boat change / source clean"/></div>
-        <div><label>Hours</label><input id="s1h" value="42"/></div>
-        <div><label>Action</label><input id="s1a" value="SMED checklist audit"/></div>
-      </div>
-      <div class="row3">
-        <div><label>Reason 2</label><input id="s2r" value="Vacuum / pump issue"/></div>
-        <div><label>Hours</label><input id="s2h" value="18"/></div>
-        <div><label>Action</label><input id="s2a" value="PM on pump seals"/></div>
-      </div>
-      <div class="row3">
-        <div><label>Reason 3</label><input id="s3r" value="Material wait"/></div>
-        <div><label>Hours</label><input id="s3h" value="12"/></div>
-        <div><label>Action</label><input id="s3a" value="Planning buffer 1 day"/></div>
-      </div>
-
-      <h2 style="margin-top:16px;font-size:.95rem">Slide 5 — Actions &amp; asks</h2>
-      <div class="row">
-        <div><label>Actions from last review (status)</label><textarea id="f_last">#12 Wire alignment SOP — Closed
+      <h2 style="margin-top:14px;font-size:.95rem">Parameter notes (one line each is fine)</h2>
+      <div class="row"><div><label>1. Output story</label><textarea id="n1">Plan 800 MT, actual 765 MT (−4.4%). Lost volume mainly from boat-change downtime and material wait.</textarea></div>
+      <div><label>2. Yield / quality</label><textarea id="n2">Yield 96.8% vs 97.5% target. Two OD variation complaints. B-grade 0.4%.</textarea></div></div>
+      <div class="row"><div><label>3. Conversion cost</label><textarea id="n3">Actual ₹13.20/kg vs target ₹12.50. Power and mix difficulty (AlOx) drove the gap. Equivalent cost closer to target.</textarea></div>
+      <div><label>4. Utilisation &amp; downtime</label><textarea id="n4">Utilisation 81% vs 85%. Top stops: boat change 42 h, vacuum/pump 18 h, material wait 12 h.</textarea></div></div>
+      <div class="row"><div><label>5. Safety &amp; compliance</label><textarea id="n5">Zero LTI. 1 near-miss (forklift). 5S audit 92%. PPE compliance 100% on observed rounds.</textarea></div>
+      <div><label>6. People &amp; skill</label><textarea id="n6">Attendance 96%. OT 4.2%. Met Train modules completed by 3 new operators. Skill gap: AlOx start-up.</textarea></div></div>
+      <div class="row"><div><label>7. Customer &amp; delivery</label><textarea id="n7">OTIF 98.2%. 2 quality complaints (OD). No claims settled this month.</textarea></div>
+      <div><label>8. Last review actions</label><textarea id="n8">#12 Wire alignment SOP — Closed
 #14 Power study M-2 — In progress (80%)
-#09 Spare boat set — Delayed (procurement)</textarea></div>
-        <div><label>Next month priorities (max 3)</label><textarea id="f_next">1. Cut boat change time 15% — Owner: Shift IC — 30 Nov
+#09 Spare boat set — Delayed (procurement)</textarea></div></div>
+      <div class="row"><div><label>9. Next month priorities (max 3)</label><textarea id="n9">1. Cut boat change time 15% — Owner: Shift IC — 30 Nov
 2. Power baseline on M-1 — Owner: Maint — 20 Nov
 3. AlOx start-up checklist — Owner: Process — 15 Nov</textarea></div>
-      </div>
-      <div>
-        <label>Decision / support needed from management</label>
-        <textarea id="f_ask">Approval for one spare boat set (CAPEX) and overtime for SMED trials on night shift.</textarea>
-      </div>
+      <div><label>Decision / support needed</label><textarea id="n_ask">Approval for one spare boat set (CAPEX) and overtime for SMED trials on night shift.</textarea></div></div>
 
       <div class="actions">
         <button type="button" class="btn btn-p" onclick="window.print()">Print / Save PDF</button>
         <button type="button" class="btn btn-g" onclick="document.getElementById('deckPreview').scrollIntoView({behavior:'smooth'})">Preview slides</button>
       </div>
-      <p class="note">This is a dummy professional format for practice and real MRMs. Replace numbers with your plant data. Logo is optional.</p>
+      <p class="note">11 horizontal (16:9) slides: cover · agenda · KPIs · then one slide per parameter (1–9) with your notes · final ask. Replace sample numbers with plant data.</p>
     </div>
 
     <div class="deck" id="deckPreview">
-      <!-- SLIDE 1 Cover -->
-      <div class="slide" id="slide1">
+      <!-- 1 Cover -->
+      <div class="slide" data-n="1">
         <div class="slide-top">
-          <div class="logo-ph" id="logoBox1"><span id="logoTxt1">Company<br/>Logo</span><img id="logoImg1" alt="" style="display:none"/></div>
-          <div class="slide-brand">
-            <div class="co" id="p_company1">YOUR COMPANY NAME</div>
-            <div class="title">Monthly Review Meeting</div>
-            <div class="sub"><span id="p_dept1">Department</span> · <span id="p_period1">Period</span></div>
-          </div>
+          <div class="logo-ph" id="logo1"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Monthly Review Meeting</div><div class="sub"><span data-f="dept">Dept</span> · <span data-f="period">Period</span></div></div>
         </div>
-        <div style="margin-top:48px;text-align:center">
-          <div style="font-size:28px;font-weight:900;color:#0f172a;letter-spacing:.02em">Department Performance Review</div>
-          <div style="font-size:15px;color:#64748b;margin-top:12px;font-weight:600" id="p_periodBig">November 2026</div>
-          <div style="margin-top:36px;font-size:14px;color:#334155">
-            <div><b>Presented by:</b> <span id="p_by">Department Head</span></div>
-            <div style="margin-top:6px"><b>Date:</b> <span id="p_date">—</span></div>
-          </div>
+        <div class="cover-center">
+          <div class="big">Department Performance Review</div>
+          <div class="per" data-f="period">November 2026</div>
+          <div class="body" style="margin-top:20px"><b>Presented by:</b> <span data-f="by">—</span><br/><b>Date:</b> <span data-f="date">—</span></div>
         </div>
-        <div class="foot"><span>Confidential — Internal use</span><span>1 / 5</span></div>
+        <div class="foot"><span>Confidential — Internal use</span><span>1 / 11</span></div>
       </div>
 
-      <!-- SLIDE 2 KPIs -->
-      <div class="slide" id="slide2">
+      <!-- 2 Agenda -->
+      <div class="slide" data-n="2">
         <div class="slide-top">
-          <div class="logo-ph" id="logoBox2"><span id="logoTxt2">Company<br/>Logo</span><img id="logoImg2" alt="" style="display:none"/></div>
-          <div class="slide-brand">
-            <div class="co" id="p_company2">YOUR COMPANY NAME</div>
-            <div class="title">Headline KPIs</div>
-            <div class="sub" id="p_period2">Period</div>
-          </div>
+          <div class="logo-ph" id="logo2"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Agenda</div><div class="sub" data-f="period">Period</div></div>
+        </div>
+        <h3>What we will cover</h3>
+        <div class="body two">
+          <ol style="margin:0;padding-left:18px;font-weight:600;line-height:1.7">
+            <li>Headline KPIs — plan vs actual</li>
+            <li>Output vs plan</li>
+            <li>Yield / quality</li>
+            <li>Conversion / process cost</li>
+            <li>Utilisation &amp; downtime</li>
+          </ol>
+          <ol start="6" style="margin:0;padding-left:18px;font-weight:600;line-height:1.7">
+            <li>Safety &amp; compliance</li>
+            <li>People &amp; skill</li>
+            <li>Customer &amp; delivery</li>
+            <li>Last review actions &amp; next priorities</li>
+            <li>Decision needed from management</li>
+          </ol>
+        </div>
+        <div class="foot"><span data-f="dept">Dept</span><span>2 / 11</span></div>
+      </div>
+
+      <!-- 3 KPIs -->
+      <div class="slide" data-n="3">
+        <div class="slide-top">
+          <div class="logo-ph" id="logo3"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div>
+          <div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">Headline KPIs</div><div class="sub" data-f="period">Period</div></div>
         </div>
         <h3>Plan vs actual</h3>
         <table class="kpi">
@@ -282,149 +244,79 @@ AlOx mix raised actual conversion cost
             <tr><td>Utilisation</td><td id="pk4p">—</td><td id="pk4a">—</td><td id="pk4g">—</td></tr>
           </tbody>
         </table>
-        <p style="font-size:12px;color:#64748b;margin-top:8px">State the single number you want management to remember from this slide.</p>
-        <div class="foot"><span id="p_dept2">Department</span><span>2 / 5</span></div>
+        <p class="body" style="margin-top:8px">State the single number you want management to remember from this slide.</p>
+        <div class="foot"><span data-f="dept">Dept</span><span>3 / 11</span></div>
       </div>
 
-      <!-- SLIDE 3 Highlights -->
-      <div class="slide" id="slide3">
-        <div class="slide-top">
-          <div class="logo-ph" id="logoBox3"><span id="logoTxt3">Company<br/>Logo</span><img id="logoImg3" alt="" style="display:none"/></div>
-          <div class="slide-brand">
-            <div class="co" id="p_company3">YOUR COMPANY NAME</div>
-            <div class="title">Highlights &amp; lowlights</div>
-            <div class="sub" id="p_period3">Period</div>
-          </div>
+      <!-- 4-12 parameter slides -->
+      <div class="slide" data-n="4"><div class="slide-top"><div class="logo-ph" id="logo4"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">1 · Output vs plan</div><div class="sub" data-f="period">Period</div></div></div><h3>Volume against commitment</h3><div class="body" id="pn1" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>4 / 11</span></div></div>
+      <div class="slide" data-n="5"><div class="slide-top"><div class="logo-ph" id="logo5"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">2 · Yield / quality</div><div class="sub" data-f="period">Period</div></div></div><h3>Good output, scrap, complaints</h3><div class="body" id="pn2" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>5 / 11</span></div></div>
+      <div class="slide" data-n="6"><div class="slide-top"><div class="logo-ph" id="logo6"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">3 · Conversion / process cost</div><div class="sub" data-f="period">Period</div></div></div><h3>₹/kg drivers — wire, boat, power, mix</h3><div class="body" id="pn3" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>6 / 11</span></div></div>
+      <div class="slide" data-n="7"><div class="slide-top"><div class="logo-ph" id="logo7"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">4 · Utilisation &amp; downtime</div><div class="sub" data-f="period">Period</div></div></div><h3>Hours lost — top reasons</h3><div class="body" id="pn4" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>7 / 11</span></div></div>
+      <div class="slide" data-n="8"><div class="slide-top"><div class="logo-ph" id="logo8"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">5 · Safety &amp; compliance</div><div class="sub" data-f="period">Period</div></div></div><h3>Zero-harm and audit discipline</h3><div class="body" id="pn5" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>8 / 11</span></div></div>
+      <div class="slide" data-n="9"><div class="slide-top"><div class="logo-ph" id="logo9"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">6 · People &amp; skill</div><div class="sub" data-f="period">Period</div></div></div><h3>Attendance, OT, training, gaps</h3><div class="body" id="pn6" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>9 / 11</span></div></div>
+      <div class="slide" data-n="10"><div class="slide-top"><div class="logo-ph" id="logo10"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">7 · Customer &amp; delivery</div><div class="sub" data-f="period">Period</div></div></div><h3>OTIF, complaints, claims</h3><div class="body" id="pn7" style="white-space:pre-wrap"></div><div class="foot"><span data-f="dept">Dept</span><span>10 / 11</span></div></div>
+      <div class="slide" data-n="11"><div class="slide-top"><div class="logo-ph" id="logo11"><span class="lt">Company<br/>Logo</span><img alt="" style="display:none"/></div><div class="slide-brand"><div class="co" data-f="company">YOUR COMPANY</div><div class="title">8–9 · Actions &amp; management ask</div><div class="sub" data-f="period">Period</div></div></div>
+        <div class="two">
+          <div><h3>Last review — status</h3><div class="body" id="pn8" style="white-space:pre-wrap"></div></div>
+          <div><h3>Next month — top 3</h3><div class="body" id="pn9" style="white-space:pre-wrap"></div></div>
         </div>
-        <div class="row">
-          <div>
-            <h3 style="color:#047857;border-color:#047857">What went well</h3>
-            <ul id="p_wins" style="margin:0;padding-left:18px;font-size:13px;font-weight:600;color:#0f172a;line-height:1.7"></ul>
-          </div>
-          <div>
-            <h3 style="color:#b91c1c;border-color:#b91c1c">Gaps / concerns</h3>
-            <ul id="p_gaps" style="margin:0;padding-left:18px;font-size:13px;font-weight:600;color:#0f172a;line-height:1.7"></ul>
-          </div>
-        </div>
-        <div class="foot"><span id="p_dept3">Department</span><span>3 / 5</span></div>
-      </div>
-
-      <!-- SLIDE 4 Stoppages -->
-      <div class="slide" id="slide4">
-        <div class="slide-top">
-          <div class="logo-ph" id="logoBox4"><span id="logoTxt4">Company<br/>Logo</span><img id="logoImg4" alt="" style="display:none"/></div>
-          <div class="slide-brand">
-            <div class="co" id="p_company4">YOUR COMPANY NAME</div>
-            <div class="title">Downtime — top reasons</div>
-            <div class="sub" id="p_period4">Period</div>
-          </div>
-        </div>
-        <h3>Focus where hours are lost</h3>
-        <table class="kpi">
-          <thead><tr><th>#</th><th>Reason</th><th>Hours</th><th>Corrective action</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td id="ps1r">—</td><td id="ps1h">—</td><td id="ps1a">—</td></tr>
-            <tr><td>2</td><td id="ps2r">—</td><td id="ps2h">—</td><td id="ps2a">—</td></tr>
-            <tr><td>3</td><td id="ps3r">—</td><td id="ps3h">—</td><td id="ps3a">—</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span id="p_dept4">Department</span><span>4 / 5</span></div>
-      </div>
-
-      <!-- SLIDE 5 Actions -->
-      <div class="slide" id="slide5">
-        <div class="slide-top">
-          <div class="logo-ph" id="logoBox5"><span id="logoTxt5">Company<br/>Logo</span><img id="logoImg5" alt="" style="display:none"/></div>
-          <div class="slide-brand">
-            <div class="co" id="p_company5">YOUR COMPANY NAME</div>
-            <div class="title">Actions &amp; management ask</div>
-            <div class="sub" id="p_period5">Period</div>
-          </div>
-        </div>
-        <h3>Last review — status</h3>
-        <ul id="p_last" style="margin:0 0 14px;padding-left:18px;font-size:13px;font-weight:600;line-height:1.7"></ul>
-        <h3>Next month — top 3</h3>
-        <ul id="p_next" style="margin:0 0 14px;padding-left:18px;font-size:13px;font-weight:600;line-height:1.7"></ul>
-        <h3>Decision needed</h3>
-        <p id="p_ask" style="font-size:13px;font-weight:700;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin:0"></p>
-        <div class="foot"><span id="p_dept5">Department</span><span>5 / 5</span></div>
+        <h3 style="margin-top:10px">Decision needed</h3>
+        <div class="body" id="pn_ask" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-weight:700"></div>
+        <div class="foot"><span data-f="dept">Dept</span><span>11 / 11</span></div>
       </div>
     </div>
   </div>
 
-  <!-- 3. Calculators -->
   <div class="panel" id="panel-calc">
     <div class="card">
       <div class="sec-tag">Tools</div>
       <h2>Packaging calculators</h2>
-      <p>All plant calculators (roll weight, OD, GSM, yield, utilisation, ₹/sqm, Met capacity, converting capacity, min manpower) live on VKS Tech.</p>
-      <a class="calc-btn" href="https://www.vkstech.com/#calculators" target="_blank" rel="noopener">
-        Open packaging calculators
-        <span>vkstech.com/#calculators</span>
-      </a>
-      <p class="hint">One place for every free calculator — no uploads inside this module.</p>
+      <p>All plant calculators live on VKS Tech — one place only.</p>
+      <a class="calc-btn" href="https://www.vkstech.com/#calculators" target="_blank" rel="noopener">Open packaging calculators<span>vkstech.com/#calculators</span></a>
     </div>
   </div>
 </main>
 <script>
 (function(){
-  function val(id){ var el=document.getElementById(id); return el ? (el.value || '').trim() : ''; }
-  function lines(id){
-    return val(id).split(/\n+/).map(function(s){return s.trim();}).filter(Boolean);
-  }
-  function setText(id, t){ var el=document.getElementById(id); if(el) el.textContent = t || '—'; }
-  function setList(id, arr){
-    var el=document.getElementById(id); if(!el) return;
-    el.innerHTML = (arr.length ? arr : ['—']).map(function(x){ return '<li>'+x.replace(/</g,'&lt;')+'</li>'; }).join('');
-  }
+  function val(id){ var el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+  function setText(id,t){ var el=document.getElementById(id); if(el) el.textContent = t || '—'; }
   function sync(){
-    var co = val('f_company') || 'Your Company Name';
-    var dept = val('f_dept') || 'Department';
-    var period = val('f_period') || 'Period';
-    var by = val('f_by') || 'Presenter';
+    var co = (val('f_company')||'Your Company Name').toUpperCase();
+    var dept = val('f_dept')||'Department';
+    var period = val('f_period')||'Period';
+    var by = val('f_by')||'Presenter';
     var dateEl = document.getElementById('f_date');
     var dateStr = '—';
     if(dateEl && dateEl.value){
       try{ dateStr = new Date(dateEl.value+'T12:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'}); }catch(e){ dateStr=dateEl.value; }
     }
-    [1,2,3,4,5].forEach(function(i){
-      setText('p_company'+i, co.toUpperCase());
-      setText('p_period'+i, period);
-      setText('p_dept'+i, dept);
-    });
-    setText('p_periodBig', period);
-    setText('p_by', by);
-    setText('p_date', dateStr);
+    document.querySelectorAll('[data-f="company"]').forEach(function(el){ el.textContent = co; });
+    document.querySelectorAll('[data-f="dept"]').forEach(function(el){ el.textContent = dept; });
+    document.querySelectorAll('[data-f="period"]').forEach(function(el){ el.textContent = period; });
+    document.querySelectorAll('[data-f="by"]').forEach(function(el){ el.textContent = by; });
+    document.querySelectorAll('[data-f="date"]').forEach(function(el){ el.textContent = dateStr; });
     setText('pk1p', val('k1p')); setText('pk1a', val('k1a')); setText('pk1g', val('k1g'));
     setText('pk2p', val('k2p')); setText('pk2a', val('k2a')); setText('pk2g', val('k2g'));
     setText('pk3p', val('k3p')); setText('pk3a', val('k3a')); setText('pk3g', val('k3g'));
     setText('pk4p', val('k4p')); setText('pk4a', val('k4a')); setText('pk4g', val('k4g'));
-    setList('p_wins', lines('f_wins'));
-    setList('p_gaps', lines('f_gaps'));
-    setText('ps1r', val('s1r')); setText('ps1h', val('s1h')); setText('ps1a', val('s1a'));
-    setText('ps2r', val('s2r')); setText('ps2h', val('s2h')); setText('ps2a', val('s2a'));
-    setText('ps3r', val('s3r')); setText('ps3h', val('s3h')); setText('ps3a', val('s3a'));
-    setList('p_last', lines('f_last'));
-    setList('p_next', lines('f_next'));
-    setText('p_ask', val('f_ask') || '—');
+    for(var i=1;i<=9;i++){ setText('pn'+i, val('n'+i)); }
+    setText('pn_ask', val('n_ask'));
   }
   function bind(){
     document.querySelectorAll('input,textarea').forEach(function(el){
-      el.addEventListener('input', sync);
-      el.addEventListener('change', sync);
+      el.addEventListener('input', sync); el.addEventListener('change', sync);
     });
     var logo = document.getElementById('f_logo');
     if(logo){
       logo.addEventListener('change', function(){
-        var f = logo.files && logo.files[0];
-        if(!f) return;
+        var f = logo.files && logo.files[0]; if(!f) return;
         var reader = new FileReader();
         reader.onload = function(){
-          [1,2,3,4,5].forEach(function(i){
-            var img = document.getElementById('logoImg'+i);
-            var txt = document.getElementById('logoTxt'+i);
+          document.querySelectorAll('.logo-ph').forEach(function(box){
+            var img = box.querySelector('img'); var lt = box.querySelector('.lt');
             if(img){ img.src = reader.result; img.style.display='block'; }
-            if(txt) txt.style.display='none';
+            if(lt) lt.style.display='none';
           });
         };
         reader.readAsDataURL(f);
@@ -441,13 +333,8 @@ AlOx mix raised actual conversion cost
       });
     });
   }
-  // default date = today
-  try{
-    var d=document.getElementById('f_date');
-    if(d && !d.value){ d.value = new Date().toISOString().slice(0,10); }
-  }catch(e){}
-  bind();
-  sync();
+  try{ var d=document.getElementById('f_date'); if(d && !d.value) d.value = new Date().toISOString().slice(0,10); }catch(e){}
+  bind(); sync();
 })();
 </script>
 </body>
