@@ -61,9 +61,9 @@ function rQuiz(pg){
   var set=g?Q_ALL:Q_GEN_IDX.map(function(i){return Q_ALL[i];});
   qState={q:0,score:0,set:set};
   pg.innerHTML=
-    '<div class="ph"><div class="ph-code">मूल्यांकन — ज्ञान परीक्षा</div>'
+    '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मूल्यांकन — ज्ञान परीक्षा':'Assessment — Knowledge check')+'</div>'
     +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'ज्ञान <span>परीक्षा</span>':'Knowledge <span>Check</span>')+'</div>'
-    +'<div class="ph-desc">'+set.length+' प्रश्न — मेटलाइज़ेशन, स्लिटिंग, सुरक्षा, 5S, TPM, Kaizen, KPI और औद्योगिक शब्दावली। उत्तीर्णांक: 70%।</div></div>'
+    +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?(set.length+' प्रश्न — मेटलाइज़ेशन, स्लिटिंग, सुरक्षा, 5S, TPM, Kaizen, KPI और औद्योगिक शब्दावली। उत्तीर्णांक: 70%।'):(set.length+' questions — metallisation, slitting, safety, 5S, TPM, Kaizen, KPI and industrial terms. Pass mark: 70%.'))+'</div></div>'
     +'<div class="quiz-wrap">'
     +'<div id="qprog" style="margin-bottom:12px">'
     +'<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:\'Share Tech Mono\',monospace;margin-bottom:4px">'
@@ -133,23 +133,34 @@ function mtLoad(key, fallback){ try{ var v = localStorage.getItem(MT_STORAGE_KEY
 function mtRemove(key){ try{ localStorage.removeItem(MT_STORAGE_KEY + key); }catch(e){} }
 
 // ══════════════════════════════════════════════════════
-// PRE-START CHECKLIST — DATE-SPECIFIC PERSISTENT
+// PRE-START CHECKLIST — DATE-SPECIFIC PERSISTENT (bilingual)
 // ══════════════════════════════════════════════════════
-var CK=[
+var CK_HI=[
   {cat:'🔒 सुरक्षा (Safety)',items:['Safety Helmet पहना हुआ और अच्छी स्थिति में','Safety Shoes पहने — Toe-Cap सही','Respiratory Mask उपलब्ध और Fit-Tested','Safety Goggles उपलब्ध और साफ','Ear Plugs कार्यस्थल पर उपलब्ध','कोई ढीले कपड़े नहीं — वर्दी ठीक से पहनी','Emergency Stop Buttons सुलभ और काम करते हुए','First Aid Kit की जगह मालूम है और स्टॉक है']},
   {cat:'🏭 मशीन स्थिति (Machine Condition)',items:['Machine क्षेत्र साफ — कोई तेल, धूल या अवरोध नहीं','सभी Guards और Grids Moving Parts पर लगे हैं','Crane और Sling Belt जांचे — कोई नुकसान नहीं','Felt Belt साफ — कोई धातु के टुकड़े या तेल नहीं','सभी Rollers साफ और संदूषण-मुक्त','Vacuum Pump Oil Level जांचा','Chiller पानी का प्रवाह और तापमान सामान्य','Al Dust Container भरा नहीं — जगह उपलब्ध']},
   {cat:'📋 रोल एवं मटेरियल (Roll & Material)',items:['प्लानिंग फॉर्मेट MET F-04 के अनुसार Bare Roll चुना','Surface Energy >54 Dynes जांची','रोल चौड़ाई के लिए सही Shield Plate चुनी','दोनों रोल सिरों पर Core Plug लगाया','SAP में सही Material Code की पुष्टि']},
   {cat:'⚙️ प्रक्रिया सेटअप (Process Setup)',items:['Boats जांचे — कोई दृश्य क्षति नहीं','Graphite Foil Boat सिरों के लिए तैयार','Masking Tape और Drum Cleaning सामग्री तैयार','Unwinder Stop Diameter Core Type के अनुसार सेट','Web Threading दिशा (I/O) की पुष्टि','कस्टमर के अनुसार OD Set Point लोड किया','SAP Production Order Number नोट किया']}
 ];
+var CK_EN=[
+  {cat:'🔒 Safety',items:['Safety helmet worn and in good condition','Safety shoes worn — toe-cap correct','Respiratory mask available and fit-tested','Safety goggles available and clean','Ear plugs available at workplace','No loose clothing — uniform worn properly','Emergency stop buttons accessible and working','First aid kit location known and stocked']},
+  {cat:'🏭 Machine condition',items:['Machine area clean — no oil, dust or obstruction','All guards and grids fitted on moving parts','Crane and sling belt checked — no damage','Felt belt clean — no metal pieces or oil','All rollers clean and contamination-free','Vacuum pump oil level checked','Chiller water flow and temperature normal','Al dust container not full — space available']},
+  {cat:'📋 Roll & material',items:['Bare roll selected as per planning format MET F-04','Surface energy >54 dynes checked','Correct shield plate selected for roll width','Core plug fitted on both roll ends','Correct material code confirmed in SAP']},
+  {cat:'⚙️ Process setup',items:['Boats checked — no visible damage','Graphite foil ready for boat ends','Masking tape and drum cleaning materials ready','Unwinder stop diameter set as per core type','Web threading direction (I/O) confirmed','OD set point loaded as per customer','SAP production order number noted']}
+];
+function getCK(){ return (typeof LANG!=='undefined' && LANG==='hi') ? CK_HI : CK_EN; }
+// backward compat alias used by length helpers
+var CK = CK_EN;
 
 // Date helpers
 function getTodayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function formatDateHindi(ds){
+function formatDateLabel(ds){
   var d=new Date(ds+'T00:00:00');
-  var days=['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'];
-  var months=['जन','फर','मार्च','अप्रै','मई','जून','जुला','अग','सित','अक्टू','नव','दिस'];
+  var hi = (typeof LANG!=='undefined' && LANG==='hi');
+  var days = hi ? ['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var months = hi ? ['जन','फर','मार्च','अप्रै','मई','जून','जुला','अग','सित','अक्टू','नव','दिस'] : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return {day:days[d.getDay()], date:d.getDate(), month:months[d.getMonth()], full:d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()};
 }
+function formatDateHindi(ds){ return formatDateLabel(ds); } // legacy name
 
 // Checklist data store: { "2026-03-11": {items:{0_0:true,...}, shift:'A', completedAt:null, startedAt:timestamp}, ... }
 var ckAllData = {};
@@ -158,7 +169,6 @@ var ckShowHistory = false;
 
 function loadCKData(){
   ckAllData = mtLoad('checklistDates', {});
-  // Migrate old single checklistState if exists
   var oldCK = mtLoad('checklistState', null);
   if(oldCK && !ckAllData[getTodayStr()]){
     ckAllData[getTodayStr()] = {items: oldCK, shift:'A', startedAt: Date.now(), completedAt: null};
@@ -175,7 +185,7 @@ function ensureTodayCK(){
   var today = getTodayStr();
   if(!ckAllData[today]){
     var items = {};
-    CK.forEach(function(cat,ci){ cat.items.forEach(function(_,ii){ items[ci+'_'+ii]=false; }); });
+    getCK().forEach(function(cat,ci){ cat.items.forEach(function(_,ii){ items[ci+'_'+ii]=false; }); });
     ckAllData[today] = {items:items, shift:'A', startedAt:Date.now(), completedAt:null};
     saveCKData();
   }
@@ -183,14 +193,13 @@ function ensureTodayCK(){
 }
 
 function getCKTotal(){
-  var t=0; CK.forEach(function(c){t+=c.items.length;}); return t;
+  var t=0; getCK().forEach(function(c){t+=c.items.length;}); return t;
 }
 function getCKChecked(data){
   if(!data||!data.items)return 0;
   return Object.values(data.items).filter(function(v){return v;}).length;
 }
 
-// Also keep ckState in sync for backward compat
 function syncCkState(){
   var today = getTodayStr();
   if(ckAllData[today]) ckState = ckAllData[today].items;
@@ -203,6 +212,8 @@ function rCheck(pg){
   var today = getTodayStr();
   var isToday = (ckViewDate === today);
   if(isToday) ensureTodayCK();
+  var hi = (typeof LANG!=='undefined' && LANG==='hi');
+  var CKlist = getCK();
 
   var viewData = getCKForDate(ckViewDate);
   var total = getCKTotal();
@@ -212,124 +223,117 @@ function rCheck(pg){
   for(var i=13;i>=0;i--){
     var d = new Date(); d.setDate(d.getDate()-i);
     var ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    var info = formatDateHindi(ds);
+    var info = formatDateLabel(ds);
     var data = getCKForDate(ds);
     var checked = getCKChecked(data);
     var statusClass = '';
     if(data && checked === total) statusClass = ' complete';
     else if(data && checked > 0) statusClass = ' partial';
     var activeClass = (ds === ckViewDate) ? ' active' : '';
-    dateStripH += '<div class="ck-date-chip'+statusClass+activeClass+'" onclick="switchCKDate(\''+ds+'\')">'
-      +'<div class="ck-date-day">'+info.day+'</div>'
-      +'<div class="ck-date-num">'+info.date+'</div>'
-      +'<div class="ck-date-mon">'+info.month+'</div>'
-      +'</div>';
+    dateStripH += '<button type="button" class="ck-date-chip'+activeClass+statusClass+'" onclick="switchCKDate(\''+ds+'\')">'
+      +'<span class="ck-dow">'+info.day+'</span>'
+      +'<span class="ck-dom">'+info.date+'</span>'
+      +'<span class="ck-moy">'+info.month+'</span>'
+      +'</button>';
   }
 
-  // ── SHIFT SELECTOR (only for today) ──
-  var shiftH = '';
-  if(isToday && viewData){
-    var curShift = viewData.shift || 'A';
-    shiftH = '<div class="ck-shift-wrap">'
-      +'<span class="ck-shift-label">शिफ्ट:</span>'
-      +'<button class="ck-shift-btn'+(curShift==='A'?' on':'')+'" onclick="setCKShift(\'A\')">A शिफ्ट</button>'
-      +'<button class="ck-shift-btn'+(curShift==='B'?' on':'')+'" onclick="setCKShift(\'B\')">B शिफ्ट</button>'
-      +'<button class="ck-shift-btn'+(curShift==='C'?' on':'')+'" onclick="setCKShift(\'C\')">C शिफ्ट</button>'
-      +'</div>';
-  }
-
-  // ── READONLY BANNER (for past dates) ──
-  var readonlyH = '';
-  if(!isToday && viewData){
-    var fdate = formatDateHindi(ckViewDate);
-    var shiftLabel = viewData.shift ? viewData.shift + ' शिफ्ट' : '';
-    readonlyH = '<div class="ck-readonly-banner">📋 '+fdate.full+' — '+shiftLabel+' — केवल देखने के लिए (Read Only)</div>';
-  } else if(!isToday && !viewData){
-    readonlyH = '<div class="ck-readonly-banner">📋 '+formatDateHindi(ckViewDate).full+' — इस दिन कोई चेकलिस्ट नहीं भरी गई।</div>';
-  }
-
-  // ── CHECKLIST ITEMS ──
+  // ── CATEGORIES ──
   var catH = '';
+  var checked = getCKChecked(viewData);
+  var pct = total ? Math.round(checked/total*100) : 0;
   if(viewData){
-    var checked = getCKChecked(viewData);
-    var pct = total ? Math.round(checked/total*100) : 0;
-
-    CK.forEach(function(cat,ci){
-      var iH = cat.items.map(function(item,ii){
+    CKlist.forEach(function(cat,ci){
+      var itemsH = '';
+      cat.items.forEach(function(item,ii){
         var key = ci+'_'+ii;
-        var chk = viewData.items[key];
-        if(isToday){
-          return '<div class="cli'+(chk?' chk':'')+'" onclick="toggleCK(\''+key+'\')">'
-            +'<div class="clbox">'+(chk?'✓':'')+'</div><div class="cltxt">'+item+'</div></div>';
-        } else {
-          return '<div class="cli'+(chk?' chk':'')+'" style="cursor:default;opacity:'+(chk?'1':'.5')+'">'
-            +'<div class="clbox">'+(chk?'✓':'')+'</div><div class="cltxt">'+item+'</div></div>';
-        }
-      }).join('');
-      catH += '<div style="margin-bottom:14px">'
-        +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:13px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">'+cat.cat+'</div>'
-        +iH+'</div>';
+        var on = !!(viewData.items && viewData.items[key]);
+        var dis = isToday ? '' : ' disabled';
+        itemsH += '<label class="ck-item'+(on?' on':'')+dis+'">'
+          +'<input type="checkbox"'+(on?' checked':'')+(isToday?'':' disabled')+' onchange="toggleCK(\''+key+'\')"/>'
+          +'<span>'+item+'</span></label>';
+      });
+      catH += '<div class="ck-cat"><div class="ck-cat-title">'+cat.cat+'</div>'+itemsH+'</div>';
     });
 
-    // Progress bar
+    var curShift = viewData.shift || 'A';
+    var shiftH = '<div class="ck-shift-row">'
+      +'<span class="ck-shift-label">'+(hi?'शिफ्ट:':'Shift:')+'</span>'
+      +'<button class="ck-shift-btn'+(curShift==='A'?' on':'')+'" onclick="setCKShift(\'A\')">'+(hi?'A शिफ्ट':'A Shift')+'</button>'
+      +'<button class="ck-shift-btn'+(curShift==='B'?' on':'')+'" onclick="setCKShift(\'B\')">'+(hi?'B शिफ्ट':'B Shift')+'</button>'
+      +'<button class="ck-shift-btn'+(curShift==='C'?' on':'')+'" onclick="setCKShift(\'C\')">'+(hi?'C शिफ्ट':'C Shift')+'</button>'
+      +'</div>';
+
+    var readonlyH = isToday ? '' : Al('i','📅', hi
+      ? (formatDateLabel(ckViewDate).full+' की चेकलिस्ट — केवल देखने के लिए। आज की तारीख चुनकर भरें।')
+      : ('Checklist for '+formatDateLabel(ckViewDate).full+' — view only. Select today to fill.'));
+
     var progH = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'
       +'<div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:\'Share Tech Mono\',monospace;margin-bottom:4px">'
-      +'<span>जांचे गए: '+checked+' / '+total+'</span><span>'+pct+'%</span></div>'
+      +'<span>'+(hi?'जांचे गए: ':'Checked: ')+checked+' / '+total+'</span><span>'+pct+'%</span></div>'
       +'<div class="prog"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>'
-      +(isToday?'<button class="btn btn-s" onclick="resetCK()">↺ रीसेट</button>':'')
+      +(isToday?'<button class="btn btn-s" onclick="resetCK()">↺ '+(hi?'रीसेट':'Reset')+'</button>':'')
       +'</div>';
 
     var completeAlert = '';
     if(checked===total && total>0){
-      completeAlert = Al('s','✅','सभी बिंदु जांचे गए! '+(isToday?'मशीन शुरू करने के लिए तैयार है। Shift Supervisor को सूचित करें और आगे बढ़ें।':'इस दिन चेकलिस्ट पूरी हुई थी।'));
+      completeAlert = Al('s','✅', hi
+        ? ('सभी बिंदु जांचे गए! '+(isToday?'मशीन शुरू करने के लिए तैयार है। Shift Supervisor को सूचित करें और आगे बढ़ें।':'इस दिन चेकलिस्ट पूरी हुई थी।'))
+        : ('All points checked! '+(isToday?'Ready to start the machine. Inform shift supervisor and proceed.':'Checklist was completed for this day.')));
     }
 
     catH = completeAlert
-      +(isToday?Al('w','⚠️','कोई भी बिंदु अधूरा हो तो <strong>मशीन शुरू न करें।</strong> Shift Supervisor को तुरंत सूचित करें।'):'')
+      +(isToday?Al('w','⚠️', hi
+        ? 'कोई भी बिंदु अधूरा हो तो <strong>मशीन शुरू न करें।</strong> Shift Supervisor को तुरंत सूचित करें।'
+        : 'If any point is incomplete, <strong>do not start the machine.</strong> Inform the shift supervisor immediately.')
+        :'')
       + progH + shiftH + readonlyH + catH;
   } else {
-    catH = readonlyH;
+    catH = Al('i','📅', hi
+      ? 'इस तारीख की कोई चेकलिस्ट नहीं।'
+      : 'No checklist saved for this date.');
   }
 
-  // ── HISTORY SECTION ──
-  var histBtnH = '<div class="ck-history-btn" onclick="toggleCKHistory()">📅 '+(ckShowHistory?'इतिहास छुपाएं':'पिछली चेकलिस्ट देखें — इतिहास')+'</div>';
+  // ── HISTORY ──
+  var histBtnH = '<div class="ck-history-btn" onclick="toggleCKHistory()">📅 '+(ckShowHistory
+    ? (hi?'इतिहास छुपाएं':'Hide history')
+    : (hi?'पिछली चेकलिस्ट देखें — इतिहास':'View past checklists — history'))+'</div>';
   var histH = '';
   if(ckShowHistory){
     var dates = Object.keys(ckAllData).sort().reverse();
     if(dates.length){
-      histH = '<div style="font-family:\'Rajdhani\',sans-serif;font-size:14px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📜 चेकलिस्ट इतिहास</div>';
+      histH = '<div style="font-family:\'Rajdhani\',sans-serif;font-size:14px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📜 '+(hi?'चेकलिस्ट इतिहास':'Checklist history')+'</div>';
       dates.forEach(function(ds){
         var data = ckAllData[ds];
-        var info = formatDateHindi(ds);
-        var checked = getCKChecked(data);
-        var pct = total ? Math.round(checked/total*100) : 0;
-        var pctClass = pct===100?'full':(pct>0?'part':'none');
+        var info = formatDateLabel(ds);
+        var ch = getCKChecked(data);
+        var p2 = total ? Math.round(ch/total*100) : 0;
+        var pctClass = p2===100?'full':(p2>0?'part':'none');
         var isT = (ds===today);
         histH += '<div class="ck-history-row" onclick="switchCKDate(\''+ds+'\')">'
-          +'<div class="ck-history-date">'+(isT?'⚡ आज':info.full)+'</div>'
-          +'<div class="ck-history-shift">'+(data.shift||'A')+' शिफ्ट</div>'
-          +'<div style="flex:1;margin-left:8px"><div class="prog"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>'
-          +'<div class="ck-history-pct '+pctClass+'">'+pct+'%</div>'
+          +'<div class="ck-history-date">'+(isT?(hi?'⚡ आज':'⚡ Today'):info.full)+'</div>'
+          +'<div class="ck-history-shift">'+(data.shift||'A')+(hi?' शिफ्ट':' Shift')+'</div>'
+          +'<div style="flex:1;margin-left:8px"><div class="prog"><div class="prog-fill" style="width:'+p2+'%"></div></div></div>'
+          +'<div class="ck-history-pct '+pctClass+'">'+p2+'%</div>'
           +'</div>';
       });
     } else {
-      histH = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px;font-family:\'Mukta\',\'Hind\',sans-serif">अभी तक कोई चेकलिस्ट नहीं भरी गई।</div>';
+      histH = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px">'+(hi?'अभी तक कोई चेकलिस्ट नहीं भरी गई।':'No checklist filled yet.')+'</div>';
     }
   }
 
   // ── RENDER ──
-  var dateInfo = formatDateHindi(ckViewDate);
   pg.innerHTML=
-    '<div class="ph"><div class="ph-code">मूल्यांकन — प्री-स्टार्ट ऑपरेटर चेकलिस्ट</div>'
-    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'प्री-स्टार्ट <span>चेकलिस्ट</span>':'Pre-Start <span>Checklist</span>')+'</div>'
-    +'<div class="ph-desc">हर Metalliser Cycle शुरू करने से पहले पूरा करें। '+total+' बिंदु — सुरक्षा, मशीन, मटेरियल और सेटअप।<br>'
-    +'<span style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--gold)">📅 तारीख चुनें → पुरानी चेकलिस्ट देखें</span></div></div>'
+    '<div class="ph"><div class="ph-code">'+(hi?'मूल्यांकन — प्री-स्टार्ट ऑपरेटर चेकलिस्ट':'Assessment — Pre-start operator checklist')+'</div>'
+    +'<div class="ph-title">'+(hi?'प्री-स्टार्ट <span>चेकलिस्ट</span>':'Pre-Start <span>Checklist</span>')+'</div>'
+    +'<div class="ph-desc">'+(hi
+      ? ('हर Metalliser Cycle शुरू करने से पहले पूरा करें। '+total+' बिंदु — सुरक्षा, मशीन, मटेरियल और सेटअप।')
+      : ('Complete before every metalliser cycle. '+total+' points — safety, machine, material and setup.'))
+    +'<br><span style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--gold)">📅 '+(hi?'तारीख चुनें → पुरानी चेकलिस्ट देखें':'Pick a date → view past checklists')+'</span></div></div>'
     +'<div class="ck-date-strip" id="ckDateStrip">'+dateStripH+'</div>'
     +catH
     +histBtnH
     +histH;
 
-  // Scroll date strip to show active date
   setTimeout(function(){
     var strip = document.getElementById('ckDateStrip');
     if(strip){
@@ -351,7 +355,7 @@ function toggleCK(key){
   var checked = getCKChecked(ckAllData[today]);
   if(checked === total && total > 0 && !ckAllData[today].completedAt){
     ckAllData[today].completedAt = Date.now();
-    showToast('✅ चेकलिस्ट पूर्ण! — '+formatDateHindi(today).full, 'success', 3000);
+    showToast((typeof LANG!=='undefined'&&LANG==='hi')?('✅ चेकलिस्ट पूर्ण! — '+formatDateLabel(today).full):('✅ Checklist complete! — '+formatDateLabel(today).full), 'success', 3000);
   }
   saveCKData();
   syncCkState();

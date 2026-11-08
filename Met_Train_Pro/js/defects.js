@@ -568,8 +568,8 @@ function rDefect(pg){
 
   pg.innerHTML=
     '<div class="ph"><div class="ph-code">DEFECT ACTION PLANS</div>'
-    +'<div class="ph-title">डिफेक्ट <span>Action Plans</span></div>'
-    +'<div class="ph-desc">मशीन पर कोई भी defect दिखे — नीचे tap करो → Step-by-Step समाधान मिलेगा। हर plan: Confirm → #1 कारण check → Fix → Verify</div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'डिफेक्ट <span>Action Plans</span>':'Defect <span>Action Plans</span>')+'</div>'
+    +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मशीन पर कोई भी defect दिखे — नीचे tap करो → Step-by-Step समाधान मिलेगा। हर plan: Confirm → #1 कारण check → Fix → Verify':'Any defect on the machine — tap below for a step-by-step fix. Each plan: Confirm → check #1 cause → Fix → Verify')+'</div>'
     +'<div class="tags"><span class="tag" style="background:rgba(229,57,53,.2);color:#e53935;border-color:rgba(229,57,53,.4)">16 Defects</span><span class="tag a">Hindi + English</span><span class="tag c">Real-Time Steps</span></div></div>'
     +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 12px 20px">'+grid+'</div>'
     +'<div style="padding:0 16px 12px">'
@@ -664,9 +664,9 @@ function rMet(pg){
   true):'';
 
   pg.innerHTML=
-    '<div class="ph"><div class="ph-code">मॉड्यूल 1 — मेटलाइज़र ऑपरेशन</div>'
-    +'<div class="ph-title">मेटलाइज़र <span>प्रशिक्षण</span></div>'
-    +'<div class="ph-desc">वैक्युम मेटलाइज़ेशन: प्रक्रिया अवलोकन, चेंबर संचालन, पैरामीटर, बोट चेंज, रोल हैंडलिंग और वेस्ट नियंत्रण।</div>'
+    '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मॉड्यूल 1 — मेटलाइज़र ऑपरेशन':'Module 1 — Metalliser operation')+'</div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मेटलाइज़र <span>प्रशिक्षण</span>':'Metalliser <span>training</span>')+'</div>'
+    +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'वैक्युम मेटलाइज़ेशन: प्रक्रिया अवलोकन, चेंबर संचालन, पैरामीटर, बोट चेंज, रोल हैंडलिंग और वेस्ट नियंत्रण।':'Vacuum metallisation: process overview, chamber operation, parameters, boat change, roll handling and waste control.')+'</div>'
     +'<div class="tags"><span class="tag a">SOP 01–07</span><span class="tag c">WI 04,10,16,24</span></div></div>'
 
     +CB('📖','मेटलाइज़ेशन प्रक्रिया — 10 चरण','MET SOP 01',
@@ -721,9 +721,9 @@ function rSlit(pg){
     +'</div>';
 
   pg.innerHTML=
-    '<div class="ph"><div class="ph-code">मॉड्यूल 2 — स्लिटर ऑपरेशन</div>'
-    +'<div class="ph-title">स्लिटर <span>प्रशिक्षण</span></div>'
-    +'<div class="ph-desc">मशीन सेटअप, ब्लेड प्रबंधन, कॉर्क टेप, क्रिटिकल कस्टमर, रोल ग्रेडिंग और जॉइंट की पूरी जानकारी।</div>'
+    '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मॉड्यूल 2 — स्लिटर ऑपरेशन':'Module 2 — Slitter operation')+'</div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'स्लिटर <span>प्रशिक्षण</span>':'Slitter <span>training</span>')+'</div>'
+    +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मशीन सेटअप, ब्लेड प्रबंधन, कॉर्क टेप, क्रिटिकल कस्टमर, रोल ग्रेडिंग और जॉइंट की पूरी जानकारी।':'Machine setup, blade management, cork tape, critical customer, roll grading and joints.')+'</div>'
     +'<div class="tags"><span class="tag a">SL WI 01–10</span><span class="tag c">SOP 09</span><span class="tag g">WI 19, 25</span></div></div>'
 
     +CB('📋','मशीन सेटअप — शुरू करने से पहले','SL WI-02',

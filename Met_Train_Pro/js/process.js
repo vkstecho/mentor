@@ -279,9 +279,9 @@ function rTerms(pg){
   }).join('');
 
   pg.innerHTML=
-    '<div class="ph"><div class="ph-code">संदर्भ — औद्योगिक शब्दावली</div>'
-    +'<div class="ph-title">औद्योगिक <span>शब्दावली</span></div>'
-    +'<div class="ph-desc">SOP, WI, 5S, TPM के 8 Pillars, Kaizen, KPI, OEE, Lean और अन्य — Full Forms, अर्थ और हिंदी में पूर्ण व्याख्या।</div>'
+    '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'संदर्भ — औद्योगिक शब्दावली':'Reference — Industrial terms')+'</div>'
+    +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'औद्योगिक <span>शब्दावली</span>':'Industrial <span>terms</span>')+'</div>'
+    +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'SOP, WI, 5S, TPM के 8 Pillars, Kaizen, KPI, OEE, Lean और अन्य — Full Forms, अर्थ और हिंदी में पूर्ण व्याख्या।':'SOP, WI, 5S, TPM 8 pillars, Kaizen, KPI, OEE, Lean and more — full forms and clear explanations.')+'</div>'
     +'<div class="tags"><span class="tag a">5S</span><span class="tag c">TPM 8 Pillars</span><span class="tag g">Kaizen</span><span class="tag">Lean</span></div></div>'
     +Al('i','💡','नीचे दिए गए Cards पर टैप करके Full Form देखें। खुद को Test करें — फिर विस्तृत जानकारी नीचे देखें!')
     +Al('w','📝','इन सभी शब्दों पर ज्ञान परीक्षा में प्रश्न हैं! Quiz में जाएं और अपनी तैयारी जांचें।')
