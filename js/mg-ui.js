@@ -189,7 +189,13 @@ MG.showCertificate = function(opts) {
     '<button type="button" id="certCloseBtn" class="px-2 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-600">Close</button>' +
     '</div></div>' +
     '<div id="certPrintArea" class="p-6 sm:p-8 text-center bg-gradient-to-b from-amber-50 to-white dark:from-slate-800 dark:to-slate-900">' +
-    '<div class="border-4 border-double border-amber-400 rounded-xl p-6 sm:p-8">' +
+    '<div class="border-4 border-double border-amber-400 rounded-xl p-6 sm:p-8 relative">' +
+    /* Small creative logo row: VKS Tech + Mentor */
+    '<div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px">' +
+    '<img src="icons/logo-vks.png" alt="VKS Tech" width="36" height="36" style="width:36px;height:36px;object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.12)" onerror="this.style.display=\'none\'" />' +
+    '<div style="width:1px;height:28px;background:linear-gradient(180deg,transparent,#f59e0b,transparent)"></div>' +
+    '<img src="icons/mentor-icon.png" alt="Mentor" width="36" height="36" style="width:36px;height:36px;object-fit:contain;border-radius:10px;box-shadow:0 1px 4px rgba(15,23,42,.12)" onerror="this.src=\'icons/mentor-icon.jpg\'" />' +
+    '</div>' +
     '<div class="text-[10px] uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300 font-bold mb-1">VKS Tech · Mentor App</div>' +
     '<div class="text-lg sm:text-xl font-black text-slate-800 dark:text-slate-100 mb-1">' + typeLabel + '</div>' +
     '<div class="w-16 h-1 bg-amber-400 mx-auto mb-4 rounded"></div>' +
@@ -209,12 +215,18 @@ MG.showCertificate = function(opts) {
     var area = document.getElementById('certPrintArea');
     var w = window.open('', '_blank');
     if (!w) { MG.showToast('Allow pop-ups to print certificate'); return; }
+    var origin = location.origin + location.pathname.replace(/\/[^/]*$/, '/');
+    var logoVks = origin + 'icons/logo-vks.png';
+    var logoMentor = origin + 'icons/mentor-icon.png';
     w.document.write('<!DOCTYPE html><html><head><title>Certificate — ' + (cert.title || '') + '</title>' +
       '<style>body{font-family:system-ui,sans-serif;margin:40px;text-align:center;}' +
       '.box{border:6px double #f59e0b;padding:40px;max-width:560px;margin:0 auto;}' +
+      '.logos{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px}' +
+      '.logos img{width:40px;height:40px;object-fit:contain;border-radius:8px}' +
       'h1{font-size:20px;margin:8px 0;} .name{font-size:28px;color:#0f766e;font-weight:800;margin:12px 0;}' +
       '.title{font-size:18px;font-weight:700;margin:12px 0;} .meta{color:#64748b;font-size:12px;}</style></head><body>' +
-      '<div class="box"><div class="meta">VKS TECH · MENTOR APP</div>' +
+      '<div class="box"><div class="logos"><img src="' + logoVks + '" alt="VKS Tech"/><img src="' + logoMentor + '" alt="Mentor"/></div>' +
+      '<div class="meta">VKS TECH · MENTOR APP</div>' +
       '<h1>' + typeLabel + '</h1><p class="meta">This certifies that</p>' +
       '<div class="name">' + (cert.name || 'Learner') + '</div>' +
       '<p class="meta">has successfully completed</p>' +

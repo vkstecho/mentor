@@ -203,13 +203,21 @@ function trackModuleVisit(id){
 }
 
 function getProgressHTML(){
-  var modules = [
+  var hi = (typeof LANG !== 'undefined' && LANG === 'hi');
+  var modules = hi ? [
     {id:'met',ico:'⚡',name:'मेटलाइज़र'},
     {id:'slit',ico:'✂️',name:'स्लिटर'},
     {id:'safety',ico:'🦺',name:'सुरक्षा'},
     {id:'sops',ico:'📋',name:'SOPs'},
     {id:'quiz',ico:'📝',name:'परीक्षा'},
-    {id:'check',ico:'✅',name:'चेकलिस्ट'},
+    {id:'check',ico:'✅',name:'चेकलिस्ट'}
+  ] : [
+    {id:'met',ico:'⚡',name:'Metalliser'},
+    {id:'slit',ico:'✂️',name:'Slitter'},
+    {id:'safety',ico:'🦺',name:'Safety'},
+    {id:'sops',ico:'📋',name:'SOPs'},
+    {id:'quiz',ico:'📝',name:'Quiz'},
+    {id:'check',ico:'✅',name:'Checklist'}
   ];
   if(MODE==='free'){
     modules.push({id:'sap',ico:'💻',name:'SAP'});
@@ -220,7 +228,9 @@ function getProgressHTML(){
   var cardsH = modules.map(function(m){
     var v = visited[m.id];
     if(v) done++;
-    var status = v ? '✓ पढ़ा — ' + v.visits + ' बार' : '— अभी नहीं पढ़ा';
+    var status = v
+      ? (hi ? ('✓ पढ़ा — ' + v.visits + ' बार') : ('✓ Read — ' + v.visits + '×'))
+      : (hi ? '— अभी नहीं पढ़ा' : '— Not opened yet');
     return '<div class="progress-card' + (v?' visited':'') + '" style="--pc:var(--gold);cursor:pointer" onclick="nav(\''+m.id+'\')">'
       +'<div class="pc-ico">' + m.ico + '</div>'
       +'<div class="pc-name">' + m.name + '</div>'
@@ -231,17 +241,17 @@ function getProgressHTML(){
   var pct = total ? Math.round(done/total*100) : 0;
   var bestH = '';
   if(window._bestScore){
-    bestH = '<div class="stat"><div class="stat-v" style="color:'+(window._bestScore.pct>=70?'var(--green)':'var(--red)')+'">'+window._bestScore.pct+'%</div><div class="stat-l">सर्वश्रेष्ठ स्कोर</div></div>';
+    bestH = '<div class="stat"><div class="stat-v" style="color:'+(window._bestScore.pct>=70?'var(--green)':'var(--red)')+'">'+window._bestScore.pct+'%</div><div class="stat-l">'+(hi?'सर्वश्रेष्ठ स्कोर':'Best score')+'</div></div>';
   }
   var studyMins = Math.round((window._studyTime || 0) / 60);
 
   return '<div style="margin-bottom:18px">'
-    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin-bottom:10px">📊 मेरी प्रगति — Learning Progress</div>'
+    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin-bottom:10px">📊 '+(hi?'मेरी प्रगति':'My progress')+'</div>'
     +'<div class="stats">'
-    +'<div class="stat"><div class="stat-v">'+pct+'%</div><div class="stat-l">मॉड्यूल पूर्ण</div></div>'
-    +'<div class="stat"><div class="stat-v">'+done+'/'+total+'</div><div class="stat-l">पढ़े गए</div></div>'
+    +'<div class="stat"><div class="stat-v">'+pct+'%</div><div class="stat-l">'+(hi?'मॉड्यूल पूर्ण':'Modules done')+'</div></div>'
+    +'<div class="stat"><div class="stat-v">'+done+'/'+total+'</div><div class="stat-l">'+(hi?'पढ़े गए':'Opened')+'</div></div>'
     + bestH
-    +'<div class="stat"><div class="stat-v">'+studyMins+'</div><div class="stat-l">मिनट अध्ययन</div></div>'
+    +'<div class="stat"><div class="stat-v">'+studyMins+'</div><div class="stat-l">'+(hi?'मिनट अध्ययन':'Minutes study')+'</div></div>'
     +'</div>'
     +'<div class="progress-grid">' + cardsH + '</div>'
     +'</div>';
@@ -362,7 +372,7 @@ function downloadCert(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('प्रमाण पत्र डाउनलोड हो गया!', 'success');
+  showToast((typeof LANG!=='undefined' && LANG==='hi') ? 'प्रमाण पत्र डाउनलोड हो गया!' : 'Certificate downloaded!', 'success');
 }
 
 // ══════════════════════════════════════════════════════
@@ -403,7 +413,7 @@ showScore = function(){
   if(!window._bestScore || pct > window._bestScore.pct){
     window._bestScore = {pct: pct, score: qState.score, total: qState.set.length, date: Date.now()};
     mtSave('bestQuizScore', window._bestScore);
-    if(pass) showToast('🎉 नया सर्वश्रेष्ठ स्कोर: ' + pct + '%!', 'success', 3000);
+    if(pass) showToast((typeof LANG!=='undefined' && LANG==='hi') ? ('🎉 नया सर्वश्रेष्ठ स्कोर: ' + pct + '%!') : ('🎉 New best score: ' + pct + '%!'), 'success', 3000);
   }
   // Show certificate button if passed
   if(pass){
@@ -412,7 +422,7 @@ showScore = function(){
       var certBtn = document.createElement('button');
       certBtn.className = 'btn btn-p cert-trigger';
       certBtn.style.cssText = 'margin-top:12px;background:linear-gradient(135deg,#f0a500,#e06030)';
-      certBtn.innerHTML = '🏆 प्रमाण पत्र प्राप्त करें';
+      certBtn.innerHTML = (typeof LANG!=='undefined' && LANG==='hi') ? '🏆 प्रमाण पत्र प्राप्त करें' : '🏆 Get certificate';
       certBtn.onclick = function(){ showCertificate(qState.score, qState.set.length); };
       var retryBtn = sb.querySelector('.btn-p');
       if(retryBtn) retryBtn.parentNode.insertBefore(certBtn, retryBtn);

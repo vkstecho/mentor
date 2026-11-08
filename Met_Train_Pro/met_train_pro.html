@@ -182,6 +182,18 @@ try{
 // Boot after all Met_Train_Pro modules are loaded
 (function bootMetTrain(){
   try {
+    // Inherit Mentor language/theme BEFORE first paint of landing
+    if (typeof mtInheritFromMentor === 'function') mtInheritFromMentor();
+    // Re-read lang in case inherit updated storage
+    try {
+      var L = localStorage.getItem('mt_lang') || localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang');
+      if (L) {
+        L = String(L).toLowerCase();
+        if (L === 'hindi' || L === 'hin') L = 'hi';
+        if (typeof setLang === 'function') setLang(L, true);
+        else if (typeof LANG !== 'undefined') LANG = L || 'en';
+      }
+    } catch (e) {}
     if (typeof renderSB === 'function') renderSB();
     if (typeof renderMobNav === 'function') renderMobNav();
     if (typeof nav === 'function') nav('landing');

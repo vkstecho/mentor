@@ -1263,14 +1263,18 @@ body.mt-from-mentor #tb-country{
 /* ── Layout: avoid cropped / stuck scroll areas ── */
 html,body{
   height:100%;
-  max-height:100%;
-  overflow:hidden;
+  max-height:100dvh;
+  overflow:hidden !important;
+}
+body{
+  display:flex !important;
+  flex-direction:column !important;
 }
 #body{
-  display:flex;
-  flex:1;
-  min-height:0;
-  overflow:hidden;
+  display:flex !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow:hidden !important;
 }
 #sidebar{
   min-height:0;
@@ -1278,29 +1282,35 @@ html,body{
 /* #mt-main is the real scroll host (HTML); #content kept as alias for older JS */
 #mt-main,
 #content{
-  flex:1;
-  min-height:0;
-  overflow-y:auto !important;
-  overflow-x:hidden;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:28px 32px;
   background:var(--bg);
+  touch-action:pan-y;
 }
 @media (max-width:768px){
   #mt-main,
   #content{
-    padding:12px 12px 80px;
+    padding:12px 12px 88px !important;
   }
 }
+.pg{display:none}
 .pg.on{
-  display:block;
+  display:block !important;
   min-height:min-content;
+  padding-bottom:28px;
 }
-/* Landing / mode pick must scroll on short phones */
-#pg-landing.pg.on{
-  min-height:100%;
+.cards .card, .home-quick .btn{
+  position:relative;
+  z-index:2;
+  cursor:pointer;
+  pointer-events:auto !important;
 }
+.home-quick{position:relative;z-index:3}
 /* Cards / steps readable in light theme */
 html[data-theme="light"] .card,
 body.light .card{

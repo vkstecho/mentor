@@ -1,5 +1,14 @@
 // Met Train PRO — Core (nav, mode, landing, utilities)
-var MODE='free',LANG='hi',CUR='home';
+// Language: prefer Mentor / Man Power preference; default English (not Hindi)
+var MODE='free', CUR='home';
+var LANG=(function(){
+  try{
+    var L = localStorage.getItem('mt_lang') || localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang') || 'en';
+    L = String(L).toLowerCase();
+    if(L==='hindi'||L==='hin') L='hi';
+    return L || 'en';
+  }catch(e){ return 'en'; }
+})();
 var qState={q:0,score:0,set:[]};
 var ckState={};
 var _tc=0;
@@ -64,9 +73,13 @@ function renderSB(){
 }
 function nav(id){
   CUR=id;
+  // Close overlays that can block clicks / scroll
+  try{
+    var sos=document.getElementById('sosPanel');
+    if(sos) sos.classList.remove('open');
+  }catch(e){}
   document.querySelectorAll('.pg').forEach(function(p){
     p.classList.remove('on');
-    p.style.cssText='';
   });
   var pg=document.getElementById('pg-'+id);
   if(!pg)return;
@@ -74,14 +87,17 @@ function nav(id){
   // AI Chatbox = full screen
   if(id==='askai'){document.body.classList.add('ai-fullscreen');}
   else{document.body.classList.remove('ai-fullscreen');}
-  if(!pg.dataset.r)renderPage(id,pg);
+  // Always re-render so language / mode changes stick (cheap for these pages)
+  try{ delete pg.dataset.r; }catch(e){}
+  renderPage(id,pg);
+  try{ pg.dataset.r='1'; }catch(e){}
   renderSB();
   renderMobNav();
   updateTopbar();
   applyLangChrome();
   try{
     var sc = document.getElementById('mt-main') || document.getElementById('content');
-    if(sc) sc.scrollTo(0,0);
+    if(sc){ sc.scrollTop = 0; sc.scrollTo(0,0); }
   }catch(e){}
 }
 function setMode(m){
@@ -604,7 +620,7 @@ function rHome(pg){
     +'<div class="ph-desc">'+phDesc+'</div>'
     +'<div class="tags"><span class="tag a">'+tagLang+'</span><span class="tag c">Multi-language</span><span class="tag g">'+tagScope+'</span></div></div>'
     +ban
-    +'<div class="card-grid">'+cH+'</div>';
+    +'<div class="cards">'+cH+'</div>';
 }
 
 
