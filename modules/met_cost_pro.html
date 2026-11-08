@@ -3,52 +3,504 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Met Cost Pro — Metallising Cost | Mentor</title>
+  <meta name="theme-color" content="#0f172a" />
+  <title>Met Cost Pro — Metallising Cost Calculator | Mentor</title>
   <link rel="icon" href="../icons/mentor-icon.jpg" />
   <style>
-    :root { --navy:#0f172a; --blue:#1e3a8a; --orange:#e85d26; --bg:#f8fafc; --card:#fff; --text:#0f172a; --muted:#64748b; }
+    :root {
+      --navy:#0f172a; --blue:#1e3a8a; --teal:#0d9488; --orange:#e85d26;
+      --bg:#f1f5f9; --card:#fff; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --ok:#166534; --okbg:#dcfce7;
+    }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
-    header { background:linear-gradient(135deg,var(--navy),var(--blue)); color:#fff; padding:16px 18px; display:flex; align-items:center; gap:12px; }
-    header a { color:#fff; text-decoration:none; font-weight:600; font-size:14px; }
-    main { max-width:720px; margin:0 auto; padding:20px 16px 48px; }
-    .badge { display:inline-block; background:#dcfce7; color:#166534; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
-    h1 { font-size:1.35rem; margin:12px 0 8px; }
-    p { color:var(--muted); line-height:1.55; }
-    .card { background:var(--card); border-radius:16px; padding:16px; margin:14px 0; box-shadow:0 1px 3px rgba(0,0,0,.06); border:1px solid #e2e8f0; }
-    ul { margin:8px 0 0; padding-left:18px; color:var(--text); }
-    li { margin:6px 0; }
-    .cta { display:inline-flex; margin-top:16px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
-    .cta2 { display:inline-flex; margin-top:12px; margin-left:8px; padding:12px 18px; background:var(--blue); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+    header { background:linear-gradient(135deg,var(--navy),var(--blue)); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:20; }
+    header a { color:#fff; text-decoration:none; font-weight:700; font-size:14px; white-space:nowrap; }
+    header .mid { flex:1; text-align:center; font-size:13px; font-weight:600; opacity:.95; }
+    main { max-width:720px; margin:0 auto; padding:16px 14px 56px; }
+    .badge { display:inline-block; background:var(--okbg); color:var(--ok); font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; letter-spacing:.02em; }
+    h1 { font-size:1.35rem; margin:10px 0 6px; line-height:1.25; }
+    .lead { color:var(--muted); margin:0 0 14px; font-size:15px; }
+    .card { background:var(--card); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 1px 3px rgba(15,23,42,.06); border:1px solid var(--line); }
+    .card h2 { font-size:1rem; margin:0 0 10px; color:var(--navy); }
+    .card p { margin:0 0 8px; color:var(--muted); font-size:14px; }
+    .drivers { display:grid; gap:8px; }
+    .drv { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; background:#f8fafc; border-radius:12px; border:1px solid var(--line); }
+    .drv b { display:block; font-size:14px; color:var(--text); }
+    .drv span { font-size:13px; color:var(--muted); }
+    .ico { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; background:#ecfdf5; }
+    label { display:block; font-size:12px; font-weight:700; color:var(--muted); margin:10px 0 4px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .row { grid-template-columns:1fr; } }
+    input, select {
+      width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:10px;
+      font-size:15px; font-weight:600; color:var(--text); background:#fff;
+    }
+    input:focus, select:focus { outline:2px solid rgba(13,148,136,.35); border-color:var(--teal); }
+    .hint { font-size:11px; color:#94a3b8; margin-top:3px; }
+    .results { display:grid; gap:10px; margin-top:14px; }
+    .res {
+      background:linear-gradient(135deg,#ecfdf5,#f0fdfa); border:1px solid #99f6e4;
+      border-radius:14px; padding:14px 16px;
+    }
+    .res .k { font-size:12px; font-weight:700; color:#0f766e; text-transform:uppercase; letter-spacing:.04em; }
+    .res .v { font-size:1.45rem; font-weight:800; color:var(--navy); margin-top:2px; }
+    .res .s { font-size:12px; color:var(--muted); margin-top:4px; }
+    .res.warn { background:linear-gradient(135deg,#fff7ed,#ffedd5); border-color:#fdba74; }
+    .res.warn .k { color:#c2410c; }
+    .formula {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size:12px; background:#0f172a; color:#e2e8f0; padding:12px 14px; border-radius:12px; margin-top:10px; line-height:1.55;
+    }
+    .tips li { margin:6px 0; font-size:14px; }
+    .cta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    .cta { display:inline-flex; padding:12px 16px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; font-size:14px; }
+    .cta2 { display:inline-flex; padding:12px 16px; background:var(--blue); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; font-size:14px; }
+    .note { font-size:12px; color:var(--muted); margin-top:10px; padding:10px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px; }
+    .sec-tag { font-size:11px; font-weight:800; color:var(--teal); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
   </style>
 </head>
 <body>
   <header>
-    <a href="../mentor.html">← Mentor</a>
-    <strong style="flex:1;text-align:center;font-size:14px">Flexible Packaging · Free module</strong>
-    <span style="width:48px"></span>
+    <a href="../mentor.html" id="backLink">← Mentor</a>
+    <div class="mid" id="hdrMid">Flexible Packaging · Free</div>
+    <span style="width:52px"></span>
   </header>
   <main>
-    <span class="badge">FREE · Self-study</span>
-    <h1>Met Cost Pro — Metallising Cost</h1>
-    <p>Free orientation on metalliser cost drivers: boat life, power, aluminium wire, yield, and cost per sqm thinking.</p>
+    <span class="badge" id="badge">FREE · Calculator</span>
+    <h1 id="title">Met Cost Pro — Metallising cost</h1>
+    <p class="lead" id="lead">Simple tools to see what metallising really costs — boats, aluminium wire, power — in ₹ per day and ₹ per sqm.</p>
+
+    <!-- Drivers -->
     <div class="card">
-      <strong>What you will cover</strong>
-      <ul>
-        <li>Boat life drivers</li>
-<li>Al wire consumption</li>
-<li>Power & vacuum</li>
-<li>Yield impact on cost</li>
-<li>Cost per sqm basics</li>
-<li>When to call process help</li>
-      </ul>
+      <div class="sec-tag" id="drvTag">Cost drivers</div>
+      <h2 id="drvTitle">What makes metallising expensive?</h2>
+      <div class="drivers" id="drivers"></div>
     </div>
+
+    <!-- Calculator -->
     <div class="card">
-      <strong>Want deeper plant-specific help?</strong>
-      <p style="margin:8px 0 0">Book a paid <b>Flexible Packaging Expert</b> one-to-one session (capacity, yield, metalliser, 5S, cost/sqm) from the Mentor home.</p>
-      <a class="cta" href="../mentor.html">Back to Mentor home</a>
-      <a class="cta2" href="../mentor.html#book-packaging">Book 1:1 Packaging</a>
+      <div class="sec-tag" id="calcTag">Live calculator</div>
+      <h2 id="calcTitle">Metalliser conversion cost</h2>
+      <p id="calcLead">Enter your plant numbers. Result updates as you type. Keep units as shown.</p>
+
+      <div class="row">
+        <div>
+          <label id="lblWidth" for="width">Film width (mm)</label>
+          <input id="width" type="number" inputmode="decimal" value="2450" min="500" step="10" />
+          <div class="hint" id="hWidth">Web width on the metalliser</div>
+        </div>
+        <div>
+          <label id="lblSpeed" for="speed">Line speed (m/min)</label>
+          <input id="speed" type="number" inputmode="decimal" value="12" min="1" step="0.5" />
+          <div class="hint" id="hSpeed">Typical metalliser run speed</div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label id="lblHours" for="hours">Running hours / day</label>
+          <input id="hours" type="number" inputmode="decimal" value="20" min="1" max="24" step="0.5" />
+        </div>
+        <div>
+          <label id="lblDays" for="days">Working days / month</label>
+          <input id="days" type="number" inputmode="decimal" value="26" min="1" max="31" step="1" />
+        </div>
+      </div>
+
+      <h2 style="margin-top:18px;font-size:.95rem" id="secWire">1) Aluminium wire</h2>
+      <div class="row">
+        <div>
+          <label id="lblAlGsm" for="alGsm">Al deposit (g/m²)</label>
+          <input id="alGsm" type="number" inputmode="decimal" value="2.5" min="0.1" step="0.1" />
+          <div class="hint" id="hAlGsm">Optical density sets this — ask process if unsure</div>
+        </div>
+        <div>
+          <label id="lblWirePrice" for="wirePrice">Wire price (₹/kg)</label>
+          <input id="wirePrice" type="number" inputmode="decimal" value="280" min="1" step="1" />
+        </div>
+      </div>
+
+      <h2 style="margin-top:18px;font-size:.95rem" id="secBoat">2) Ceramic boats</h2>
+      <div class="row">
+        <div>
+          <label id="lblBoatPrice" for="boatPrice">Boat price (₹ each)</label>
+          <input id="boatPrice" type="number" inputmode="decimal" value="1150" min="1" step="10" />
+          <div class="hint" id="hBoatPrice">Tier-3 ~₹1150 · Tier-2 ~₹1500 · Tier-1 ~₹2000</div>
+        </div>
+        <div>
+          <label id="lblBoatsSet" for="boatsSet">Boats per set</label>
+          <input id="boatsSet" type="number" inputmode="decimal" value="26" min="1" step="1" />
+          <div class="hint" id="hBoatsSet">e.g. 26 on 2.45 m · ~50 on 3.65 m</div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label id="lblBoatLife" for="boatLife">Boat life (hours)</label>
+          <input id="boatLife" type="number" inputmode="decimal" value="10" min="1" step="0.5" />
+          <div class="hint" id="hBoatLife">Many Indian plants run ~10 h; good discipline ~12.5 h</div>
+        </div>
+        <div>
+          <label id="lblWireWaste" for="wireWaste">Wire extra / waste %</label>
+          <input id="wireWaste" type="number" inputmode="decimal" value="8" min="0" max="40" step="1" />
+          <div class="hint" id="hWireWaste">Startup, ends, spitting loss</div>
+        </div>
+      </div>
+
+      <h2 style="margin-top:18px;font-size:.95rem" id="secPower">3) Power</h2>
+      <div class="row">
+        <div>
+          <label id="lblKw" for="kw">Average load (kW)</label>
+          <input id="kw" type="number" inputmode="decimal" value="180" min="1" step="5" />
+          <div class="hint" id="hKw">Boats + vacuum + drives (rough plant average)</div>
+        </div>
+        <div>
+          <label id="lblRate" for="rate">Electricity (₹/kWh)</label>
+          <input id="rate" type="number" inputmode="decimal" value="9" min="1" step="0.5" />
+        </div>
+      </div>
+
+      <div class="results" id="results"></div>
+      <div class="formula" id="formulaBox"></div>
+      <p class="note" id="noteCalc">This is a shop-floor estimate for learning and discussion — not a full costing sheet. Yield loss and labour are not included.</p>
+    </div>
+
+    <!-- Film ₹/sqm helper -->
+    <div class="card">
+      <div class="sec-tag" id="filmTag">Bonus</div>
+      <h2 id="filmTitle">Base film cost → ₹ per sqm</h2>
+      <p id="filmLead">When suppliers quote ₹/kg, convert to ₹/sqm with GSM.</p>
+      <div class="row">
+        <div>
+          <label id="lblRkg" for="rkg">Film price (₹/kg)</label>
+          <input id="rkg" type="number" inputmode="decimal" value="180" min="1" step="1" />
+        </div>
+        <div>
+          <label id="lblGsm" for="gsm">Film GSM (g/m²)</label>
+          <input id="gsm" type="number" inputmode="decimal" value="12" min="1" step="0.1" />
+        </div>
+      </div>
+      <div class="results" id="filmResults"></div>
+      <div class="formula" id="filmFormula"></div>
+    </div>
+
+    <!-- Tips from blog -->
+    <div class="card">
+      <div class="sec-tag" id="tipTag">From plant practice</div>
+      <h2 id="tipTitle">How to cut conversion cost</h2>
+      <ul class="tips" id="tips"></ul>
+    </div>
+
+    <div class="card">
+      <strong id="helpTitle">Need plant-specific help?</strong>
+      <p id="helpBody" style="margin:8px 0 0;color:var(--muted);font-size:14px">Book a paid Flexible Packaging Expert 1:1 for boat life, yield, and cost/sqm on your machine.</p>
+      <div class="cta-row">
+        <a class="cta" href="../mentor.html" id="ctaHome">Back to Mentor</a>
+        <a class="cta2" href="../mentor.html" id="ctaBook">Book 1:1 Packaging</a>
+      </div>
     </div>
   </main>
+
+  <script>
+(function () {
+  'use strict';
+
+  function getLang() {
+    try {
+      var l = (localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang') || 'en').toLowerCase();
+      if (l === 'hindi' || l === 'hin') l = 'hi';
+      return l || 'en';
+    } catch (e) { return 'en'; }
+  }
+
+  /** Full strings: en + hi. Other codes fall back to en (or hi for common IN codes if we add later). */
+  var STR = {
+    en: {
+      back: '← Mentor',
+      hdr: 'Flexible Packaging · Free',
+      badge: 'FREE · Calculator',
+      title: 'Met Cost Pro — Metallising cost',
+      lead: 'Simple tools to see what metallising really costs — boats, aluminium wire, power — in ₹ per day and ₹ per sqm.',
+      drvTag: 'Cost drivers',
+      drvTitle: 'What makes metallising expensive?',
+      drivers: [
+        { ico: '🚢', t: 'Ceramic boats', d: 'Often the biggest variable cost. Short life = more boat sets every day.' },
+        { ico: '🧵', t: 'Aluminium wire', d: 'More OD / thicker deposit = more kg of wire per sqm of film.' },
+        { ico: '⚡', t: 'Power', d: 'Boats, vacuum pumps and drives run many hours every day.' },
+        { ico: '📉', t: 'Yield loss', d: 'Scrap and start-up waste raise true cost per good sqm (not in this simple calc).' }
+      ],
+      calcTag: 'Live calculator',
+      calcTitle: 'Metalliser conversion cost',
+      calcLead: 'Enter your plant numbers. Result updates as you type. Keep units as shown.',
+      lblWidth: 'Film width (mm)', hWidth: 'Web width on the metalliser',
+      lblSpeed: 'Line speed (m/min)', hSpeed: 'Typical metalliser run speed',
+      lblHours: 'Running hours / day', lblDays: 'Working days / month',
+      secWire: '1) Aluminium wire',
+      lblAlGsm: 'Al deposit (g/m²)', hAlGsm: 'Optical density sets this — ask process if unsure',
+      lblWirePrice: 'Wire price (₹/kg)',
+      secBoat: '2) Ceramic boats',
+      lblBoatPrice: 'Boat price (₹ each)', hBoatPrice: 'Tier-3 ~₹1150 · Tier-2 ~₹1500 · Tier-1 ~₹2000',
+      lblBoatsSet: 'Boats per set', hBoatsSet: 'e.g. 26 on 2.45 m · ~50 on 3.65 m',
+      lblBoatLife: 'Boat life (hours)', hBoatLife: 'Many Indian plants run ~10 h; good discipline ~12.5 h',
+      lblWireWaste: 'Wire extra / waste %', hWireWaste: 'Startup, ends, spitting loss',
+      secPower: '3) Power',
+      lblKw: 'Average load (kW)', hKw: 'Boats + vacuum + drives (rough plant average)',
+      lblRate: 'Electricity (₹/kWh)',
+      kAreaDay: 'Film area / day',
+      kWireDay: 'Wire cost / day',
+      kBoatDay: 'Boat cost / day',
+      kPowerDay: 'Power cost / day',
+      kConvDay: 'Conversion cost / day',
+      kConvSqm: 'Conversion ₹ / sqm',
+      kConvMonth: 'Conversion cost / month',
+      kBoatMonth: 'Boat cost / month',
+      sArea: 'Width × speed × 60 × hours',
+      sWire: 'Area × Al g/m² × price (with waste %)',
+      sBoat: 'Full set cost spread over boat life hours',
+      sPower: 'kW × hours × ₹/kWh',
+      sConv: 'Wire + boats + power (simple conversion)',
+      sSqm: 'Daily conversion ÷ daily area',
+      sMonth: 'Daily × working days',
+      sBoatMonth: 'Watch this number — boat life is leverage',
+      formulaTitle: 'How we calculate (simple)',
+      formulaBody: 'Area/day (m²) = (width mm ÷ 1000) × speed × 60 × hours\nWire kg/day = Area × (Al g/m² ÷ 1000) × (1 + waste%/100)\nWire ₹/day = Wire kg × wire ₹/kg\nBoat ₹/day = (boats/set × boat ₹) ÷ life hours × run hours\nPower ₹/day = kW × hours × ₹/kWh\nConversion ₹/sqm = (Wire + Boat + Power) ÷ Area',
+      noteCalc: 'Shop-floor estimate for learning — not a full costing sheet. Yield loss and labour are not included.',
+      filmTag: 'Bonus',
+      filmTitle: 'Base film cost → ₹ per sqm',
+      filmLead: 'When suppliers quote ₹/kg, convert to ₹/sqm with GSM.',
+      lblRkg: 'Film price (₹/kg)', lblGsm: 'Film GSM (g/m²)',
+      kFilmSqm: 'Film ₹ / sqm',
+      sFilm: '₹/kg × GSM ÷ 1000',
+      filmFormula: '₹/sqm = ₹/kg × GSM ÷ 1000\nExample: ₹180/kg × 12 GSM ÷ 1000 = ₹2.16 / sqm',
+      tipTag: 'From plant practice',
+      tipTitle: 'How to cut conversion cost',
+      tips: [
+        'Push boat life from ~10 h toward 12–12.5 h with stable current and good seating — often the fastest saving.',
+        'Keep wire alignment and feed steady to reduce spitting and wasted aluminium.',
+        'Track boat sets per day, not only “we changed boats”. Monthly boat bill becomes visible.',
+        'Do not buy the cheapest boat if life drops more than the price gap — cost per hour of life matters.',
+        'Power is steady; boats and wire move when process discipline slips.'
+      ],
+      helpTitle: 'Need plant-specific help?',
+      helpBody: 'Book a paid Flexible Packaging Expert 1:1 for boat life, yield, and cost/sqm on your machine.',
+      ctaHome: 'Back to Mentor',
+      ctaBook: 'Book 1:1 Packaging',
+      unitSqm: 'm²',
+      unitInr: '₹'
+    },
+    hi: {
+      back: '← मेंटर',
+      hdr: 'फ्लेक्सिबल पैकेजिंग · फ्री',
+      badge: 'फ्री · कैलकुलेटर',
+      title: 'Met Cost Pro — मेटलाइज़िंग लागत',
+      lead: 'सरल टूल — बोट, एल्युमिनियम वायर और बिजली की लागत दिन और ₹/sqm में समझें।',
+      drvTag: 'लागत के कारण',
+      drvTitle: 'मेटलाइज़िंग महँगी क्यों पड़ती है?',
+      drivers: [
+        { ico: '🚢', t: 'सिरेमिक बोट', d: 'अक्सर सबसे बड़ी वेरिएबल लागत। कम लाइफ = हर दिन ज़्यादा बोट सेट।' },
+        { ico: '🧵', t: 'एल्युमिनियम वायर', d: 'ज़्यादा OD / मोटा कोट = प्रति sqm ज़्यादा वायर।' },
+        { ico: '⚡', t: 'बिजली', d: 'बोट, वैक्यूम और ड्राइव रोज़ कई घंटे चलते हैं।' },
+        { ico: '📉', t: 'यील्ड लॉस', d: 'स्क्रैप और स्टार्ट-अप वेस्ट से असली लागत बढ़ती है (इस सरल कैलकुलेटर में नहीं)।' }
+      ],
+      calcTag: 'लाइव कैलकुलेटर',
+      calcTitle: 'मेटलाइज़र कन्वर्शन लागत',
+      calcLead: 'अपने प्लांट के नंबर भरें। टाइप करते ही रिजल्ट बदलेगा। यूनिट वैसी ही रखें।',
+      lblWidth: 'फिल्म चौड़ाई (mm)', hWidth: 'मेटलाइज़र पर वेब चौड़ाई',
+      lblSpeed: 'लाइन स्पीड (m/min)', hSpeed: 'सामान्य रन स्पीड',
+      lblHours: 'रनिंग घंटे / दिन', lblDays: 'काम के दिन / महीना',
+      secWire: '1) एल्युमिनियम वायर',
+      lblAlGsm: 'Al जमाव (g/m²)', hAlGsm: 'OD से तय होता है — शक हो तो प्रोसेस से पूछें',
+      lblWirePrice: 'वायर कीमत (₹/kg)',
+      secBoat: '2) सिरेमिक बोट',
+      lblBoatPrice: 'बोट कीमत (₹ प्रति)', hBoatPrice: 'Tier-3 ~₹1150 · Tier-2 ~₹1500 · Tier-1 ~₹2000',
+      lblBoatsSet: 'बोट प्रति सेट', hBoatsSet: 'जैसे 2.45 m पर 26 · 3.65 m पर ~50',
+      lblBoatLife: 'बोट लाइफ (घंटे)', hBoatLife: 'कई प्लांट ~10 घंटे; अच्छी डिसिप्लिन ~12.5 घंटे',
+      lblWireWaste: 'वायर अतिरिक्त / वेस्ट %', hWireWaste: 'स्टार्टअप, छोर, स्पिटिंग लॉस',
+      secPower: '3) बिजली',
+      lblKw: 'औसत लोड (kW)', hKw: 'बोट + वैक्यूम + ड्राइव (लगभग)',
+      lblRate: 'बिजली दर (₹/kWh)',
+      kAreaDay: 'फिल्म एरिया / दिन',
+      kWireDay: 'वायर लागत / दिन',
+      kBoatDay: 'बोट लागत / दिन',
+      kPowerDay: 'बिजली लागत / दिन',
+      kConvDay: 'कन्वर्शन लागत / दिन',
+      kConvSqm: 'कन्वर्शन ₹ / sqm',
+      kConvMonth: 'कन्वर्शन लागत / महीना',
+      kBoatMonth: 'बोट लागत / महीना',
+      sArea: 'चौड़ाई × स्पीड × 60 × घंटे',
+      sWire: 'एरिया × Al g/m² × कीमत (वेस्ट सहित)',
+      sBoat: 'पूरे सेट की कीमत बोट लाइफ पर बाँटी',
+      sPower: 'kW × घंटे × ₹/kWh',
+      sConv: 'वायर + बोट + बिजली (सरल कन्वर्शन)',
+      sSqm: 'दैनिक कन्वर्शन ÷ दैनिक एरिया',
+      sMonth: 'दैनिक × काम के दिन',
+      sBoatMonth: 'यह नंबर देखें — बोट लाइफ में बचत छुपी है',
+      formulaTitle: 'गणना कैसे होती है (सरल)',
+      formulaBody: 'एरिया/दिन (m²) = (चौड़ाई mm ÷ 1000) × स्पीड × 60 × घंटे\nवायर kg/दिन = एरिया × (Al g/m² ÷ 1000) × (1 + वेस्ट%/100)\nवायर ₹/दिन = वायर kg × वायर ₹/kg\nबोट ₹/दिन = (बोट/सेट × बोट ₹) ÷ लाइफ घंटे × रन घंटे\nबिजली ₹/दिन = kW × घंटे × ₹/kWh\nकन्वर्शन ₹/sqm = (वायर + बोट + बिजली) ÷ एरिया',
+      noteCalc: 'सीखने के लिए सरल अनुमान — पूरा कॉस्टिंग शीट नहीं। यील्ड लॉस और लेबर शामिल नहीं।',
+      filmTag: 'बोनस',
+      filmTitle: 'बेस फिल्म लागत → ₹ प्रति sqm',
+      filmLead: 'सप्लायर ₹/kg बताए तो GSM से ₹/sqm निकालें।',
+      lblRkg: 'फिल्म कीमत (₹/kg)', lblGsm: 'फिल्म GSM (g/m²)',
+      kFilmSqm: 'फिल्म ₹ / sqm',
+      sFilm: '₹/kg × GSM ÷ 1000',
+      filmFormula: '₹/sqm = ₹/kg × GSM ÷ 1000\nउदाहरण: ₹180/kg × 12 GSM ÷ 1000 = ₹2.16 / sqm',
+      tipTag: 'प्लांट अनुभव से',
+      tipTitle: 'कन्वर्शन लागत कैसे घटाएँ',
+      tips: [
+        'बोट लाइफ ~10 घंटे से 12–12.5 घंटे की ओर ले जाएँ — स्थिर करंट और अच्छी सीटिंग से अक्सर सबसे तेज़ बचत।',
+        'वायर अलाइनमेंट और फीड स्थिर रखें — स्पिटिंग और बर्बाद एल्युमिनियम कम होगा।',
+        'सिर्फ “बोट बदली” नहीं, रोज़ कितने सेट लगे यह ट्रैक करें। मासिक बोट बिल साफ दिखेगा।',
+        'सस्ती बोट न लें अगर लाइफ कीमत के अंतर से ज़्यादा गिरे — प्रति घंटे लाइफ की लागत मायने रखती है।',
+        'बिजली स्थिर रहती है; प्रोसेस ढीला पड़ने पर बोट और वायर की लागत बढ़ती है।'
+      ],
+      helpTitle: 'प्लांट-विशिष्ट मदद चाहिए?',
+      helpBody: 'अपनी मशीन पर बोट लाइफ, यील्ड और ₹/sqm के लिए Flexible Packaging Expert 1:1 बुक करें।',
+      ctaHome: 'मेंटर पर वापस',
+      ctaBook: '1:1 पैकेजिंग बुक करें',
+      unitSqm: 'm²',
+      unitInr: '₹'
+    }
+  };
+
+  function t() {
+    var lang = getLang();
+    return STR[lang] || STR.en;
+  }
+
+  function num(id, fallback) {
+    var el = document.getElementById(id);
+    var v = el ? parseFloat(el.value) : NaN;
+    return isFinite(v) ? v : fallback;
+  }
+
+  function fmtInr(n) {
+    if (!isFinite(n)) return '—';
+    try {
+      return '₹' + Math.round(n).toLocaleString('en-IN');
+    } catch (e) {
+      return '₹' + Math.round(n);
+    }
+  }
+
+  function fmtNum(n, d) {
+    if (!isFinite(n)) return '—';
+    d = d == null ? 2 : d;
+    return n.toLocaleString('en-IN', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+  }
+
+  function applyText() {
+    var S = t();
+    document.documentElement.lang = (getLang() === 'hi') ? 'hi' : 'en';
+    document.getElementById('backLink').textContent = S.back;
+    document.getElementById('hdrMid').textContent = S.hdr;
+    document.getElementById('badge').textContent = S.badge;
+    document.getElementById('title').textContent = S.title;
+    document.getElementById('lead').textContent = S.lead;
+    document.getElementById('drvTag').textContent = S.drvTag;
+    document.getElementById('drvTitle').textContent = S.drvTitle;
+    document.getElementById('drivers').innerHTML = S.drivers.map(function (d) {
+      return '<div class="drv"><div class="ico">' + d.ico + '</div><div><b>' + d.t + '</b><span>' + d.d + '</span></div></div>';
+    }).join('');
+    document.getElementById('calcTag').textContent = S.calcTag;
+    document.getElementById('calcTitle').textContent = S.calcTitle;
+    document.getElementById('calcLead').textContent = S.calcLead;
+    var map = {
+      lblWidth: 'lblWidth', hWidth: 'hWidth', lblSpeed: 'lblSpeed', hSpeed: 'hSpeed',
+      lblHours: 'lblHours', lblDays: 'lblDays', secWire: 'secWire', lblAlGsm: 'lblAlGsm',
+      hAlGsm: 'hAlGsm', lblWirePrice: 'lblWirePrice', secBoat: 'secBoat', lblBoatPrice: 'lblBoatPrice',
+      hBoatPrice: 'hBoatPrice', lblBoatsSet: 'lblBoatsSet', hBoatsSet: 'hBoatsSet',
+      lblBoatLife: 'lblBoatLife', hBoatLife: 'hBoatLife', lblWireWaste: 'lblWireWaste',
+      hWireWaste: 'hWireWaste', secPower: 'secPower', lblKw: 'lblKw', hKw: 'hKw', lblRate: 'lblRate',
+      noteCalc: 'noteCalc', filmTag: 'filmTag', filmTitle: 'filmTitle', filmLead: 'filmLead',
+      lblRkg: 'lblRkg', lblGsm: 'lblGsm', tipTag: 'tipTag', tipTitle: 'tipTitle',
+      helpTitle: 'helpTitle', helpBody: 'helpBody', ctaHome: 'ctaHome', ctaBook: 'ctaBook'
+    };
+    Object.keys(map).forEach(function (k) {
+      var el = document.getElementById(map[k]);
+      if (el && S[k] != null) el.textContent = S[k];
+    });
+    document.getElementById('tips').innerHTML = S.tips.map(function (x) { return '<li>' + x + '</li>'; }).join('');
+    document.getElementById('formulaBox').textContent = S.formulaTitle + '\n' + S.formulaBody;
+    document.getElementById('filmFormula').textContent = S.filmFormula;
+    calc();
+    calcFilm();
+  }
+
+  function calc() {
+    var S = t();
+    var widthMm = num('width', 2450);
+    var speed = num('speed', 12);
+    var hours = num('hours', 20);
+    var days = num('days', 26);
+    var alGsm = num('alGsm', 2.5);
+    var wirePrice = num('wirePrice', 280);
+    var boatPrice = num('boatPrice', 1150);
+    var boatsSet = num('boatsSet', 26);
+    var boatLife = num('boatLife', 10);
+    var wireWaste = num('wireWaste', 8);
+    var kw = num('kw', 180);
+    var rate = num('rate', 9);
+
+    var widthM = widthMm / 1000;
+    var areaDay = widthM * speed * 60 * hours; // m²
+    var wireKg = areaDay * (alGsm / 1000) * (1 + wireWaste / 100);
+    var wireDay = wireKg * wirePrice;
+    var boatDay = boatLife > 0 ? (boatsSet * boatPrice / boatLife) * hours : 0;
+    var powerDay = kw * hours * rate;
+    var convDay = wireDay + boatDay + powerDay;
+    var convSqm = areaDay > 0 ? convDay / areaDay : 0;
+    var convMonth = convDay * days;
+    var boatMonth = boatDay * days;
+
+    function row(k, v, s, warn) {
+      return '<div class="res' + (warn ? ' warn' : '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="s">' + s + '</div></div>';
+    }
+
+    document.getElementById('results').innerHTML =
+      row(S.kAreaDay, fmtNum(areaDay, 0) + ' ' + S.unitSqm, S.sArea) +
+      row(S.kWireDay, fmtInr(wireDay), S.sWire) +
+      row(S.kBoatDay, fmtInr(boatDay), S.sBoat) +
+      row(S.kPowerDay, fmtInr(powerDay), S.sPower) +
+      row(S.kConvDay, fmtInr(convDay), S.sConv) +
+      row(S.kConvSqm, '₹' + fmtNum(convSqm, 3), S.sSqm) +
+      row(S.kConvMonth, fmtInr(convMonth), S.sMonth) +
+      row(S.kBoatMonth, fmtInr(boatMonth), S.sBoatMonth, true);
+  }
+
+  function calcFilm() {
+    var S = t();
+    var rkg = num('rkg', 180);
+    var gsm = num('gsm', 12);
+    var sqm = rkg * gsm / 1000;
+    document.getElementById('filmResults').innerHTML =
+      '<div class="res"><div class="k">' + S.kFilmSqm + '</div><div class="v">₹' + fmtNum(sqm, 3) + '</div><div class="s">' + S.sFilm + '</div></div>';
+  }
+
+  ['width','speed','hours','days','alGsm','wirePrice','boatPrice','boatsSet','boatLife','wireWaste','kw','rate'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calc);
+      el.addEventListener('change', calc);
+    }
+  });
+  ['rkg','gsm'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calcFilm);
+      el.addEventListener('change', calcFilm);
+    }
+  });
+
+  applyText();
+
+  // Re-apply if user changes language in another tab / returns from Mentor
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'mentor_lang' || e.key === 'mp_lang') applyText();
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) applyText();
+  });
+})();
+  </script>
 </body>
 </html>

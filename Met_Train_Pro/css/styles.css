@@ -102,11 +102,11 @@ html[data-theme="light"] .toast, body.light .toast{
 #pg-landing.on{display:flex!important;flex-direction:column;justify-content:center;align-items:center;padding:20px 16px 80px;gap:0}
 .land-header{text-align:center;margin-bottom:28px;width:100%}
 .land-hex{width:76px;height:76px;background:linear-gradient(135deg,#25d366,#128c7e);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:900;margin:0 auto 16px;box-shadow:0 0 40px rgba(37,211,102,.3)}
-.land-title{font-family:var(--font-display);font-size:34px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:#fff;line-height:1}
-.land-title span{color:#25d366}
+.land-title{font-family:var(--font-display);font-size:34px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--txt,#f5f5f5);line-height:1}
+.land-title span{color:var(--gold,#25d366)}
 .land-sub{font-size:15px;color:var(--muted);margin-top:5px;font-family:var(--font-body)}
 .land-divider{width:70px;height:3px;background:linear-gradient(90deg,#128c7e,#25d366,#4ade80);border-radius:2px;margin:12px auto 0}
-.land-q{font-size:14px;color:rgba(204,216,232,.5);text-align:center;margin-bottom:20px;font-style:italic}
+.land-q{font-size:14px;color:var(--muted,#94a3b8);text-align:center;margin-bottom:20px;font-style:italic}
 
 /* Button */
 .land-btn-gls{width:100%;max-width:400px;background:rgba(37,211,102,.08);border:2px solid rgba(37,211,102,.45);border-radius:18px;padding:22px 18px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;transition:all .2s;margin-bottom:14px;position:relative;overflow:hidden}
@@ -157,7 +157,7 @@ html[data-theme="light"] .toast, body.light .toast{
 #topbar{height:60px;background:var(--surf,#212121);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;flex-shrink:0;z-index:100;box-shadow:0 1px 12px rgba(0,0,0,.5)}
 .tb-logo{display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid var(--bdr);height:100%;cursor:pointer}
 .tb-hex{width:38px;height:38px;background:linear-gradient(135deg,#25d366,#128c7e);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:900;box-shadow:0 2px 12px rgba(37,211,102,.35)}
-.tb-name{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:.05em;text-transform:uppercase;color:#f1f1f1}
+.tb-name{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:.05em;text-transform:uppercase;color:var(--txt,#f1f1f1)}
 .tb-name span{color:var(--gold)}
 .tb-sub{font-size:10px;color:var(--muted);letter-spacing:.08em;font-family:var(--font-mono)}
 .tb-modes{display:flex;height:100%;margin-left:10px}
@@ -198,7 +198,7 @@ html[data-theme="light"] .toast, body.light .toast{
 .tag.r{border-color:rgba(232,69,69,.35);color:var(--red);background:rgba(232,69,69,.05)}
 /* CARDS */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:22px}
-.card{background:#1f1f1f;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.card{background:var(--surf,#1f1f1f);border:1px solid var(--bdr,rgba(255,255,255,.08));border-radius:14px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;color:var(--txt)}
 .card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cc,var(--gold));transform:scaleX(0);transform-origin:left;transition:.25s}
 .card:hover{border-color:rgba(37,211,102,.5);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.5);background:#282828}
 .card:hover::after{transform:scaleX(1)}
@@ -208,11 +208,11 @@ html[data-theme="light"] .toast, body.light .toast{
 .card-meta{margin-top:10px;font-family:var(--font-mono);font-size:9px;color:var(--muted)}
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:20px}
-.stat{background:#1f1f1f;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 10px;text-align:center}
+.stat{background:var(--surf,#1f1f1f);border:1px solid var(--bdr,rgba(255,255,255,.08));border-radius:14px;padding:14px 10px;text-align:center;color:var(--txt)}
 .stat-v{font-family:var(--font-display);font-size:30px;font-weight:800;color:#25d366;line-height:1}
 .stat-l{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;font-family:var(--font-body)}
 /* COLLAPSIBLE */
-.cb{background:#1f1f1f;border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.cb{background:var(--surf,#1f1f1f);border:1px solid var(--bdr,rgba(255,255,255,.08));border-radius:14px;margin-bottom:12px;overflow:hidden;color:var(--txt)}
 .cb-h{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s}
 .cb-h:hover{background:#282828}
 .cb-h.open{border-bottom:1px solid var(--bdr)}
@@ -349,11 +349,13 @@ table.t tr:hover td{background:rgba(240,165,0,.015)}
   /* ── LAYOUT ── */
   #body{flex-direction:column;overflow:hidden}
   #sidebar{display:none!important}
-  #content{
-    padding:12px 12px 74px;
-    overflow-y:auto;
+  #content,
+  #mt-main{
+    padding:12px 12px 80px;
+    overflow-y:auto !important;
     overflow-x:hidden;
     flex:1;
+    min-height:0;
     -webkit-overflow-scrolling:touch;
   }
 
@@ -1052,7 +1054,8 @@ table.t td,table.t th{text-align:left;vertical-align:middle}
 body.ai-fullscreen #sidebar{display:none!important}
 body.ai-fullscreen #topbar{display:none!important}
 body.ai-fullscreen #mob-nav{display:none!important}
-body.ai-fullscreen #content{margin:0;padding:0;max-width:100%}
+body.ai-fullscreen #content,
+body.ai-fullscreen #mt-main{margin:0;padding:0;max-width:100%}
 body.ai-fullscreen #pg-askai{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;background:var(--bg)}
 
 .ai-header{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #333;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(109,40,217,.06));margin-bottom:4px}
@@ -1165,7 +1168,7 @@ body{font-size:16px;line-height:1.75;font-weight:500;color:var(--txt)}
 }
 .ph-title{font-family:var(--font-display)!important;font-size:28px!important;font-weight:700!important;letter-spacing:.04em;line-height:1.2}
 .ph-code{font-family:var(--font-mono)!important;font-size:11px!important;letter-spacing:.12em;color:#25d366!important;opacity:1!important}
-.cb-title{font-size:15px!important;font-weight:700!important;color:#fff!important}
+.cb-title{font-size:15px!important;font-weight:700!important;color:var(--txt,#f5f5f5)!important}
 .card-title{font-size:15px!important;font-weight:700!important}
 .card-desc{font-size:13px!important;line-height:1.7!important;color:var(--muted)!important}
 .sb-item{font-size:14px!important;font-weight:600!important;line-height:1.45}
@@ -1261,16 +1264,42 @@ body.mt-from-mentor #tb-country{
 html,body{
   height:100%;
   max-height:100%;
+  overflow:hidden;
 }
 #body{
+  display:flex;
+  flex:1;
   min-height:0;
+  overflow:hidden;
 }
 #sidebar{
   min-height:0;
 }
+/* #mt-main is the real scroll host (HTML); #content kept as alias for older JS */
+#mt-main,
 #content{
+  flex:1;
   min-height:0;
+  overflow-y:auto !important;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
+  padding:28px 32px;
+  background:var(--bg);
+}
+@media (max-width:768px){
+  #mt-main,
+  #content{
+    padding:12px 12px 80px;
+  }
+}
+.pg.on{
+  display:block;
+  min-height:min-content;
+}
+/* Landing / mode pick must scroll on short phones */
+#pg-landing.pg.on{
+  min-height:100%;
 }
 /* Cards / steps readable in light theme */
 html[data-theme="light"] .card,
@@ -1386,17 +1415,32 @@ body.light .sub{
 }
 /* Keep white text on solid accent / primary buttons only */
 html[data-theme="light"] .btn-primary,
+html[data-theme="light"] .btn-primary,
 html[data-theme="light"] .btn-g,
-html[data-theme="light"] .land-btn-gls,
-html[data-theme="light"] .land-btn-pro,
 html[data-theme="light"] .badge-free,
 html[data-theme="light"] .on.lb,
-html[data-theme="light"] .sb-item.on,
 body.light .btn-primary,
-body.light .btn-g,
+body.light .btn-g{
+  color:#fff !important;
+}
+/* Landing mode cards stay dark text on light green panels */
+html[data-theme="light"] .land-btn-gls,
+html[data-theme="light"] .land-btn-pro,
 body.light .land-btn-gls,
 body.light .land-btn-pro{
-  color:#fff !important;
+  color:#0f172a !important;
+  background:rgba(13,148,136,.08);
+  border-color:rgba(13,148,136,.45);
+}
+html[data-theme="light"] .land-btn-pro,
+body.light .land-btn-pro{
+  background:linear-gradient(135deg,rgba(13,148,136,.16),rgba(15,118,110,.08));
+  border-color:rgba(13,148,136,.65);
+  box-shadow:0 0 28px rgba(13,148,136,.12);
+}
+html[data-theme="light"] .land-q,
+body.light .land-q{
+  color:#475569 !important;
 }
 html[data-theme="light"] .sb-item.on,
 body.light .sb-item.on{
@@ -1438,4 +1482,41 @@ body.light #tb-back-btn{
 html.mt-from-mentor #tb-back-btn,
 body.mt-from-mentor #tb-back-btn{
   display:block !important;
+}
+
+/* ── Met Train 2.6.1: scroll host + light contrast polish ── */
+html[data-theme="light"] .card:hover,
+body.light .card:hover,
+html[data-theme="light"] .cb-h:hover,
+body.light .cb-h:hover,
+html[data-theme="light"] .fi:hover,
+body.light .fi:hover,
+html[data-theme="light"] .search-result:hover,
+body.light .search-result:hover,
+html[data-theme="light"] .man-item:hover,
+body.light .man-item:hover{
+  background:#eef2f7 !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.08);
+}
+html[data-theme="light"] .btn-s,
+body.light .btn-s{
+  background:#e2e8f0;
+  color:#0f172a;
+  border-color:rgba(15,23,42,.12);
+}
+html[data-theme="light"] .card-title,
+html[data-theme="light"] .stat-v,
+body.light .card-title{
+  color:#0f172a !important;
+}
+html[data-theme="light"] .card-desc,
+html[data-theme="light"] .stat-l,
+body.light .card-desc,
+body.light .stat-l{
+  color:#334155 !important;
+}
+/* Ensure pages inside #mt-main can grow and parent scrolls */
+#mt-main .pg{
+  max-width:920px;
+  margin:0 auto;
 }

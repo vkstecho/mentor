@@ -73,7 +73,18 @@ MG.FREE_PACK_MODULES = [
   { id: 'timestudy', title: 'Time Study', desc: 'Cycle time & standard time', href: 'modules/timestudy.html', icon: 'fa-stopwatch' },
   { id: 'excel_expert', title: 'Excel Expert', desc: 'Plant Excel & logs', href: 'modules/excel_expert.html', icon: 'fa-file-excel' },
   { id: 'kpi', title: 'KPI Dashboard', desc: 'Yield, OEE-style KPIs', href: 'modules/kpi_dashboard.html', icon: 'fa-chart-line' },
-  { id: 'met_cost', title: 'Met Cost Pro', desc: 'Metallising cost drivers', href: 'modules/met_cost_pro.html', icon: 'fa-coins' }
+  { id: 'met_cost', title: 'Met Cost Pro', desc: 'Metallising cost drivers', href: 'modules/met_cost_pro.html', icon: 'fa-coins' },
+  /* Packaging calculators (live on vkstech.com — same tools as homepage #calculators) */
+  { id: 'calc_hub', title: 'All Packaging Calculators', desc: 'Roll weight, length, OD, GSM, yield, utilisation, ₹/sqm, Met capacity, converting capacity, min manpower', href: 'https://www.vkstech.com/#calculators', icon: 'fa-calculator', external: true },
+  { id: 'calc_roll_weight', title: 'Film Roll Weight', desc: 'Weight from L × W × μm × ρ', href: 'https://www.vkstech.com/#calculators', icon: 'fa-weight-hanging', external: true },
+  { id: 'calc_roll_od', title: 'Roll OD Calculator', desc: 'Outer diameter from length & thickness', href: 'https://www.vkstech.com/#calculators', icon: 'fa-circle-notch', external: true },
+  { id: 'calc_gsm', title: 'GSM ↔ Micron', desc: 'Convert GSM and micron with density', href: 'https://www.vkstech.com/#calculators', icon: 'fa-exchange-alt', external: true },
+  { id: 'calc_yield', title: 'Production Yield %', desc: 'Output ÷ Input × 100', href: 'https://www.vkstech.com/#calculators', icon: 'fa-percentage', external: true },
+  { id: 'calc_util', title: 'Machine Utilisation %', desc: 'Running time ÷ shift time', href: 'https://www.vkstech.com/#calculators', icon: 'fa-gauge-high', external: true },
+  { id: 'calc_cost_sqm', title: 'Cost per Square Meter', desc: '₹/sqm from ₹/kg and GSM', href: 'https://www.vkstech.com/#calculators', icon: 'fa-rupee-sign', external: true },
+  { id: 'calc_met_cap', title: 'Met M/C Capacity', desc: 'Cycle → rolls/day → MT/day', href: 'https://www.vkstech.com/#calculators', icon: 'fa-industry', external: true },
+  { id: 'calc_plant_cap', title: 'Converting Plant Capacity', desc: 'All machines → bottleneck MT/day', href: 'https://www.vkstech.com/#calculators', icon: 'fa-sitemap', external: true },
+  { id: 'calc_min_mp', title: 'Min Manpower', desc: 'Shifts × machines × relief × buffer', href: 'https://www.vkstech.com/#calculators', icon: 'fa-users', external: true }
 ];
 
 /**

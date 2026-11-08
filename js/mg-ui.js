@@ -26,9 +26,12 @@ MG.renderLearningPaths = function() {
     var steps = path.moduleIds.map(function(mid, idx) {
       var mod = MG._moduleById(mid);
       var done = MG.isModuleComplete(mid);
-      return '<span class="inline-flex items-center gap-1 text-[11px] ' + (done ? 'text-emerald-600 font-semibold' : 'text-slate-500') + '">' +
+      var label = mod ? mod.title : mid;
+      var href = mod && mod.href ? mod.href : '#';
+      var cls = 'inline-flex items-center gap-1 text-[11px] ' + (done ? 'text-emerald-600 font-semibold' : 'text-slate-600 dark:text-slate-300 hover:text-teal-600 hover:underline');
+      return '<a href="' + href + '" class="' + cls + '">' +
         (done ? '<i class="fas fa-circle-check"></i> ' : '<span class="opacity-60">' + (idx + 1) + '.</span> ') +
-        (mod ? mod.title : mid) + '</span>';
+        label + '</a>';
     }).join('<span class="text-slate-300 mx-1">→</span>');
 
     var certBtn = prog.complete
@@ -65,26 +68,50 @@ MG.renderFreePackSection = function() {
   if (!host) return;
   if (MG.state && MG.state.data) MG.ensureProgressFields(MG.state.data);
 
-  host.innerHTML = MG.FREE_PACK_MODULES.map(function (m) {
-    var done = MG.isModuleComplete(m.id);
-    var statusBadge = done
-      ? '<span class="text-[10px] font-bold text-emerald-600 uppercase"><i class="fas fa-check-circle"></i> Completed</span>'
-      : '<span class="text-[10px] font-bold text-emerald-600 uppercase">Free</span>';
-    var actions = done
-      ? '<button type="button" data-cert-mod="' + m.id + '" class="text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:underline"><i class="fas fa-certificate mr-0.5"></i>Certificate</button>'
-      : '<button type="button" data-mark-mod="' + m.id + '" class="text-[11px] font-semibold text-teal-700 dark:text-teal-300 hover:underline"><i class="fas fa-check mr-0.5"></i>Mark complete</button>';
+  var modules = (MG.FREE_PACK_MODULES || []).filter(function(m){ return !m.external; });
+  var calcs = (MG.FREE_PACK_MODULES || []).filter(function(m){ return !!m.external; });
 
-    return '<div class="block p-3 rounded-xl border ' + (done ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-900/10' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800') + ' hover:border-teal-500 hover:shadow transition" data-module-id="' + m.id + '">' +
+  function cardHtml(m, isCalc) {
+    var done = !isCalc && MG.isModuleComplete(m.id);
+    var target = isCalc ? ' target="_blank" rel="noopener"' : '';
+    var openLabel = isCalc ? 'Open calculator' : 'Open module';
+    var iconBg = isCalc ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300' : 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300';
+    var border = done
+      ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-900/10'
+      : (isCalc ? 'border-amber-200 dark:border-amber-800 bg-white dark:bg-slate-800' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800');
+    var statusBadge = isCalc
+      ? '<span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase">Calculator</span>'
+      : (done
+        ? '<span class="text-[10px] font-bold text-emerald-600 uppercase"><i class="fas fa-check-circle"></i> Completed</span>'
+        : '<span class="text-[10px] font-bold text-emerald-600 uppercase">Free</span>');
+    var actions = '';
+    if (!isCalc) {
+      actions = done
+        ? '<button type="button" data-cert-mod="' + m.id + '" class="text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:underline"><i class="fas fa-certificate mr-0.5"></i>Certificate</button>'
+        : '<button type="button" data-mark-mod="' + m.id + '" class="text-[11px] font-semibold text-teal-700 dark:text-teal-300 hover:underline"><i class="fas fa-check mr-0.5"></i>Mark complete</button>';
+    }
+    return '<div class="block p-3 rounded-xl border ' + border + ' hover:border-teal-500 hover:shadow transition" data-module-id="' + m.id + '">' +
       '<div class="flex items-start gap-3">' +
-      '<a href="' + m.href + '" class="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0"><i class="fas ' + m.icon + '"></i></a>' +
+      '<a href="' + m.href + '"' + target + ' class="w-10 h-10 rounded-lg ' + iconBg + ' flex items-center justify-center shrink-0"><i class="fas ' + m.icon + '"></i></a>' +
       '<div class="min-w-0 flex-1">' +
-      '<div class="font-semibold text-sm flex flex-wrap items-center gap-2"><a href="' + m.href + '" class="hover:underline">' + m.title + '</a> ' + statusBadge + '</div>' +
+      '<div class="font-semibold text-sm flex flex-wrap items-center gap-2"><a href="' + m.href + '"' + target + ' class="hover:underline">' + m.title + '</a> ' + statusBadge + '</div>' +
       '<div class="text-xs text-slate-500 mt-0.5">' + m.desc + '</div>' +
       '<div class="mt-2 flex items-center gap-3">' +
-      '<a href="' + m.href + '" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-600"><i class="fas fa-external-link-alt mr-0.5"></i>Open module</a>' +
+      '<a href="' + m.href + '"' + target + ' class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-600"><i class="fas fa-external-link-alt mr-0.5"></i>' + openLabel + '</a>' +
       actions +
       '</div></div></div></div>';
-  }).join('');
+  }
+
+  var html = '';
+  if (modules.length) {
+    html += modules.map(function(m){ return cardHtml(m, false); }).join('');
+  }
+  if (calcs.length) {
+    html += '<div class="sm:col-span-2 mt-1 mb-0 pt-2 border-t border-slate-200 dark:border-slate-700">' +
+      '<div class="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300 mb-2"><i class="fas fa-calculator mr-1"></i> Packaging calculators (vkstech.com)</div></div>';
+    html += calcs.map(function(m){ return cardHtml(m, true); }).join('');
+  }
+  host.innerHTML = html;
 
   host.querySelectorAll('[data-mark-mod]').forEach(function(btn) {
     btn.addEventListener('click', function(e) {

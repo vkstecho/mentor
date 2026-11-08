@@ -79,7 +79,10 @@ function nav(id){
   renderMobNav();
   updateTopbar();
   applyLangChrome();
-  try{ document.getElementById('content').scrollTo(0,0); }catch(e){}
+  try{
+    var sc = document.getElementById('mt-main') || document.getElementById('content');
+    if(sc) sc.scrollTo(0,0);
+  }catch(e){}
 }
 function setMode(m){
   MODE=m;
@@ -237,7 +240,7 @@ function applyLangChrome(){
     }
   }
   // Apply bilingual swap on visible content
-  applyBilingualContent(document.getElementById('content')||document.body);
+  applyBilingualContent(document.getElementById('mt-main')||document.getElementById('content')||document.body);
 
   // Translate [data-mt-key] using SB_LABELS / mtT
   try{
@@ -332,7 +335,19 @@ function renderPage(id,pg){
 // ══════════════════════════════════════════════════════
 function rLanding(pg){
   var hi = (LANG==='hi');
-  // Pure Hindi OR pure English — no mixed phrases
+  var isLight = false;
+  try {
+    isLight = (document.documentElement.getAttribute('data-theme') === 'light') ||
+      document.documentElement.classList.contains('mt-preload-light') ||
+      document.body.classList.contains('light');
+  } catch (e) {}
+  // Theme-aware colours — dark mode keeps previous look; light mode is high-contrast
+  var cTitle = isLight ? '#0f172a' : '#f8fafc';
+  var cMuted = isLight ? '#475569' : '#94a3b8';
+  var cPick = isLight ? '#334155' : '#94a3b8';
+  var cSub = isLight ? '#475569' : 'rgba(226,232,240,.72)';
+  var cAccent = isLight ? '#0d9488' : '#f0a500';
+
   var sub = hi
     ? 'मेटलाइज़र प्रशिक्षण — OD · Vacuum · Defects · SOPs'
     : 'Metalliser training — OD · Vacuum · Defects · SOPs';
@@ -354,47 +369,47 @@ function rLanding(pg){
     ? 'मेटलाइज़र प्रश्न पूछें — हिंदी या English में उत्तर'
     : 'Ask metalliser questions — answers in clear English';
 
-  function modeBtn(onclick, grad, border, iconBg, icon, titleColor, title, sub, badgeBg, badgeBorder, badgeColor, arrowColor){
-    return '<button type="button" onclick="'+onclick+'" style="width:100%;max-width:420px;background:'+grad+';border:2px solid '+border+';border-radius:18px;padding:20px 18px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s;margin-bottom:16px;font-family:inherit">'
+  function modeBtn(onclick, grad, border, iconBg, icon, titleColor, title, subTxt, badgeBg, badgeBorder, badgeColor, arrowColor){
+    return '<button type="button" onclick="'+onclick+'" style="width:100%;max-width:420px;background:'+grad+';border:2px solid '+border+';border-radius:18px;padding:20px 18px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s;margin-bottom:16px;font-family:inherit;color:inherit">'
       +'<div style="width:56px;height:56px;border-radius:14px;background:'+iconBg+';display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">'+icon+'</div>'
-      +'<div style="flex:1">'
+      +'<div style="flex:1;min-width:0">'
       +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:20px;font-weight:900;color:'+titleColor+';margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em">'+title+'</div>'
-      +'<div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;font-family:inherit">'+sub+'</div>'
+      +'<div style="font-size:12px;color:'+cSub+';line-height:1.5;font-family:inherit">'+subTxt+'</div>'
       +'<div style="margin-top:8px;display:inline-block;background:'+badgeBg+';border:1px solid '+badgeBorder+';border-radius:6px;padding:3px 10px;font-size:12px;font-weight:900;color:'+badgeColor+'">'+freeBadge+'</div>'
       +'</div>'
-      +'<div style="font-size:26px;color:'+arrowColor+'">›</div>'
+      +'<div style="font-size:26px;color:'+arrowColor+';flex-shrink:0">›</div>'
       +'</button>';
   }
 
   pg.innerHTML =
-    '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:24px 16px 20px;overflow-y:auto">'
-    +'<div style="text-align:center;margin-bottom:30px;width:100%">'
+    '<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:min(100%,calc(100vh - 100px));padding:20px 16px 28px;width:100%;box-sizing:border-box">'
+    +'<div style="text-align:center;margin-bottom:24px;width:100%">'
     +'<img src="assets/logo-icon.svg" alt="Met Train PRO" width="76" height="76" style="display:block;margin:0 auto 16px;border-radius:18px;box-shadow:0 0 40px rgba(37,211,102,.3)">'
-    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:36px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:#fff;line-height:1">Met Train <span style="color:#f0a500">PRO</span></div>'
-    +'<div style="font-size:14px;color:#506070;margin-top:6px;font-family:inherit">'+sub+'</div>'
-    +'<div style="width:60px;height:3px;background:linear-gradient(90deg,#f0a500,#e06030);border-radius:2px;margin:14px auto 0"></div>'
+    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:clamp(28px,8vw,36px);font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:'+cTitle+';line-height:1.1">Met Train <span style="color:'+cAccent+'">PRO</span></div>'
+    +'<div style="font-size:14px;color:'+cMuted+';margin-top:8px;font-family:inherit;font-weight:600">'+sub+'</div>'
+    +'<div style="width:60px;height:3px;background:linear-gradient(90deg,#0d9488,#25d366);border-radius:2px;margin:14px auto 0"></div>'
     +'</div>'
-    +'<div style="font-size:15px;color:rgba(204,216,232,.45);text-align:center;margin-bottom:24px;font-family:inherit">'+pick+'</div>'
+    +'<div style="font-size:15px;color:'+cPick+';text-align:center;margin-bottom:20px;font-family:inherit;font-weight:600">'+pick+'</div>'
     +modeBtn('enterFree()',
       'linear-gradient(135deg,rgba(24,201,122,.15),rgba(24,201,122,.06))','rgba(24,201,122,.5)',
-      'linear-gradient(135deg,rgba(24,201,122,.3),rgba(24,201,122,.1))','🏭','#18c97a',
+      'linear-gradient(135deg,rgba(24,201,122,.3),rgba(24,201,122,.1))','🏭', isLight ? '#059669' : '#18c97a',
       empTitle, empSub,
-      'rgba(24,201,122,.2)','rgba(24,201,122,.4)','#18c97a','rgba(24,201,122,.6)')
+      'rgba(24,201,122,.2)','rgba(24,201,122,.4)', isLight ? '#047857' : '#18c97a','rgba(24,201,122,.6)')
     +modeBtn('enterGen()',
       'linear-gradient(135deg,rgba(240,165,0,.15),rgba(240,165,0,.06))','rgba(240,165,0,.5)',
-      'linear-gradient(135deg,rgba(240,165,0,.3),rgba(240,165,0,.1))','🔥','#f0a500',
+      'linear-gradient(135deg,rgba(240,165,0,.3),rgba(240,165,0,.1))','🔥', isLight ? '#c2410c' : '#f0a500',
       dhakTitle, dhakSub,
-      'rgba(240,165,0,.2)','rgba(240,165,0,.4)','#f0a500','rgba(240,165,0,.6)')
+      'rgba(240,165,0,.2)','rgba(240,165,0,.4)', isLight ? '#c2410c' : '#f0a500','rgba(240,165,0,.6)')
     +modeBtn('enterDefect()',
       'linear-gradient(135deg,rgba(229,57,53,.2),rgba(198,40,40,.08))','rgba(229,57,53,.5)',
-      'linear-gradient(135deg,rgba(229,57,53,.35),rgba(198,40,40,.15))','🔴','#e53935',
+      'linear-gradient(135deg,rgba(229,57,53,.35),rgba(198,40,40,.15))','🔴', isLight ? '#b91c1c' : '#e53935',
       'Defect Action Plans', defSub,
-      'rgba(24,201,122,.2)','rgba(24,201,122,.4)','#18c97a','rgba(229,57,53,.5)')
+      'rgba(24,201,122,.2)','rgba(24,201,122,.4)', isLight ? '#047857' : '#18c97a','rgba(229,57,53,.5)')
     +modeBtn('enterFreeAI()',
       'linear-gradient(135deg,rgba(139,92,246,.18),rgba(109,40,217,.08))','rgba(139,92,246,.5)',
-      'linear-gradient(135deg,rgba(139,92,246,.3),rgba(109,40,217,.12))','🤖','#a78bfa',
+      'linear-gradient(135deg,rgba(139,92,246,.3),rgba(109,40,217,.12))','🤖', isLight ? '#6d28d9' : '#a78bfa',
       aiTitle, aiSub,
-      'rgba(139,92,246,.2)','rgba(139,92,246,.4)','#a78bfa','rgba(139,92,246,.5)')
+      'rgba(139,92,246,.2)','rgba(139,92,246,.4)', isLight ? '#6d28d9' : '#a78bfa','rgba(139,92,246,.5)')
     +'</div>';
 }
 
