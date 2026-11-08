@@ -9,6 +9,9 @@ Use with `AI_INDEX.md` for file paths. Logic lives in `js/mg-*.js` modules.
 - Package discounts, Razorpay links
 - Topic catalog, chat, recordings
 - Free modules: Met Train Pro, MR Skill, SupSkill, Time Study, Excel Expert, KPI, Met Cost
+- **Learning Paths**: New Metallizer Operator, Shift In-charge, Process Engineer (sequenced modules + progress)
+- **Completion certificates**: digital / printable for modules and full paths
+- **Man Power bridge**: deep-link `?openModule=<id>` or `?path=<pathId>` (+ existing iframe / `from=mp` auth)
 - Theme toggle, PWA install
 - Shared auth bridge with website / Resume / Man Power
 - Device remember: password + fingerprint (WebAuthn) after first OTP; survives logout

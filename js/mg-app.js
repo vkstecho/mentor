@@ -102,6 +102,7 @@ MG.startApp = async function(mob) {
   MG.state.mobile = mob;
   MG.state.isMentor = false;
   MG.state.data = MG.loadUserData(MG.state.mobile); // instant from cache
+  try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e0) {}
   (function(){
     var m = MG.state.mobile || '';
     var masked = m.length === 10 ? (m.slice(0,2) + '••••' + m.slice(-4)) : m;
@@ -138,12 +139,16 @@ MG.startApp = async function(mob) {
   MG.$('#mobilePrompt').classList.remove('flex');
   MG.$('#app').classList.remove('hidden');
   MG.renderCatalog();
+  try { MG.renderFreePackSection(); } catch (eF) {}
   // Then refresh from Firebase
   try {
     MG.state.data = await MG.loadUserDataAsync(MG.state.mobile);
+    try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e1) {}
     MG.startRealtimeFor(MG.state.mobile);
     MG.renderCatalog();
+    try { MG.renderFreePackSection(); } catch (eF2) {}
   } catch (e) {}
+  try { if (MG.handleMentorDeepLink) MG.handleMentorDeepLink(); } catch (eDL) {}
 }
 
 MG.esc = function(str) {
@@ -601,7 +606,11 @@ document.addEventListener('DOMContentLoaded', function () {
   try { MG.loadTrackSettings(); } catch (e) {}
   try { MG.initMentorPwaUi();
   try { MG.initProfileUi(); } catch (e) {} } catch (e) {}
+  try {
+    if (MG.state && MG.state.data && MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data);
+  } catch (eP) {}
   try { MG.renderFreePackSection(); } catch (e) {}
+  try { if (MG.handleMentorDeepLink) MG.handleMentorDeepLink(); } catch (eDL) {}
 });
 
 })(window.MG = window.MG || {});

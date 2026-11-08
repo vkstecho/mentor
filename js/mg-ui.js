@@ -3,19 +3,231 @@
  */
 (function (MG) {
 'use strict';
-// ========== Free Flexible Packaging training modules ==========
+// ========== Free Flexible Packaging training modules + Learning Paths + Certificates ==========
+
+MG._moduleById = function(id) {
+  return (MG.FREE_PACK_MODULES || []).find(function(m){ return m.id === id; }) || null;
+};
+
+MG.renderLearningPaths = function() {
+  var host = document.getElementById('learningPaths');
+  if (!host) return;
+  if (MG.state && MG.state.data) MG.ensureProgressFields(MG.state.data);
+
+  var colorMap = {
+    teal: { ring: 'border-teal-300 dark:border-teal-700', bar: 'bg-teal-500', badge: 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200', iconBg: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300' },
+    indigo: { ring: 'border-indigo-300 dark:border-indigo-700', bar: 'bg-indigo-500', badge: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200', iconBg: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300' },
+    orange: { ring: 'border-orange-300 dark:border-orange-700', bar: 'bg-orange-500', badge: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200', iconBg: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' }
+  };
+
+  host.innerHTML = (MG.LEARNING_PATHS || []).map(function(path) {
+    var prog = MG.getPathProgress(path);
+    var c = colorMap[path.color] || colorMap.teal;
+    var steps = path.moduleIds.map(function(mid, idx) {
+      var mod = MG._moduleById(mid);
+      var done = MG.isModuleComplete(mid);
+      return '<span class="inline-flex items-center gap-1 text-[11px] ' + (done ? 'text-emerald-600 font-semibold' : 'text-slate-500') + '">' +
+        (done ? '<i class="fas fa-circle-check"></i> ' : '<span class="opacity-60">' + (idx + 1) + '.</span> ') +
+        (mod ? mod.title : mid) + '</span>';
+    }).join('<span class="text-slate-300 mx-1">→</span>');
+
+    var certBtn = prog.complete
+      ? '<button type="button" data-cert-path="' + path.id + '" class="mt-2 text-xs font-bold text-amber-700 dark:text-amber-300 hover:underline"><i class="fas fa-certificate mr-1"></i>View certificate</button>'
+      : '';
+
+    return '<div class="rounded-xl border-2 ' + c.ring + ' bg-white dark:bg-slate-800 p-4 shadow-sm" data-path-id="' + path.id + '">' +
+      '<div class="flex items-start gap-3 mb-2">' +
+      '<div class="w-11 h-11 rounded-xl ' + c.iconBg + ' flex items-center justify-center shrink-0"><i class="fas ' + path.icon + ' text-lg"></i></div>' +
+      '<div class="min-w-0 flex-1">' +
+      '<div class="font-bold text-sm text-slate-800 dark:text-slate-100">' + path.title + '</div>' +
+      '<div class="text-[11px] mt-0.5 ' + c.badge + ' inline-block px-1.5 py-0.5 rounded">' + path.audience + '</div>' +
+      '<p class="text-xs text-slate-500 mt-1.5 leading-relaxed">' + path.desc + '</p>' +
+      '</div></div>' +
+      '<div class="mt-2 flex flex-wrap items-center gap-y-1">' + steps + '</div>' +
+      '<div class="mt-3 flex items-center gap-3">' +
+      '<div class="flex-1 h-2 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">' +
+      '<div class="h-full ' + c.bar + ' transition-all" style="width:' + prog.pct + '%"></div></div>' +
+      '<span class="text-xs font-bold tabular-nums ' + (prog.complete ? 'text-emerald-600' : 'text-slate-600 dark:text-slate-300') + '">' + prog.done + '/' + prog.total + '</span>' +
+      '</div>' +
+      certBtn +
+      '</div>';
+  }).join('');
+
+  host.querySelectorAll('[data-cert-path]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      MG.showCertificate({ type: 'path', refId: btn.getAttribute('data-cert-path') });
+    });
+  });
+};
 
 MG.renderFreePackSection = function() {
   var host = document.getElementById('freePackModules');
   if (!host) return;
+  if (MG.state && MG.state.data) MG.ensureProgressFields(MG.state.data);
+
   host.innerHTML = MG.FREE_PACK_MODULES.map(function (m) {
-    return '<a href="' + m.href + '" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-teal-500 hover:shadow transition">' +
+    var done = MG.isModuleComplete(m.id);
+    var statusBadge = done
+      ? '<span class="text-[10px] font-bold text-emerald-600 uppercase"><i class="fas fa-check-circle"></i> Completed</span>'
+      : '<span class="text-[10px] font-bold text-emerald-600 uppercase">Free</span>';
+    var actions = done
+      ? '<button type="button" data-cert-mod="' + m.id + '" class="text-[11px] font-semibold text-amber-700 dark:text-amber-300 hover:underline"><i class="fas fa-certificate mr-0.5"></i>Certificate</button>'
+      : '<button type="button" data-mark-mod="' + m.id + '" class="text-[11px] font-semibold text-teal-700 dark:text-teal-300 hover:underline"><i class="fas fa-check mr-0.5"></i>Mark complete</button>';
+
+    return '<div class="block p-3 rounded-xl border ' + (done ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-900/10' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800') + ' hover:border-teal-500 hover:shadow transition" data-module-id="' + m.id + '">' +
       '<div class="flex items-start gap-3">' +
-      '<div class="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0"><i class="fas ' + m.icon + '"></i></div>' +
-      '<div class="min-w-0"><div class="font-semibold text-sm">' + m.title + ' <span class="text-[10px] font-bold text-emerald-600 uppercase">Free</span></div>' +
-      '<div class="text-xs text-slate-500 mt-0.5">' + m.desc + '</div></div></div></a>';
+      '<a href="' + m.href + '" class="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0"><i class="fas ' + m.icon + '"></i></a>' +
+      '<div class="min-w-0 flex-1">' +
+      '<div class="font-semibold text-sm flex flex-wrap items-center gap-2"><a href="' + m.href + '" class="hover:underline">' + m.title + '</a> ' + statusBadge + '</div>' +
+      '<div class="text-xs text-slate-500 mt-0.5">' + m.desc + '</div>' +
+      '<div class="mt-2 flex items-center gap-3">' +
+      '<a href="' + m.href + '" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-600"><i class="fas fa-external-link-alt mr-0.5"></i>Open module</a>' +
+      actions +
+      '</div></div></div></div>';
   }).join('');
-}
+
+  host.querySelectorAll('[data-mark-mod]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var id = btn.getAttribute('data-mark-mod');
+      var res = MG.markModuleComplete(id, { source: 'self' });
+      if (res && res.ok) {
+        MG.showToast(res.already ? 'Already marked complete' : 'Module marked complete ✓');
+        if (res.pathJustCompleted) {
+          var path = (MG.LEARNING_PATHS || []).find(function(p){ return p.id === res.pathJustCompleted; });
+          setTimeout(function(){
+            MG.showToast('Learning path completed: ' + (path ? path.title : res.pathJustCompleted) + ' — certificate ready!');
+          }, 600);
+        }
+        MG.renderFreePackSection();
+        MG.renderLearningPaths();
+      }
+    });
+  });
+  host.querySelectorAll('[data-cert-mod]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      MG.showCertificate({ type: 'module', refId: btn.getAttribute('data-cert-mod') });
+    });
+  });
+
+  try { MG.renderLearningPaths(); } catch (e) {}
+};
+
+/** Digital certificate modal (printable) */
+MG.showCertificate = function(opts) {
+  opts = opts || {};
+  var data = MG.ensureProgressFields(MG.state.data || {});
+  var cert = (data.certificates || []).find(function(c) {
+    return c.type === opts.type && c.refId === opts.refId;
+  });
+  // Allow viewing even if cert object missing but progress exists
+  if (!cert) {
+    var title = opts.refId;
+    var name = (data.profile && (data.profile.name || data.profile.fullName)) || 'Learner';
+    if (opts.type === 'module') {
+      var mod = MG._moduleById(opts.refId);
+      if (!mod || !MG.isModuleComplete(opts.refId)) {
+        MG.showToast('Complete the module first to unlock the certificate');
+        return;
+      }
+      title = mod.title;
+    } else if (opts.type === 'path') {
+      var path = (MG.LEARNING_PATHS || []).find(function(p){ return p.id === opts.refId; });
+      if (!path || !MG.getPathProgress(path).complete) {
+        MG.showToast('Finish all modules in the path to unlock the certificate');
+        return;
+      }
+      title = path.title;
+    }
+    cert = { type: opts.type, refId: opts.refId, title: title, name: name, issuedAt: Date.now() };
+  }
+
+  var issued = new Date(cert.issuedAt || Date.now()).toLocaleDateString('en-IN', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+  var typeLabel = cert.type === 'path' ? 'Learning Path Certificate' : 'Module Completion Certificate';
+  var old = document.getElementById('certModal');
+  if (old) old.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'certModal';
+  modal.className = 'fixed inset-0 z-[80] flex items-center justify-center p-3 bg-black/50';
+  modal.innerHTML =
+    '<div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">' +
+    '<div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">' +
+    '<span class="font-bold text-sm"><i class="fas fa-certificate text-amber-500 mr-1"></i> Certificate</span>' +
+    '<div class="flex gap-2">' +
+    '<button type="button" id="certPrintBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 text-white hover:bg-teal-700"><i class="fas fa-print mr-1"></i>Print</button>' +
+    '<button type="button" id="certCloseBtn" class="px-2 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-600">Close</button>' +
+    '</div></div>' +
+    '<div id="certPrintArea" class="p-6 sm:p-8 text-center bg-gradient-to-b from-amber-50 to-white dark:from-slate-800 dark:to-slate-900">' +
+    '<div class="border-4 border-double border-amber-400 rounded-xl p-6 sm:p-8">' +
+    '<div class="text-[10px] uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300 font-bold mb-1">VKS Tech · Mentor App</div>' +
+    '<div class="text-lg sm:text-xl font-black text-slate-800 dark:text-slate-100 mb-1">' + typeLabel + '</div>' +
+    '<div class="w-16 h-1 bg-amber-400 mx-auto mb-4 rounded"></div>' +
+    '<p class="text-xs text-slate-500 mb-1">This certifies that</p>' +
+    '<div class="text-xl sm:text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">' + (cert.name || 'Learner') + '</div>' +
+    '<p class="text-xs text-slate-500 mb-1">has successfully completed</p>' +
+    '<div class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">“' + (cert.title || '') + '”</div>' +
+    '<p class="text-[11px] text-slate-500">Issued on ' + issued + '</p>' +
+    '<p class="text-[10px] text-slate-400 mt-3">Flexible Packaging · Competence evidence for plant skill matrix</p>' +
+    '<div class="mt-4 text-[10px] text-slate-400">vkstech.com · Mentor by VKS Tech</div>' +
+    '</div></div></div>';
+
+  document.body.appendChild(modal);
+  document.getElementById('certCloseBtn').onclick = function(){ modal.remove(); };
+  modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+  document.getElementById('certPrintBtn').onclick = function() {
+    var area = document.getElementById('certPrintArea');
+    var w = window.open('', '_blank');
+    if (!w) { MG.showToast('Allow pop-ups to print certificate'); return; }
+    w.document.write('<!DOCTYPE html><html><head><title>Certificate — ' + (cert.title || '') + '</title>' +
+      '<style>body{font-family:system-ui,sans-serif;margin:40px;text-align:center;}' +
+      '.box{border:6px double #f59e0b;padding:40px;max-width:560px;margin:0 auto;}' +
+      'h1{font-size:20px;margin:8px 0;} .name{font-size:28px;color:#0f766e;font-weight:800;margin:12px 0;}' +
+      '.title{font-size:18px;font-weight:700;margin:12px 0;} .meta{color:#64748b;font-size:12px;}</style></head><body>' +
+      '<div class="box"><div class="meta">VKS TECH · MENTOR APP</div>' +
+      '<h1>' + typeLabel + '</h1><p class="meta">This certifies that</p>' +
+      '<div class="name">' + (cert.name || 'Learner') + '</div>' +
+      '<p class="meta">has successfully completed</p>' +
+      '<div class="title">“' + (cert.title || '') + '”</div>' +
+      '<p class="meta">Issued on ' + issued + '</p>' +
+      '<p class="meta" style="margin-top:24px">Flexible Packaging · Competence evidence</p>' +
+      '<p class="meta">vkstech.com</p></div>' +
+      '<script>window.onload=function(){window.print();}<\/script></body></html>');
+    w.document.close();
+  };
+};
+
+/** Deep-link from Man Power / external: ?openModule=id  or  ?path=id */
+MG.handleMentorDeepLink = function() {
+  try {
+    var params = new URLSearchParams(window.location.search || '');
+    var openMod = params.get('openModule') || params.get('module');
+    var pathId = params.get('path') || params.get('learningPath');
+    if (pathId) {
+      if (typeof MG.showCategory === 'function') MG.showCategory('packaging');
+      setTimeout(function() {
+        var el = document.querySelector('[data-path-id="' + pathId + '"]');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-offset-2', 'ring-teal-500');
+        }
+      }, 400);
+    }
+    if (openMod) {
+      var mod = MG._moduleById(openMod);
+      if (mod && mod.href) {
+        // Open module in same tab after short delay so path highlight can show
+        if (typeof MG.showCategory === 'function') MG.showCategory('packaging');
+        setTimeout(function() {
+          window.location.href = mod.href + (mod.href.indexOf('?') >= 0 ? '&' : '?') + 'from=manpower';
+        }, pathId ? 900 : 200);
+      }
+    }
+  } catch (e) { console.warn('[Mentor] deep link', e); }
+};
 
 
 // ========== Theme ==========

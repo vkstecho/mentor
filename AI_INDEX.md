@@ -18,19 +18,19 @@ Runtime is split into feature modules under `js/mg-*.js` (loaded in order from `
 
 | Feature / section | File | Notes |
 |-------------------|------|-------|
-| **Rates, tracks, topics, free-module list** | `js/mg-config.js` | `DEFAULT_TRACKS`, `TOPICS`, `FREE_PACK_MODULES`, phones, Razorpay |
+| **Rates, tracks, topics, free-module list, learning paths** | `js/mg-config.js` | `DEFAULT_TRACKS`, `TOPICS`, `FREE_PACK_MODULES`, `LEARNING_PATHS`, phones, Razorpay |
 | **Runtime state + DOM `$`/`$$`** | `js/mg-state.js` | `MG.state.*` |
 | **Mobile detect + site auth bridge** | `js/mg-auth.js` | Man Power parent, localStorage shared auth |
-| **Firebase data layer** | `js/mg-data.js` | `mentor_guidance`, load/save, realtime, chat merge |
-| **Theme, toast, catalog UI, free pack render** | `js/mg-ui.js` | `renderCatalog`, `renderFreePackSection` |
+| **Firebase data layer + module/path progress + certificates** | `js/mg-data.js` | `mentor_guidance`, load/save, realtime, `moduleProgress`, `pathProgress`, `certificates`, `markModuleComplete` |
+| **Theme, toast, catalog UI, free pack, learning paths, certificates, deep-links** | `js/mg-ui.js` | `renderCatalog`, `renderFreePackSection`, `renderLearningPaths`, `showCertificate`, `handleMentorDeepLink` |
 | **PWA install / share / Play Store** | `js/mg-pwa.js` | |
 | **Track select, pricing override, booking modal** | `js/mg-tracks.js` | packages, confirm payment |
 | **Workspace, recordings, chat** | `js/mg-workspace.js` | |
 | **Payment history, mentor OTP, student admin** | `js/mg-mentor.js` | approve pay, student switch |
-| **Init, login OTP UI, events, boot** | `js/mg-app.js` | `init`, `bindEvents`, DOMContentLoaded |
+| **Init, login OTP UI, events, boot** | `js/mg-app.js` | `init`, `bindEvents`, DOMContentLoaded, deep-link |
 | **Legacy stub** | `js/guidance.js` | Info only — not used for logic |
 | **Styles** | `css/guidance.css` | |
-| **Shell HTML** | `mentor.html` | script order at bottom |
+| **Shell HTML** | `mentor.html` | `#learningPaths`, `#freePackModules`, script order at bottom |
 | **Landing** | `index.html` | marketing cards |
 | **RTDB rules** | `database.rules.json` | |
 | **PWA** | `manifest.json`, `sw.js` | SW precaches all `mg-*.js` |
@@ -52,6 +52,10 @@ Runtime is split into feature modules under `js/mg-*.js` (loaded in order from `
 | Hourly rates / track packages / Razorpay link | `js/mg-config.js` |
 | Topic catalog content | `js/mg-config.js` (`TOPICS`) |
 | Free module links | `js/mg-config.js` (`FREE_PACK_MODULES`) |
+| Learning path definitions | `js/mg-config.js` (`LEARNING_PATHS`) |
+| Module/path progress + certificates data | `js/mg-data.js` |
+| Learning path / free module / certificate UI | `js/mg-ui.js` |
+| Man Power deep-link (`?path=` / `?openModule=`) | `js/mg-ui.js` `handleMentorDeepLink` |
 | Chat / recordings behavior | `js/mg-workspace.js` |
 | Booking / payment confirm | `js/mg-tracks.js` |
 | Mentor OTP / student list / approve | `js/mg-mentor.js` |
@@ -84,6 +88,10 @@ Do **not** load every `mg-*.js`. Use this map and open one module. Config + topi
 ## Recent improvements
 | Feature | File |
 |---------|------|
+| Learning Paths (New Metallizer Operator, Shift In-charge, Process Engineer) | `js/mg-config.js` `LEARNING_PATHS`, `js/mg-ui.js` `renderLearningPaths`, `mentor.html` `#learningPaths` |
+| Module / path completion tracking | `js/mg-data.js` `moduleProgress`, `pathProgress`, `markModuleComplete` |
+| Digital completion certificates (print-ready) | `js/mg-ui.js` `showCertificate` |
+| Man Power one-click bridge (`?openModule=` / `?path=`) | `js/mg-ui.js` `handleMentorDeepLink` |
 | Required UTR / Payment ID | `js/mg-tracks.js` `confirmPayment`, `mentor.html` |
 | Preferred time window | `mg-config.js` `PREFERRED_SLOT_OPTIONS`, booking modal |
 | Reject payment + WhatsApp remind | `js/mg-mentor.js` |

@@ -18,8 +18,105 @@ MG.emptyUserData = function(mob) {
     payments: [],
     recordings: {},
     chats: {},
+    moduleProgress: {},   // { moduleId: { completedAt, source } }
+    pathProgress: {},     // { pathId: { completedAt, modules: [...] } }
+    certificates: [],     // [{ id, type:'module'|'path', refId, title, issuedAt, name }]
     updatedAt: Date.now()
   };
+}
+
+/** Ensure progress fields exist on any loaded user blob */
+MG.ensureProgressFields = function(data) {
+  if (!data || typeof data !== 'object') return data;
+  if (!data.moduleProgress || typeof data.moduleProgress !== 'object') data.moduleProgress = {};
+  if (!data.pathProgress || typeof data.pathProgress !== 'object') data.pathProgress = {};
+  if (!Array.isArray(data.certificates)) data.certificates = [];
+  return data;
+}
+
+MG.isModuleComplete = function(moduleId) {
+  var d = MG.ensureProgressFields(MG.state.data || {});
+  return !!(d.moduleProgress[moduleId] && d.moduleProgress[moduleId].completedAt);
+}
+
+MG.getPathProgress = function(path) {
+  if (!path || !path.moduleIds) return { done: 0, total: 0, pct: 0, complete: false };
+  var done = 0;
+  path.moduleIds.forEach(function(id){ if (MG.isModuleComplete(id)) done++; });
+  var total = path.moduleIds.length;
+  return { done: done, total: total, pct: total ? Math.round((done / total) * 100) : 0, complete: done >= total && total > 0 };
+}
+
+/**
+ * Mark a free module complete. Optionally issue module certificate.
+ * Returns { ok, pathJustCompleted: pathId|null, cert }
+ */
+MG.markModuleComplete = function(moduleId, opts) {
+  opts = opts || {};
+  var mob = String((MG.state.mobile || (MG.state.data && MG.state.data.mobile) || '')).replace(/\D/g, '').slice(-10);
+  if (!mob) {
+    if (typeof MG.showToast === 'function') MG.showToast('Login first to track progress & certificates');
+    return { ok: false };
+  }
+  var mod = (MG.FREE_PACK_MODULES || []).find(function(m){ return m.id === moduleId; });
+  if (!mod) return { ok: false };
+
+  MG.state.data = MG.ensureProgressFields(MG.state.data || MG.emptyUserData(mob));
+  var already = MG.isModuleComplete(moduleId);
+  if (!already) {
+    MG.state.data.moduleProgress[moduleId] = {
+      completedAt: Date.now(),
+      source: opts.source || 'self',
+      title: mod.title
+    };
+  }
+
+  // Module certificate (once)
+  var certId = 'mod_' + moduleId;
+  var hasModCert = (MG.state.data.certificates || []).some(function(c){ return c.id === certId; });
+  var cert = null;
+  if (!hasModCert) {
+    var displayName = (MG.state.data.profile && (MG.state.data.profile.name || MG.state.data.profile.fullName)) || ('Learner ' + mob.slice(-4));
+    cert = {
+      id: certId,
+      type: 'module',
+      refId: moduleId,
+      title: mod.title,
+      issuedAt: Date.now(),
+      name: displayName
+    };
+    MG.state.data.certificates.push(cert);
+  }
+
+  // Check learning paths
+  var pathJustCompleted = null;
+  (MG.LEARNING_PATHS || []).forEach(function(path) {
+    var prog = MG.getPathProgress(path);
+    if (prog.complete) {
+      if (!MG.state.data.pathProgress[path.id] || !MG.state.data.pathProgress[path.id].completedAt) {
+        MG.state.data.pathProgress[path.id] = {
+          completedAt: Date.now(),
+          modules: path.moduleIds.slice()
+        };
+        pathJustCompleted = path.id;
+        var pCertId = 'path_' + path.id;
+        if (!(MG.state.data.certificates || []).some(function(c){ return c.id === pCertId; })) {
+          var dn = (MG.state.data.profile && (MG.state.data.profile.name || MG.state.data.profile.fullName)) || ('Learner ' + mob.slice(-4));
+          MG.state.data.certificates.push({
+            id: pCertId,
+            type: 'path',
+            refId: path.id,
+            title: path.title,
+            issuedAt: Date.now(),
+            name: dn
+          });
+        }
+      }
+    }
+  });
+
+  MG.saveUserData(mob, MG.state.data);
+  return { ok: true, already: already, pathJustCompleted: pathJustCompleted, cert: cert };
 }
 
 MG.loadUserData = function(mob) {

@@ -76,6 +76,41 @@ MG.FREE_PACK_MODULES = [
   { id: 'met_cost', title: 'Met Cost Pro', desc: 'Metallising cost drivers', href: 'modules/met_cost_pro.html', icon: 'fa-coins' }
 ];
 
+/**
+ * Pre-built Learning Paths (Blog #91 / skill-matrix stack).
+ * moduleIds reference FREE_PACK_MODULES.id in suggested order.
+ * Man Power deep-link: mentor.html?path=<id>  or  ?openModule=<moduleId>
+ */
+MG.LEARNING_PATHS = [
+  {
+    id: 'new_metallizer_operator',
+    title: 'New Metallizer Operator',
+    desc: 'Core process competence for operators joining metalliser lines — boat change, vacuum, wire, cost awareness.',
+    audience: 'Operators · 0–18 months experience',
+    icon: 'fa-industry',
+    color: 'teal',
+    moduleIds: ['met_train', 'mr_skill', 'met_cost', 'excel_expert']
+  },
+  {
+    id: 'shift_incharge',
+    title: 'Shift In-charge',
+    desc: 'Lead a shift with discipline: soft skills, time standards, KPIs and handover quality.',
+    audience: 'Supervisors · Shift leads',
+    icon: 'fa-user-tie',
+    color: 'indigo',
+    moduleIds: ['supskill', 'timestudy', 'kpi', 'excel_expert', 'met_train']
+  },
+  {
+    id: 'process_engineer',
+    title: 'Process Engineer',
+    desc: 'Depth on metalliser economics, yield drivers, time study and plant KPIs for continuous improvement.',
+    audience: 'Process / Production engineers',
+    icon: 'fa-flask',
+    color: 'orange',
+    moduleIds: ['met_train', 'met_cost', 'timestudy', 'kpi', 'excel_expert', 'mr_skill']
+  }
+];
+
 // ========== Topics Catalog ==========
 // track: 'career_ai' | 'packaging' — used for rate badge + default booking track
 // icons: array of {icon: 'fa class or text', bg: 'brand color', title: 'tooltip'} or {img, title}
