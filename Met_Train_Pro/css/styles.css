@@ -1237,50 +1237,200 @@ html[data-theme="light"] .lb.on, body.light .lb.on{
 .tb-langs{display:flex;align-items:center;gap:3px;flex-wrap:wrap;max-width:200px}
 
 
-/* ── 2.6.16: light theme readable cards (no layout changes) ── */
+/* ============================================================
+   2.6.18 — fonts: WHITE on dark, BLACK on light
+   ============================================================ */
+
+/* Dark theme (default / data-theme not light): white text everywhere in content */
+html:not([data-theme="light"]) body,
+html:not([data-theme="light"]) #content,
+html:not([data-theme="light"]) .pg,
+html:not([data-theme="light"]) .cb,
+html:not([data-theme="light"]) .cb-body,
+html:not([data-theme="light"]) .cb-title,
+html:not([data-theme="light"]) .st,
+html:not([data-theme="light"]) .fs,
+html:not([data-theme="light"]) .fi,
+html:not([data-theme="light"]) .fi .fs,
+html:not([data-theme="light"]) .fi .fs span,
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .ph-desc,
+html:not([data-theme="light"]) .ph-title,
+html:not([data-theme="light"]) table.t td,
+html:not([data-theme="light"]) .stat,
+html:not([data-theme="light"]) .cbox,
+html:not([data-theme="light"]) .alert,
+html:not([data-theme="light"]) .cli,
+html:not([data-theme="light"]) .qtext,
+html:not([data-theme="light"]) .opt,
+html:not([data-theme="light"]) .en-as-main {
+  color: #ffffff !important;
+}
+html:not([data-theme="light"]) .cb-sub,
+html:not([data-theme="light"]) .muted,
+html:not([data-theme="light"]) .ph-code,
+html:not([data-theme="light"]) .fi .fs .en {
+  color: #e2e8f0 !important;
+}
+html:not([data-theme="light"]) .fi .ft,
+html:not([data-theme="light"]) table.t th,
+html:not([data-theme="light"]) .tv,
+html:not([data-theme="light"]) .sn {
+  color: #4ade80 !important;
+}
+/* Keep dark panels dark in dark theme */
+html:not([data-theme="light"]) .fi {
+  background: #1a1a1a !important;
+}
+html:not([data-theme="light"]) .cb {
+  background: var(--surf, #1f1f1f) !important;
+}
+
+/* Light theme: BLACK text on light surfaces */
+html[data-theme="light"] body,
+body.light,
+html[data-theme="light"] #content,
+body.light #content,
+html[data-theme="light"] .pg,
+body.light .pg,
+html[data-theme="light"] .cb,
+body.light .cb,
+html[data-theme="light"] .cb-body,
+body.light .cb-body,
+html[data-theme="light"] .cb-title,
+body.light .cb-title,
+html[data-theme="light"] .st,
+body.light .st,
+html[data-theme="light"] .fs,
+body.light .fs,
+html[data-theme="light"] .fi,
+body.light .fi,
+html[data-theme="light"] .fi .fs,
+body.light .fi .fs,
+html[data-theme="light"] .fi .fs span,
+body.light .fi .fs span,
+html[data-theme="light"] .card,
+body.light .card,
+html[data-theme="light"] .ph-desc,
+body.light .ph-desc,
+html[data-theme="light"] .ph-title,
+body.light .ph-title,
+html[data-theme="light"] table.t td,
+body.light table.t td,
+html[data-theme="light"] .stat,
+body.light .stat,
+html[data-theme="light"] .cbox,
+body.light .cbox,
+html[data-theme="light"] .cli,
+body.light .cli,
+html[data-theme="light"] .qtext,
+body.light .qtext,
+html[data-theme="light"] .opt,
+body.light .opt,
+html[data-theme="light"] .en-as-main,
+body.light .en-as-main {
+  color: #000000 !important;
+}
+html[data-theme="light"] .cb-sub,
+body.light .cb-sub,
+html[data-theme="light"] .muted,
+body.light .muted,
+html[data-theme="light"] .ph-code,
+body.light .ph-code {
+  color: #334155 !important;
+}
+/* Light theme: white cards (so black text is visible) */
 html[data-theme="light"] .cb,
 body.light .cb,
 html[data-theme="light"] .card,
-body.light .card {
+body.light .card,
+html[data-theme="light"] .fi,
+body.light .fi,
+html[data-theme="light"] .stat,
+body.light .stat,
+html[data-theme="light"] .cbox,
+body.light .cbox {
   background: #ffffff !important;
-  border-color: rgba(15,23,42,.12) !important;
-  color: #0f172a !important;
+  border-color: rgba(0,0,0,.12) !important;
 }
 html[data-theme="light"] .cb-h:hover,
-body.light .cb-h:hover { background: #f1f5f9 !important; }
-html[data-theme="light"] .cb-title,
-html[data-theme="light"] .st,
-html[data-theme="light"] .fs,
-html[data-theme="light"] .cb-body,
-html[data-theme="light"] td,
-html[data-theme="light"] th,
-body.light .cb-title,
-body.light .st,
-body.light .fs,
-body.light .cb-body,
-body.light td,
-body.light th {
-  color: #0f172a !important;
-}
-html[data-theme="light"] .fi,
-body.light .fi {
-  background: #fff !important;
-  border-color: rgba(15,23,42,.12) !important;
-  color: #0f172a !important;
+body.light .cb-h:hover {
+  background: #f1f5f9 !important;
 }
 html[data-theme="light"] .fi .ft,
-body.light .fi .ft { color: #0d9488 !important; }
-html[data-theme="light"] .fi .fs,
-body.light .fi .fs { color: #0f172a !important; }
+body.light .fi .ft,
+html[data-theme="light"] table.t th,
+body.light table.t th,
+html[data-theme="light"] .tv,
+body.light .tv {
+  color: #0d9488 !important;
+}
+html[data-theme="light"] .fi .fn,
+body.light .fi .fn {
+  color: #0d9488 !important;
+  border-color: rgba(13,148,136,.4) !important;
+  background: rgba(13,148,136,.08) !important;
+}
 
-/* AI chat input size */
-.ai-input-wrap textarea,
-#ai-inp {
-  min-height: 72px !important;
+/* Sidebar / nav: match theme */
+html:not([data-theme="light"]) #sidebar,
+html:not([data-theme="light"]) .sb-item {
+  color: #e2e8f0;
+}
+html:not([data-theme="light"]) .sb-item.on {
+  color: #4ade80 !important;
+}
+html[data-theme="light"] #sidebar,
+html[data-theme="light"] .sb-item,
+body.light #sidebar,
+body.light .sb-item {
+  color: #000000 !important;
+}
+html[data-theme="light"] .sb-item.on,
+body.light .sb-item.on {
+  color: #0d9488 !important;
+}
+
+/* AI input stays dark with white text always */
+#ai-inp,
+.ai-input-wrap textarea {
+  color: #ffffff !important;
+  background: #1a1a2e !important;
+  min-height: 88px !important;
   font-size: 16px !important;
-  padding: 16px 18px !important;
-  max-height: 140px !important;
-  border-radius: 16px !important;
+}
+.ai-bubble-bot { color: #f8fafc !important; }
+.ai-bubble-user { color: #ffffff !important; }
+
+/* AI chat layout (keep from 2.6.17) */
+#pg-askai {
+  padding: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  min-height: calc(100vh - 60px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.ai-chat-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: calc(100vh - 60px) !important;
+  width: 100% !important;
+}
+#ai-msgs {
+  flex: 1 1 auto !important;
+  min-height: 220px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+.ai-input-wrap {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  gap: 12px !important;
+  align-items: flex-end !important;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  background: #0f0f14 !important;
 }
 .ai-send-btn {
   width: 56px !important;
@@ -1290,7 +1440,7 @@ body.light .fi .fs { color: #0f172a !important; }
   font-size: 22px !important;
 }
 
-/* Ensure #content is the only scroll host (match old, add min-height:0 for flex) */
+/* Scroll host */
 #body { min-height: 0; }
 #content {
   flex: 1 1 auto;
