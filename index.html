@@ -1,555 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mentor by VKS Tech — 1:1 Career, AI & Flexible Packaging</title>
-  <link rel="icon" href="assets/mentor-icon.jpg" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1e3a8a" />
-  <meta name="description" content="One-to-one mentorship: Career & AI and Flexible Packaging Expert tracks. Free plant modules. Book hours, pay via Razorpay, learn with recordings." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root { --navy:#0f172a; --blue:#1e3a8a; --orange:#ea580c; --slate:#64748b; --border:#e2e8f0; --bg:#f8fafc; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-text-size-adjust: 100%; }
-    body { font-family: Inter, system-ui, sans-serif; color: var(--navy); line-height: 1.55; overflow-x: hidden; }
-    a { color: inherit; text-decoration: none; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
-    @media(min-width:640px){ .wrap { padding: 0 24px; } }
-    .nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-    .nav-in { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 8px; }
-    @media(min-width:640px){ .nav-in { height: 64px; } }
-    .logo { font-weight: 800; display: flex; gap: 8px; align-items: center; text-decoration:none; color:inherit; min-width:0; }
-    .logo > span.logo-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; display:grid; place-items:center; font-size:12px; flex-shrink:0; }
-    .nav-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-    @media(min-width:640px){ .nav-actions { gap:8px; } }
-    .btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:12px; font-weight:600; font-size:13px; border:none; cursor:pointer; white-space:nowrap; }
-    @media(min-width:640px){ .btn { padding:11px 18px; font-size:14px; } }
-    .btn-primary { background:#2563eb; color:#fff; }
-    .btn-orange { background: var(--orange); color:#fff; }
-    .btn-ghost { border:1px solid var(--border); background:#fff; }
-    .nav .btn-ghost { padding:8px 12px; }
-    @media(max-width:480px){
-      .nav .btn-ghost[data-i18n="login"] { display:none; }
-      .nav .btn-primary { padding:8px 12px; font-size:12px; }
-    }
-    .hero { background: linear-gradient(160deg,#0f172a 0%,#1e3a8a 55%,#0f766e 120%); color:#fff; padding:40px 0 48px; }
-    @media(min-width:640px){ .hero { padding:56px 0 64px; } }
-    .hero h1 { font-size: clamp(1.55rem,5.5vw,2.75rem); line-height:1.15; letter-spacing:-.03em; margin:12px 0 14px; max-width:18ch; }
-    .hero p { opacity:.9; max-width:36rem; margin-bottom:20px; font-size:15px; }
-    @media(min-width:640px){ .hero p { font-size:16px; } }
-    .hero-actions { display:flex; flex-wrap:wrap; gap:10px; }
-    .hero-actions .btn { min-height:44px; }
-    .badge { display:inline-block; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); padding:6px 12px; border-radius:999px; font-size:11px; font-weight:600; }
-    @media(min-width:640px){ .badge { font-size:12px; } }
-    section { padding:40px 0; }
-    @media(min-width:640px){ section { padding:56px 0; } }
-    .bg { background: var(--bg); }
-    h2 { font-size: clamp(1.25rem,3.2vw,1.9rem); letter-spacing:-.02em; margin-bottom:10px; }
-    .lead { color: var(--slate); max-width:36rem; font-size:14px; }
-    @media(min-width:640px){ .lead { font-size:15px; } }
-    .grid { display:grid; gap:14px; margin-top:24px; }
-    @media(min-width:640px){ .grid { gap:16px; margin-top:28px; } }
-    @media(min-width:800px){ .grid-2{ grid-template-columns:1fr 1fr; } .grid-3{ grid-template-columns:repeat(3,1fr); } }
-    .card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow:0 4px 20px rgba(15,23,42,.06); transition: transform .15s ease, box-shadow .15s ease; }
-    @media(min-width:640px){ .card { padding:20px; } }
-    .card:hover { transform: translateY(-2px); box-shadow:0 8px 28px rgba(15,23,42,.1); }
-    .card h3 { font-size:1.02rem; margin-bottom:8px; }
-    .card p, .card li { color:var(--slate); font-size:13px; }
-    @media(min-width:640px){ .card p, .card li { font-size:14px; } }
-    .card ul { padding-left:18px; margin-top:8px; }
-    .price { font-weight:800; color:var(--orange); font-size:1.2rem; margin:8px 0; }
-    .steps { display:grid; gap:12px; margin-top:20px; }
-    @media(min-width:640px){ .steps { gap:14px; margin-top:24px; grid-template-columns:repeat(2,1fr); } }
-    @media(min-width:900px){ .steps{ grid-template-columns:repeat(4,1fr); } }
-    .step { background:#fff; border:1px solid var(--border); border-radius:14px; padding:14px; }
-    @media(min-width:640px){ .step { padding:16px; } }
-    .num { width:28px; height:28px; border-radius:8px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:800; margin-bottom:10px; }
-    .cta { background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; text-align:center; padding:40px 0; }
-    @media(min-width:640px){ .cta { padding:48px 0; } }
-    .cta .btn { min-height:48px; min-width:min(100%,220px); }
-    footer { background:var(--navy); color:#94a3b8; padding:24px 0; font-size:13px; }
-    @media(min-width:640px){ footer { padding:28px 0; } }
-    footer a:hover { color:#fff; }
-    /* Touch-friendly free module cards */
-    #free .card { min-height:88px; display:flex; flex-direction:column; justify-content:center; }
-    @media(max-width:639px){
-      #free .grid-3 { grid-template-columns:1fr 1fr; }
-      #testimonials .grid-3 { grid-template-columns:1fr; }
-    }
-  
-/* 🌐 Multi-language app promo strip */
-.mn-lang-promo, .mn-lang-promo {
-  margin: 18px 0 8px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(37,99,235,.06), rgba(234,88,12,.05));
-  border: 1px solid rgba(37,99,235,.12);
-}
-.mn-lang-promo-inner, .mn-lang-promo-inner { display:flex; flex-direction:column; gap:10px; }
-.mn-lang-promo-label, .mn-lang-promo-label {
-  display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
-}
-.mn-lang-promo-icon, .mn-lang-promo-icon { font-size:18px; }
-.mn-lang-promo-title, .mn-lang-promo-title {
-  font-weight:800; font-size:14px; color:#0f172a; letter-spacing:.01em;
-}
-.mn-lang-promo-sub, .mn-lang-promo-sub {
-  font-size:12px; color:#64748b; font-weight:500;
-}
-.mn-lang-chips, .mn-lang-chips {
-  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-}
-.mn-chip, .mn-chip {
-  min-width:40px; height:36px; padding:0 12px;
-  border-radius:999px; border:1px solid #e2e8f0;
-  background:#fff; color:#0f172a; font-weight:700; font-size:13px;
-  cursor:pointer; transition:.15s ease;
-  box-shadow:0 1px 2px rgba(15,23,42,.04);
-}
-.mn-chip:hover, .mn-chip:hover {
-  border-color:#2563eb; color:#1d4ed8; transform:translateY(-1px);
-}
-.mn-chip-more, .mn-chip-more {
-  background:#0f172a; color:#fff; border-color:#0f172a;
-}
-.mn-chip-more:hover, .mn-chip-more:hover {
-  background:#1e293b; color:#fff; border-color:#1e293b;
-}
-#landingLangBtn, #mentorLandingLang {
-  min-width:48px; font-weight:800 !important;
-  border:1.5px solid #cbd5e1 !important;
-  border-radius:10px !important;
-  background:linear-gradient(180deg,#fff,#f8fafc) !important;
-}
-
-
-/* Hide expanded language strip on landing — single chip only */
-.mn-lang-promo{display:none!important;}
-</style>
-
+<meta charset="utf-8">
+<title>PackLink – Packaging Industry Network</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e3b2e">
+<meta name="description" content="PackLink – India's packaging industry network. Verified members, job board, company profiles, chats, and AI-ready resume tools for flexible packaging professionals.">
+<meta property="og:title" content="PackLink – Packaging Industry Network">
+<meta property="og:description" content="Connect with packaging professionals, post and find jobs, build your resume — built for flexible packaging.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="/manifest.json">
 <script>
-(function () {
-  try {
-    var params = new URLSearchParams(location.search || '');
-    if (params.get('stay') === '1' || params.get('marketing') === '1') return;
-    var verified = localStorage.getItem('vks_site_verified') === '1';
-    var phone = (localStorage.getItem('vks_site_phone') || '').replace(/\D/g, '').slice(-10);
-    if (!phone) {
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (k && k.indexOf('vks_mentor_verified_') === 0 && localStorage.getItem(k) === '1') {
-          phone = k.replace('vks_mentor_verified_', '');
-          verified = true;
-          break;
-        }
-      }
-    } else if (localStorage.getItem('vks_mentor_verified_' + phone) === '1') {
-      verified = true;
-    }
-    if (verified && phone && /^[6-9]\d{9}$/.test(phone)) {
-      location.replace('mentor.html');
-    }
-  } catch (e) {}
-})();
+/* Capture install prompt early (same pattern as Man Power) */
+window.__plDeferredPrompt = null;
+window.__plPwaInstallReady = false;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  window.__plDeferredPrompt = e;
+  window.__plPwaInstallReady = true;
+  try { if (typeof window.refreshInstallUI === 'function') window.refreshInstallUI(); } catch(x){}
+});
+window.addEventListener('appinstalled', function(){
+  window.__plDeferredPrompt = null;
+  window.__plPwaInstallReady = false;
+  window.__plPwaInstalled = true;
+  try { localStorage.setItem('packlink_pwa_installed','1'); } catch(x){}
+  try { if (typeof window.refreshInstallUI === 'function') window.refreshInstallUI(); } catch(x){}
+});
 </script>
-
+<link rel="icon" type="image/png" sizes="96x96" href="/Assets/icon-96.png">
+<link rel="apple-touch-icon" href="/Assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PackLink – Packaging Industry Network">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="css/app.css">
+<script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-in">
-      <a class="logo" href="mentor.html" style="text-decoration:none;color:inherit">
-        <img src="assets/mentor-icon.jpg" alt="Mentor" width="34" height="34" style="border-radius:10px;object-fit:cover;width:34px;height:34px;flex-shrink:0" />
-        <span style="display:flex;flex-direction:column;line-height:1.15;gap:1px">
-          <span style="font-weight:800;font-size:16px;color:#0f172a;letter-spacing:-.02em">Mentor</span>
-          <span style="font-weight:600;font-size:10px;color:#64748b;letter-spacing:.02em">by VKS Tech</span>
-        </span>
-      </a>
-      <div class="nav-actions">
-        <a class="btn btn-ghost" href="mentor.html" data-i18n="login">Login</a>
-        <button type="button" id="mentorLandingLang" onclick="try{mentorLandingToggleLang()}catch(e){}" style="padding:8px 12px;border-radius:999px;border:1.5px solid #cbd5e1;background:#fff;font-weight:800;font-size:12px;cursor:pointer;min-height:40px" title="Switch language">🌐 EN</button>
-        <a class="btn btn-primary" href="mentor.html" data-i18n="start">Start free modules</a>
+
+<div id="splash"><img src="/Assets/icon-192.png" alt="PackLink"></div>
+
+<!-- App lock (PIN / fingerprint) while session is active -->
+<section id="appLock" class="hide">
+  <div class="brand"><img src="/Assets/icon-192.png" alt=""><div><h1>PackLink</h1><p>Unlock this device</p></div></div>
+  <div class="box" style="text-align:center">
+    <p style="margin:0 0 14px;color:var(--muted);font-size:14px">Enter your PIN to continue. No OTP needed.</p>
+    <div class="field"><label for="lockPin">PIN</label><input id="lockPin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="current-password"></div>
+    <button class="btn" id="lockUnlock">Unlock</button>
+    <button class="btn ghost" id="lockBio" style="margin-top:8px;display:none">Fingerprint / Face</button>
+    <button class="link" id="lockLogout" style="margin-top:16px">Sign out completely (need OTP next time)</button>
+  </div>
+  <div class="err" id="lockErr"></div>
+</section>
+
+
+<!-- ========== LANDING (public marketing) ========== -->
+<section id="landing" class="landing">
+  <div class="ld-nav">
+    <div class="ld-brand">
+      <img src="/Assets/icon-96.png" alt="PackLink" width="36" height="36">
+      <div>
+        <strong>PackLink</strong>
+        <span>Linking Packaging Professionals</span>
       </div>
+    </div>
+    <div class="ld-nav-actions">
+      <button type="button" class="ld-btn ghost" id="ldInstallTop" onclick="try{window.triggerFPInstall&&window.triggerFPInstall()}catch(e){}">📲 Install</button>
+      <button type="button" class="ld-btn primary" id="ldLoginTop">Log in →</button>
+    </div>
+  </div>
+
+  <div class="ld-hero">
+    <div class="ld-eyebrow">🇮🇳 Built for Flexible Packaging · VKS Tech</div>
+    <h1>Your industry network<br><span>for packaging careers</span></h1>
+    <p class="ld-lead">
+      PackLink is a members-only network for flexible packaging professionals —
+      verified colleagues, job posts (hiring &amp; seeking), company context, private chats,
+      and a resume workspace in one place.
+    </p>
+    <div class="ld-cta-row">
+      <button type="button" class="ld-btn primary lg" id="ldLoginHero">Log in with OTP</button>
+      <button type="button" class="ld-btn ghost lg" id="ldInstallHero" onclick="try{window.triggerFPInstall&&window.triggerFPInstall()}catch(e){}">Install app</button>
+    </div>
+    <p class="ld-note">Admin-verified mobiles only · Free for members · Works as a phone app (PWA)</p>
+  </div>
+
+  <div class="ld-purpose">
+    <h2>What PackLink is for</h2>
+    <p class="ld-sub">Not a generic job site. A focused network for people who work in film, converting, printing, lamination, and packaging plants.</p>
+    <div class="ld-grid">
+      <article class="ld-card">
+        <div class="ic">💬</div>
+        <h3>Industry chats</h3>
+        <p>Talk with verified packaging peers — not random applicants from the open web.</p>
+      </article>
+      <article class="ld-card">
+        <div class="ic">👷</div>
+        <h3>Member directory</h3>
+        <p>Find people by company, designation, and department across the packaging ecosystem.</p>
+      </article>
+      <article class="ld-card">
+        <div class="ic">💼</div>
+        <h3>Job board</h3>
+        <p>Post hiring or “seeking” roles. Filter by your posts and recent listings.</p>
+      </article>
+      <article class="ld-card">
+        <div class="ic">📄</div>
+        <h3>Resume workspace</h3>
+        <p>Build an ATS-friendly resume inside the app, or open the full VKS Resume Builder.</p>
+      </article>
+      <article class="ld-card">
+        <div class="ic">🏢</div>
+        <h3>Company context</h3>
+        <p>Profiles rooted in real packaging companies (UFlex, JPFL, Cosmo, SRF and more).</p>
+      </article>
+      <article class="ld-card">
+        <div class="ic">🔐</div>
+        <h3>Members only</h3>
+        <p>Login is OTP on numbers added by admin — keeps the network professional.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="ld-how">
+    <h2>How it works</h2>
+    <ol>
+      <li><strong>Admin adds your mobile</strong> to the member list (Excel upload or manual).</li>
+      <li><strong>You log in with OTP</strong> — no passwords to remember.</li>
+      <li><strong>Complete your profile</strong>, explore members, post or apply for jobs, build your resume.</li>
+      <li><strong>Install the app</strong> on your phone for a home-screen shortcut and faster access.</li>
+    </ol>
+  </div>
+
+  <div class="ld-footer">
+    <div>
+      <strong>PackLink</strong> · by <a href="https://vkstech.com" target="_blank" rel="noopener">VKS Tech</a>
+      · <a href="/privacy.html">Privacy</a>
+    </div>
+    <button type="button" class="ld-btn primary" id="ldLoginFoot">Log in →</button>
+  </div>
+</section>
+
+<!-- Install bar -->
+<div id="installBar" class="hide">
+  <img src="/Assets/icon-96.png" alt="">
+  <span>Install PackLink – Packaging Industry Network</span>
+  <button class="go" id="installBtn">Download app</button>
+  <button class="x" id="installX" aria-label="Dismiss">×</button>
+</div>
+
+<!-- Login -->
+<section id="login" class="hide">
+  <div class="brand"><img src="/Assets/icon-192.png" alt=""><div><h1>PackLink</h1><p>Linking Packaging Professionals · Members only</p></div></div>
+  <p class="login-purpose">Jobs, directory, chat &amp; resume tools for flexible packaging professionals.</p>
+  <div class="login-install-row" id="loginInstallRow" role="navigation" aria-label="Install app">
+    <button type="button" class="pl-sec-install" id="loginPwaBtn" title="Install PackLink app">
+      <span class="fp-sec-ic">📲</span>
+      <span class="fp-sec-lb">Install app · iOS / Android / Windows</span>
+    </button>
+    <button type="button" class="pl-sec-install ghost" id="loginShareBtn" title="Share PackLink">
+      <span class="fp-sec-ic">📤</span>
+      <span class="fp-sec-lb">Share app</span>
+    </button>
+  </div>
+  <div class="box">
+    <div id="stepDevice" class="hide">
+      <p style="margin:0 0 10px;font-size:14px;color:var(--muted)">Welcome back on this device</p>
+      <div class="field"><label>Mobile</label><input id="devPhoneShow" type="text" readonly style="opacity:.85"></div>
+      <div class="field"><label for="devPin">Enter your PIN</label><input id="devPin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="current-password"></div>
+      <button class="btn" id="devPinLogin">Unlock with PIN</button>
+      <button class="btn ghost" id="devBioLogin" style="margin-top:8px;display:none">Unlock with fingerprint / face</button>
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        <button class="link" id="devUseOtp">Use OTP instead</button>
+        <button class="link" id="devOtherNum">Different number</button>
+      </div>
+    </div>
+    <div id="stepPhone">
+      <label for="phone">Mobile number</label>
+      <div class="phoneRow"><select id="cc" aria-label="Country code"><option value="+91">+91 India</option></select><input id="phone" type="tel" inputmode="numeric" maxlength="14" placeholder="Mobile number" autocomplete="tel-national"></div>
+      <button class="btn" id="sendOtp">Send OTP</button>
+    </div>
+    <div id="stepOtp" class="hide">
+      <label for="otp">Enter the 6-digit OTP sent to <b id="sentTo"></b></label>
+      <input id="otp" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••">
+      <button class="btn" id="verifyOtp">Verify and sign in</button>
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <button class="link" id="changeNum">Change number</button>
+        <button class="link" id="resend" disabled>Resend OTP</button>
+      </div>
+    </div>
+  </div>
+  <div class="err" id="loginErr"></div>
+  <div id="recaptcha"></div>
+</section>
+
+<!-- Pending approval (number not in members) -->
+<section id="pending" class="hide">
+  <div class="brand"><img src="/Assets/icon-192.png" alt=""><div><h1>PackLink</h1><p>Members only network</p></div></div>
+  <div class="box" style="text-align:center">
+    <h2 style="margin:0 0 12px;font-size:20px">You are not registered</h2>
+    <p style="margin:0 0 16px;line-height:1.5;color:var(--muted)">
+      This mobile number is not yet in the PackLink database.<br><br>
+      Please send a WhatsApp message to the admin with your <strong>current employment proof</strong> and <strong>Resume</strong>.
+      After verification the admin will approve your login.
+    </p>
+    <a id="pendingWaLink" class="btn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
+      WhatsApp admin
+    </a>
+    <p style="margin:18px 0 0;font-size:13px;color:var(--muted)">
+      After the admin approves you, reopen the app and sign in with the same number.
+    </p>
+    <button type="button" class="link" id="pendingLogout" style="margin-top:16px">Use a different number</button>
+  </div>
+</section>
+
+<!-- App -->
+<div id="app" class="hide">
+  <header class="top">
+    <img src="/Assets/icon-96.png" alt="">
+    <h2 id="pageTitle">Chats</h2>
+    <div class="hdr-actions">
+      <button type="button" class="hdr-chip" id="shareAppBtn" title="Share app" aria-label="Share app">📤 Share</button>
+      <button type="button" class="hdr-chip" id="pwaInstallBtn" title="Install app" aria-label="Install app">📲 Install</button>
+      <small id="who"></small>
     </div>
   </header>
-
-  <section class="hero">
-    <div class="wrap">
-      <div class="badge" data-i18n="badge">1:1 mentorship · Career & AI · Flexible packaging</div>
-      <h1 data-i18n="hero">1:1 guidance from a production leader who led 60-member teams.</h1>
-      <p><strong>Vivek Kumar</strong> — M.Tech (GATE), NIT Uttarakhand · 9 years at UFlex, JPFL &amp; GLS · highest single-line output 818 MT · defects cut from 9% to 0.2%. Free plant modules to start. Paid hours when you need Excel, yield, AI prompts, or career decisions fixed — not a generic course dump.</p>
-      <div class="hero-actions">
-        <a class="btn btn-orange" href="mentor.html" data-i18n="openApp">Book a paid hour →</a>
-        <a class="btn btn-ghost" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)" href="#tracks" data-i18n="seeTracks">See tracks &amp; live rates</a>
+  <main>
+    <section class="page on" id="page-chat">
+      <div class="filters" id="chatModeFilters" style="padding:8px 12px 0;margin:0">
+        <button type="button" class="chip on" data-chat-mode="group">Group</button>
+        <button type="button" class="chip" data-chat-mode="dm">Personal<span class="badge hide" id="dmBadge" style="margin-left:6px"></span></button>
       </div>
-      <p style="margin-top:18px;font-size:13px;opacity:.85">Not sure yet? Start with free modules — no payment needed. Prefer to talk first? WhatsApp after login.</p>
-    </div>
-  </section>
-
-  <section id="tracks">
-    <div class="wrap">
-      <h2 data-i18n="twoTracks">Two paid tracks</h2>
-      <p class="lead">Live rates from admin — what you see below is what you pay. If your first paid session does not feel useful, tell the mentor; we make it right.</p>
-      <div class="grid grid-2">
-        <article class="card">
-          <h3 data-i18n="career">Career &amp; AI Track</h3>
-          <div class="price" data-rate-career>₹699 / hour</div>
-          <ul>
-            <li>Prompts: ChatGPT, Gemini, Claude</li>
-            <li>Excel + AI workflows</li>
-            <li>LinkedIn, freelancing, soft skills</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3 data-i18n="pack">Flexible Packaging Expert</h3>
-          <div class="price" data-rate-pack>₹799 / hour</div>
-          <ul>
-            <li>Capacity, yield, waste, metalliser boat life</li>
-            <li>5S, manpower &amp; shift design</li>
-            <li>Plant Excel systems</li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg" id="how">
-    <div class="wrap">
-      <h2 data-i18n="how">How booking works</h2>
-      <div class="steps">
-        <div class="step"><div class="num">1</div><strong>Pick track &amp; hours</strong><p style="color:var(--slate);font-size:13px;margin-top:6px">Focus topic + preferred time window</p></div>
-        <div class="step"><div class="num">2</div><strong>Pay on Razorpay</strong><p style="color:var(--slate);font-size:13px;margin-top:6px">Link set by mentor for that track</p></div>
-        <div class="step"><div class="num">3</div><strong>Submit UTR</strong><p style="color:var(--slate);font-size:13px;margin-top:6px">Payment id required for approval</p></div>
-        <div class="step"><div class="num">4</div><strong>Mentor unlocks</strong><p style="color:var(--slate);font-size:13px;margin-top:6px">Chat, checklist, session recording</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="free">
-    <div class="wrap">
-      <h2 data-i18n="free">Free modules</h2>
-      <p class="lead">Start without payment — then book 1:1 when you need plant-specific help.</p>
-      <div class="grid grid-3">
-        <a class="card" href="modules/excel_expert.html"><h3>Excel Expert</h3><p>Yield, waste, roster COUNTIF</p></a>
-        <a class="card" href="modules/supskill.html"><h3>SupSkill</h3><p>Shift handover &amp; escalation</p></a>
-        <a class="card" href="modules/timestudy.html"><h3>Time Study</h3><p>Simple stopwatch method</p></a>
-        <a class="card" href="Met_Train_Pro/met_train_pro.html"><h3>Met Train Pro</h3><p>Metalliser training hub</p></a>
-        <a class="card" href="MR_Skill/mr_skill.html"><h3>MR Skill</h3><p>Skills module</p></a>
-        <a class="card" href="modules/kpi_dashboard.html"><h3>KPI basics</h3><p>Weekly plant indicators</p></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta">
-    <div class="wrap">
-      <h2 style="color:#fff" data-i18n="ready">Ready for a focused hour?</h2>
-      <p style="opacity:.9;margin:10px 0 20px">Login with mobile OTP → choose track → pay → mentor approves.</p>
-      <a class="btn btn-orange" href="mentor.html" data-i18n="go">Go to Mentor app</a>
-    </div>
-  </section>
-
-  <!-- Testimonials — shared source: github.com/vkstecho/manpower/testimonials -->
-  <section id="testimonials" style="padding:56px 0;background:#f8fafc">
-    <div class="wrap">
-      <h2 style="text-align:center;margin-bottom:8px">What learners say</h2>
-      <p class="lead" style="text-align:center;margin:0 auto 28px">Real sessions. Real outcomes. Real career paths under VKS Tech mentoring — loaded live from the shared testimonials library on GitHub.</p>
-      <div id="testimonialsGrid" class="grid grid-3" style="margin-top:8px">
-        <div class="card" style="text-align:center;color:var(--slate);font-size:14px;padding:28px 18px" id="testimonialsPlaceholder">
-          Loading testimonials…
+      <div id="groupChatPane" style="display:flex;flex-direction:column;flex:1;min-height:0">
+        <div class="toolbar">
+          <input class="search" id="cSearch" placeholder="Search messages…" autocomplete="off">
+          <span id="chatSearchHit" class="hide"></span>
+          <button type="button" class="hdr-chip hide" id="chatSettingsBtn" title="Chat settings (admin)">⚙ Settings</button>
+        </div>
+        <div id="chatOnlyAdminsBanner" class="banner hide" style="margin:0 12px 8px">Only admins can send messages right now.</div>
+        <div id="chatList"></div>
+        <button id="toBottom" class="hide">New messages ↓</button>
+        <div class="composer">
+          <input type="file" id="chatImgIn" accept="image/*" class="hide">
+          <button type="button" class="circ ghost" id="attachBtn" aria-label="Attach photo" title="Send photo">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <textarea id="msg" rows="1" placeholder="Message" enterkeyhint="send"></textarea>
+          <button class="circ" id="sendBtn" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Contact — same style as vkstech.com -->
-  <section id="contact" style="padding:48px 0;background:#0f172a;color:#fff">
-    <div class="wrap" style="display:grid;gap:24px">
-      <div>
-        <h2 style="color:#fff;margin-bottom:8px">Contact</h2>
-        <p style="opacity:.8;max-width:36rem;margin:0">Questions about tracks, sessions, or free modules? Reach out the same way as on VKS Tech.</p>
+      <div id="dmPane" class="hide" style="flex-direction:column;flex:1;min-height:0">
+        <div id="dmListView" class="scroll" style="flex:1">
+          <div id="dmRequests" style="padding:0 12px"></div>
+          <div id="dmThreads" style="padding:0 12px 12px"></div>
+        </div>
+        <div id="dmChatView" class="hide" style="flex-direction:column;flex:1;min-height:0">
+          <div class="toolbar" style="gap:8px">
+            <button type="button" class="btn sm ghost" id="dmBack">← Back</button>
+            <div style="flex:1;min-width:0">
+              <div id="dmPeerName" style="font-weight:700;font-size:15px"></div>
+              <div id="dmPeerMeta" style="font-size:12px;color:var(--muted)"></div>
+            </div>
+          </div>
+          <div id="dmMsgList" style="flex:1;overflow:auto;padding:8px 12px"></div>
+          <div class="composer" id="dmComposer">
+            <textarea id="dmMsg" rows="1" placeholder="Personal message" enterkeyhint="send"></textarea>
+            <button class="circ" id="dmSendBtn" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-        <a class="btn btn-orange" href="https://wa.me/918929394920" target="_blank" rel="noopener">WhatsApp</a>
-        <a class="btn" href="mailto:Care@vkstech.com" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)">Care@vkstech.com</a>
-        <a class="btn" href="https://vkstech.com" target="_blank" rel="noopener" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)">vkstech.com</a>
+    </section>
+
+    <section class="page" id="page-members">
+      <div class="scroll">
+        <div id="profileBanner" class="banner hide">Complete your profile so members can find you. <button type="button" id="goProfile">Go to Profile</button></div>
+        <div id="memberAdminBar" class="hide" style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+          <button type="button" class="btn sm ghost" id="mSelectToggle">Select</button>
+          <button type="button" class="btn sm danger hide" id="mBulkDelete">Delete selected</button>
+          <span id="mSelectCount" class="hide" style="font-size:13px;color:var(--muted)"></span>
+        </div>
+        <input class="search" id="mSearch" placeholder="Search name, company, designation, department">
+        <div class="filters" id="mFilters">
+          <button type="button" class="chip on" data-des="all">All</button>
+        </div>
+        <div id="mList"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <footer>
-    <div class="wrap" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center">
-      <span>© VKS Tech · Mentor</span>
-      <span style="display:flex;flex-wrap:wrap;gap:14px">
-        <a href="mentor.html">App</a>
-        <a href="#tracks">Tracks</a>
-        <a href="#contact">Contact</a>
-        <a href="https://vkstech.com" target="_blank" rel="noopener">VKS Tech</a>
-      </span>
-    </div>
-  </footer>
-  <script>
-  (function(){
-    var url = 'https://mentor-vkstech-default-rtdb.asia-southeast1.firebasedatabase.app/mentor_settings/tracks.json';
-    fetch(url).then(function(r){return r.json()}).then(function(o){
-      if(!o) return;
-      function setAll(sel, rate){
-        var nodes = document.querySelectorAll(sel);
-        var text = '₹' + Number(rate).toLocaleString('en-IN') + ' / hour';
-        var textShort = '₹' + Number(rate).toLocaleString('en-IN') + '/hr';
-        for(var i=0;i<nodes.length;i++){
-          var t = nodes[i].textContent || '';
-          nodes[i].textContent = (t.indexOf('/hr') !== -1 && t.indexOf('hour') === -1) ? textShort : text;
-        }
-      }
-      if(o.career_ai && o.career_ai.hourlyRate){
-        setAll('[data-rate-career]', o.career_ai.hourlyRate);
-        setAll('[data-track-rate="career_ai"]', o.career_ai.hourlyRate);
-      }
-      if(o.packaging && o.packaging.hourlyRate){
-        setAll('[data-rate-pack]', o.packaging.hourlyRate);
-        setAll('[data-track-rate="packaging"]', o.packaging.hourlyRate);
-      }
-    }).catch(function(){});
-  })();
-  </script>
+    <section class="page" id="page-jobs">
+      <div class="scroll">
+        <input class="search" id="jSearch" placeholder="Search jobs by title, company, location, skills…">
+        <div class="filters">
+          <button type="button" class="chip on" data-filter="all">All</button>
+          <button type="button" class="chip" data-filter="mine">My posts</button>
+          <button type="button" class="chip" data-filter="recent">Last 7 days</button>
+          <button type="button" class="chip" data-filter="urgent">Urgent hire</button>
+        </div>
+        <div id="jList"></div>
+      </div>
+      <button class="fab" id="postJob">+ Post a job</button>
+    </section>
+
+    <!-- Resume builder -->
+    <section class="page" id="page-resume">
+      <div class="scroll">
+        <div class="card resume-promo">
+          <div class="resume-promo-head">
+            <div>
+              <h3 style="margin:0 0 4px;font-size:16px">📄 Resume workspace</h3>
+              <p style="margin:0;color:var(--muted);font-size:13px;line-height:1.45">Free forever · ATS-friendly · PDF ready. Build here or open the full VKS Tech Resume Builder.</p>
+            </div>
+          </div>
+          <div class="resume-promo-actions">
+            <button type="button" class="btn sm" id="resumeScrollBtn">Use in-app builder</button>
+            <a class="btn sm ghost" id="resumeExternalBtn" href="https://vkstech.com/resume/" target="_blank" rel="noopener">Free AI Resume Builder ↗</a>
+          </div>
+        </div>
+        <div id="resumeRoot">
+          <div class="empty">Loading resume builder…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-profile">
+      <div class="scroll">
+        <div id="completeBanner" class="banner hide">Add a photo and short about to look more professional.</div>
+        <div class="card" style="text-align:center">
+          <label for="avIn" style="cursor:pointer"><div class="av big" id="pAv" style="margin:0 auto 8px"></div><span class="link">Change photo</span></label>
+          <input type="file" id="avIn" accept="image/*" class="hide">
+          <h3 id="pName" style="margin:6px 0 0"></h3>
+          <p id="pMeta"></p><p id="pMobile"></p>
+        </div>
+
+        <!-- Clear Current vs Target -->
+        <div class="card">
+          <h3 style="margin:0 0 12px;font-size:15px">Your current role</h3>
+          <div class="kv"><span>Current designation</span><span id="pCurDes">—</span></div>
+          <div class="kv"><span>Current company</span><span id="pCurCo">—</span></div>
+          <div class="kv"><span>Current salary (CTC)</span><span id="pCurCtc">—</span></div>
+          <p style="margin:10px 0 0;font-size:12px;color:var(--muted)">Designation &amp; company can be updated below. CTC is private (visible only to you and admins).</p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 12px;font-size:15px">Your target &amp; mobility</h3>
+          <div class="field"><label for="eTargetDes">Target designation</label><input id="eTargetDes" maxlength="60" placeholder="e.g. Production Manager"></div>
+          <div class="field"><label for="eTargetCtc">Target salary (CTC)</label><input id="eTargetCtc" maxlength="40" placeholder="e.g. 12 LPA"></div>
+          <div class="field"><label for="eCurCtc">Current salary (CTC)</label><input id="eCurCtc" maxlength="40" placeholder="e.g. 8 LPA — private, only you + admins see this"></div>
+          <label class="check-row" style="display:flex;align-items:flex-start;gap:10px;margin:12px 0 4px;cursor:pointer">
+            <input type="checkbox" id="eOpenToMobility" style="margin-top:3px">
+            <span>Open to internal training / cross-plant movement<br><small style="color:var(--muted);font-weight:400">Signals to plants that you are available for skill development or transfer</small></span>
+          </label>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--muted)">Target, CTC &amp; mobility are saved when you press <b>Save changes</b> in Edit profile below. Current CTC stays private (you + admins only).</p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 12px;font-size:15px">Edit profile</h3>
+          <div class="field"><label for="eName">Name</label><input id="eName" maxlength="60"></div>
+          <div class="field"><label for="eAbout">About</label><textarea id="eAbout" rows="3" maxlength="200" placeholder="Tell members what you do"></textarea></div>
+          <div class="field"><label for="eCompany">Company</label><input id="eCompany" maxlength="80"></div>
+          <div class="field"><label for="eDes">Designation</label><input id="eDes" maxlength="60"></div>
+          <div class="field"><label for="eDept">Department</label><input id="eDept" maxlength="60"></div>
+          <div class="field"><label for="eStartYear">Year you started working</label><input id="eStartYear" type="number" min="1970" max="2030" step="1" placeholder="e.g. 2016"></div>
+          <p style="margin:-6px 0 12px;font-size:12px;color:var(--muted)">Experience years are calculated automatically from this year (updates every year).</p>
+          <div class="field"><label for="eDob">Date of birth</label><input id="eDob" type="date"></div>
+          <button class="btn" id="saveProfile">Save changes</button>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 10px;font-size:15px">Preferences</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px">
+            <span>Dark mode</span>
+            <button type="button" class="btn sm ghost" id="themeBtn">Toggle</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span>Desktop notifications</span>
+            <button type="button" class="btn sm ghost" id="notifBtn">Enable</button>
+          </div>
+        </div>
+
+        <!-- More from VKS Tech -->
+        <div class="card">
+          <h3 style="margin:0 0 12px;font-size:15px">More from VKS Tech</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:var(--muted)">Open these apps with the same mobile number. Built by the same team for packaging professionals.</p>
+
+          <a class="item" href="https://vkstech.com/" target="_blank" rel="noopener" style="text-decoration:none;margin-bottom:8px">
+            <div class="av" style="background-image:url('/Assets/logo-vks.png');background-size:cover;background-position:center"></div>
+            <div style="flex:1">
+              <div class="t">VKS Tech</div>
+              <div class="s">Apps, calculators &amp; free tools for packaging</div>
+            </div>
+          </a>
+
+          <a class="item" href="https://manpower.vkstech.com/" target="_blank" rel="noopener" style="text-decoration:none;margin-bottom:8px">
+            <div class="av" style="background-image:url('/Assets/logo-manpower.png');background-size:cover;background-position:center"></div>
+            <div style="flex:1">
+              <div class="t">Man Power</div>
+              <div class="s">Shift roster, leave, team &amp; training for plants</div>
+            </div>
+          </a>
+
+          <a class="item" href="https://mentor.vkstech.com/" target="_blank" rel="noopener" style="text-decoration:none;margin-bottom:8px">
+            <div class="av" style="background-image:url('/Assets/logo-mentor.jpg');background-size:cover;background-position:center"></div>
+            <div style="flex:1">
+              <div class="t">Mentor by VKS</div>
+              <div class="s">One-to-one guidance · AI tools · Career · ₹699/hr</div>
+            </div>
+          </a>
+
+          <a class="item" href="https://vkstech.com/resume/" target="_blank" rel="noopener" style="text-decoration:none">
+            <div class="av" style="background-image:url('/Assets/logo-resume.jpg');background-size:cover;background-position:center"></div>
+            <div style="flex:1">
+              <div class="t">Free AI Resume Builder</div>
+              <div class="s">ATS-friendly PDF · 100% free · Also inside Resume tab</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 12px;font-size:15px">Login security (this device)</h3>
+          <p style="margin:0 0 12px;font-size:13px;color:var(--muted)">Set a PIN once. After that, <b>Log out</b> only locks the app — next open needs PIN only, not OTP. First login on a new device still needs OTP.</p>
+          <div class="field"><label for="ePin">Set or change PIN (4–8 digits)</label><input id="ePin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="new-password"></div>
+          <div class="field"><label for="ePin2">Confirm PIN</label><input id="ePin2" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="new-password"></div>
+          <button class="btn" id="savePin" style="margin-bottom:10px">Save PIN for this device</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
+            <span>Fingerprint / Face unlock</span>
+            <button type="button" class="btn sm ghost" id="bioBtn">Enable</button>
+          </div>
+          <button class="btn sm ghost" id="clearDeviceLogin">Remove PIN from this device</button>
+        </div>
+
+        <button class="btn ghost" id="installBtn2" style="margin-bottom:10px">📲 Install / Download app</button>
+        <button class="btn ghost" id="shareBtnProfile" style="margin-bottom:10px">📤 Share PackLink</button>
+
+        <div class="card" id="customerCareCard">
+          <h3 style="margin:0 0 8px;font-size:15px">Customer care &amp; safety</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:var(--muted);line-height:1.45">Report a suspicious person, misuse, or any app problem. We respond on WhatsApp and email.</p>
+          <a class="care-link care-wa" href="https://wa.me/918929394920?text=Hello%20PackLink%20support%2C%20I%20need%20help%20regarding%3A%20" target="_blank" rel="noopener">
+            <span class="care-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="#fff" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </span>
+            <span class="care-text">
+              <strong>WhatsApp</strong>
+              <small>+91-8929394920</small>
+            </span>
+          </a>
+          <a class="care-link care-mail" href="mailto:PackLink@VKSTech.com?subject=PackLink%20support%20%2F%20report&amp;body=Hello%20PackLink%20team%2C%0A%0AI%20need%20help%20regarding%3A%0A" target="_blank" rel="noopener">
+            <span class="care-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="#fff" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
+            <span class="care-text">
+              <strong>Email</strong>
+              <small>PackLink@VKSTech.com</small>
+            </span>
+          </a>
+        </div>
+
+        <button class="btn danger" id="logout">Log out (lock with PIN)</button>
+        <button class="btn danger ghost" id="deleteAccount" style="margin-top:10px;border:1px solid var(--danger)">Delete my account</button>
+        <p style="margin:8px 0 0;font-size:12px;color:var(--muted);text-align:center">Deletes your number from PackLink completely. You will need admin approval to join again.</p>
+      </div>
+    </section>
+
+    <section class="page" id="page-admin">
+      <div class="scroll">
+        <div class="card">
+          <h3>Pending login requests</h3>
+          <p>Users who tried to sign in but are not yet in the database. Approve after verifying employment proof &amp; resume on WhatsApp.</p>
+          <div id="pendingList"><div class="empty">No pending requests.</div></div>
+        </div>
+        <div class="card">
+          <h3>Upload members from Excel</h3>
+          <p>Columns: Mobile Number, Name, Company Name, Designation, Department, CTC, Email ID, Authority. Only these numbers can log in.</p>
+          <input type="file" id="xlIn" accept=".xlsx,.xls,.csv" style="margin:8px 0">
+          <div id="xlPrev"></div>
+        </div>
+        <div class="card">
+          <h3>Download current members</h3>
+          <p>Exports the latest data from the database (including any designation / company updates made by members in their profile).</p>
+          <button class="btn amber" id="xlDownload">Download Excel</button>
+        </div>
+        <div class="card">
+          <h3>Add one member</h3>
+          <div class="field"><label>Mobile number</label><input id="aMob" type="tel" inputmode="numeric" placeholder="10-digit number"></div>
+          <div class="field"><label>Name</label><input id="aName"></div>
+          <div class="field"><label>Company</label><input id="aCo"></div>
+          <div class="field"><label>Designation</label><input id="aDes"></div>
+          <div class="field"><label>Department</label><input id="aDep"></div>
+          <button class="btn" id="aAdd">Add member</button>
+        </div>
+        <div class="card"><h3>Admins</h3><div id="admList"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs">
+    <button data-p="chat" class="on"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-5.5A8 8 0 1 1 21 12z"/></svg>Chats<i class="badge hide" id="unread"></i></button>
+    <button data-p="members"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>Members</button>
+    <button data-p="jobs"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Jobs</button>
+    <button data-p="resume"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/></svg>Resume</button>
+    <button data-p="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button>
+    <button data-p="admin" id="tabAdmin" class="hide"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Admin</button>
+  </nav>
+</div>
+
+<div id="scrim"><div id="sheet"></div></div>
+<div id="toast"></div>
+<div id="plInstallModal" class="fp-modal hide" role="dialog" aria-modal="true" aria-labelledby="plInstallTitle">
+  <div class="fp-modal-card">
+    <h3 id="plInstallTitle">📲 Install PackLink</h3>
+    <div id="plInstallBody"></div>
+    <button type="button" class="btn" id="plInstallClose">OK</button>
+  </div>
+</div>
 
 <script>
-(function(){
-  try {
-    var q = window.location.search || '';
-    if (!q) return;
-    document.querySelectorAll('a[href="mentor.html"], a[href="./mentor.html"], a[href="/mentor.html"]').forEach(function(a){
-      a.href = 'mentor.html' + q;
-    });
-    // Persist mobile for OTP skip when from Man Power
-    var params = new URLSearchParams(q);
-    var m = (params.get('mobile') || '').replace(/\D/g,'').slice(-10);
-    if (m.length === 10) {
-      try {
-        localStorage.setItem('vks_site_phone', m);
-        localStorage.setItem('vks_site_verified', '1');
-        localStorage.setItem('vks_guidance_mobile', m);
-      } catch(e){}
-    }
-  } catch(e){}
-})();
+// Never leave user stuck on splash if module fails
+setTimeout(function(){
+  var s=document.getElementById('splash');
+  if(s && s.style.display!=='none'){ s.classList.add('out'); s.style.display='none';
+    var land=document.getElementById('landing');
+    if(land) land.classList.remove('hide');
+    else { var login=document.getElementById('login'); if(login) login.classList.remove('hide'); }
+  }
+}, 8000);
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
-  });
-}
-</script>
-
-
-
-
-
-
-<script>
-(function(){
-  var KEY='mentor_lang', CK='mp_country';
-  var LOCALES={
-    IN:{name:'India',flag:'🇮🇳',langs:[{code:'hi',label:'हिं',title:'हिन्दी'},{code:'en',label:'EN',title:'English'},{code:'gu',label:'ગુ',title:'ગુજરાતી'},{code:'ta',label:'த',title:'தமிழ்'},{code:'te',label:'తె',title:'తెలుగు'},{code:'kn',label:'ಕ',title:'ಕನ್ನಡ'},{code:'bn',label:'বা',title:'বাংলা'},{code:'mr',label:'मर',title:'मराठी'},{code:'ml',label:'മ',title:'മലയാളം'},{code:'pa',label:'ਪੰ',title:'ਪੰਜਾਬੀ'}]},
-    GULF:{name:'Gulf',flag:'🌴',langs:[{code:'en',label:'EN',title:'English'},{code:'hi',label:'हिं',title:'हिन्दी'},{code:'ar',label:'ع',title:'العربية'},{code:'ur',label:'اُ',title:'اردو'},{code:'bn',label:'বা',title:'বাংলা'}]},
-    CN:{name:'China',flag:'CN',langs:[{code:'zh',label:'中',title:'中文'},{code:'en',label:'EN',title:'English'}]},
-    EU:{name:'Europe',flag:'EU',langs:[{code:'en',label:'EN',title:'English'},{code:'de',label:'DE',title:'Deutsch'},{code:'it',label:'IT',title:'Italiano'},{code:'es',label:'ES',title:'Español'},{code:'tr',label:'TR',title:'Türkçe'},{code:'fr',label:'FR',title:'Français'}]},
-    AM:{name:'Americas',flag:'🌎',langs:[{code:'en',label:'EN',title:'English'},{code:'es',label:'ES',title:'Español'},{code:'pt',label:'PT',title:'Português'}]},
-    SEA:{name:'SE Asia',flag:'🌏',langs:[{code:'en',label:'EN',title:'English'},{code:'th',label:'ไท',title:'ไทย'},{code:'id',label:'ID',title:'Indonesia'},{code:'vi',label:'VI',title:'Tiếng Việt'}]}
-  };
-  var ORDER=['IN','GULF','CN','EU','AM','SEA'];
-  var STR = {"en": {"login": "Login", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "Career & AI Guidance", "pack": "Flexible Packaging", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "Country & Language", "localeHint": "Same preference style as Man Power. Choose your country, then language.", "country": "1. Country", "languageSection": "2. Language", "done": "Done", "missingNote": "If a string is missing in your language, English is shown."}, "hi": {"login": "लॉगिन", "start": "मुफ्त मॉड्यूल शुरू करें", "badge": "1:1 मेंटरशिप · करियर और AI · फ्लेक्सिबल पैकेजिंग", "hero": "ऐसे मेंटर से सीखें जो असली प्लांट और AI समस्याओं पर काम करता है।", "openApp": "Mentor ऐप खोलें", "seeTracks": "ट्रैक और रेट देखें", "twoTracks": "दो पेड ट्रैक", "career": "करियर और AI मार्गदर्शन", "pack": "फ्लेक्सिबल पैकेजिंग", "how": "बुकिंग कैसे होती है", "free": "मुफ्त मॉड्यूल", "ready": "एक फोकस्ड घंटे के लिए तैयार?", "go": "Mentor ऐप पर जाएँ", "localeTitle": "देश और भाषा", "localeHint": "Man Power जैसा चयन। अपना देश चुनें, फिर भाषा।", "country": "1. देश", "languageSection": "2. भाषा", "done": "हो गया", "missingNote": "अनुवाद न हो तो English दिखेगा।"}, "gu": {"login": "લૉગિન", "start": "મફત મોડ્યુલ શરૂ કરો", "badge": "1:1 મેન્ટરશિપ · કેરિયર અને AI · ફ્લેક્સિબલ પેકેજિંગ", "hero": "એવા મેન્ટર સાથે શીખો જે અસલી પ્લાન્ટ અને AI સમસ્યાઓ પર કામ કરે છે.", "openApp": "Mentor એપ ખોલો", "seeTracks": "ટ્રેક અને રેટ જુઓ", "twoTracks": "બે પેડ ટ્રેક", "career": "કેરિયર અને AI માર્ગદર્શન", "pack": "ફ્લેક્સિબલ પેકેજિંગ", "how": "બુકિંગ કેવી રીતે થાય છે", "free": "મફત મોડ્યુલ", "ready": "એક ફોકસ્ડ કલાક માટે તૈયાર?", "go": "Mentor એપ પર જાઓ", "localeTitle": "દેશ અને ભાષા", "localeHint": "Man Power જેવી પસંદગી. દેશ પસંદ કરો, પછી ભાષા.", "country": "1. દેશ", "languageSection": "2. ભાષા", "done": "થઈ ગયું", "missingNote": "અનુવાદ ન હોય તો English."}, "ta": {"login": "உள்நுழை", "start": "இலவச தொகுதிகளைத் தொடங்கு", "badge": "1:1 வழிகாட்டல் · தொழில் & AI · நெகிழ் பேக்கேஜிங்", "hero": "உண்மையான ஆலை & AI சிக்கல்களில் பணியாற்றும் வழிகாட்டியிடம் கற்றுக்கொள்ளுங்கள்.", "openApp": "Mentor ஆப்பைத் திற", "seeTracks": "பாதைகள் & கட்டணம் பார்", "twoTracks": "இரண்டு கட்டண பாதைகள்", "career": "தொழில் மற்றும் AI வழிகாட்டல்", "pack": "நெகிழ் பேக்கேஜிங்", "how": "முன்பதிவு எப்படி", "free": "இலவச தொகுதிகள்", "ready": "ஒரு கவனம் செலுத்தும் மணிநேரத்திற்கு தயாரா?", "go": "Mentor ஆப்பிற்குச் செல்", "localeTitle": "நாடு மற்றும் மொழி", "localeHint": "Man Power போன்ற தேர்வு. நாட்டைத் தேர்ந்தெடுத்து, பிறகு மொழி.", "country": "1. நாடு", "languageSection": "2. மொழி", "done": "முடிந்தது", "missingNote": "மொழிபெயர்ப்பு இல்லை எனில் English."}, "te": {"login": "లాగిన్", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "కెరీర్ & AI మార్గదర్శకత్వం", "pack": "ఫ్లెక్సిబుల్ ప్యాకేజింగ్", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "దేశం & భాష", "localeHint": "Man Power లాంటి ఎంపిక. దేశం ఎంచుకుని, తర్వాత భాష.", "country": "1. దేశం", "languageSection": "2. భాష", "done": "పూర్తి", "missingNote": "అనువాదం లేకపోతే English."}, "kn": {"login": "ಲಾಗಿನ್", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "ವೃತ್ತಿ ಮತ್ತು AI ಮಾರ್ಗದರ್ಶನ", "pack": "ಫ್ಲೆಕ್ಸಿಬಲ್ ಪ್ಯಾಕೇಜಿಂಗ್", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "ದೇಶ ಮತ್ತು ಭಾಷೆ", "localeHint": "Man Power ರೀತಿಯ ಆಯ್ಕೆ. ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಭಾಷೆ.", "country": "1. ದೇಶ", "languageSection": "2. ಭಾಷೆ", "done": "ಮುಗಿದಿದೆ", "missingNote": "ಅನುವಾದವಿಲ್ಲದಿದ್ದರೆ English."}, "bn": {"login": "লগইন", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "ক্যারিয়ার ও AI গাইডেন্স", "pack": "ফ্লেক্সিবল প্যাকেজিং", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "দেশ ও ভাষা", "localeHint": "Man Power-এর মতো বেছে নিন। দেশ, তারপর ভাষা।", "country": "1. দেশ", "languageSection": "2. ভাষা", "done": "হয়ে গেছে", "missingNote": "অনুবাদ না থাকলে English।"}, "mr": {"login": "लॉगिन", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "करिअर आणि AI मार्गदर्शन", "pack": "फ्लेक्सिबल पॅकेजिंग", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "देश आणि भाषा", "localeHint": "Man Power सारची निवड. देश निवडा, नंतर भाषा.", "country": "1. देश", "languageSection": "2. भाषा", "done": "झाले", "missingNote": "भाषांतर नसल्यास English."}, "ml": {"login": "ലോഗിൻ", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "കരിയർ & AI ഗൈഡൻസ്", "pack": "ഫ്ലെക്സിബിൾ പാക്കേജിംഗ്", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "രാജ്യവും ഭാഷയും", "localeHint": "Man Power പോലുള്ള തിരഞ്ഞെടുപ്പ്. രാജ്യം, പിന്നെ ഭാഷ.", "country": "1. രാജ്യം", "languageSection": "2. ഭാഷ", "done": "കഴിഞ്ഞു", "missingNote": "വിവർത്തനമില്ലെങ്കിൽ English."}, "pa": {"login": "ਲਾਗਇਨ", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "ਕਰੀਅਰ ਅਤੇ AI ਮਾਰਗਦਰਸ਼ਨ", "pack": "ਫਲੈਕਸੀਬਲ ਪੈਕੇਜਿੰਗ", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "ਦੇਸ਼ ਅਤੇ ਭਾਸ਼ਾ", "localeHint": "Man Power ਵਰਗੀ ਚੋਣ। ਦੇਸ਼ ਚੁਣੋ, ਫਿਰ ਭਾਸ਼ਾ।", "country": "1. ਦੇਸ਼", "languageSection": "2. ਭਾਸ਼ਾ", "done": "ਹੋ ਗਿਆ", "missingNote": "ਅਨੁਵਾਦ ਨਾ ਹੋਵੇ ਤਾਂ English।"}, "ar": {"login": "تسجيل الدخول", "start": "ابدأ الوحدات المجانية", "badge": "إرشاد فردي · مهنة وذكاء اصطناعي · تعبئة مرنة", "hero": "تعلّم مع مرشد يعمل على مشكلات المصنع والذكاء الاصطناعي الحقيقية.", "openApp": "افتح تطبيق Mentor", "seeTracks": "عرض المسارات والأسعار", "twoTracks": "مساران مدفوعان", "career": "المسار المهني والذكاء الاصطناعي", "pack": "التعبئة المرنة", "how": "كيف يعمل الحجز", "free": "وحدات مجانية", "ready": "هل أنت مستعد لساعة مركّزة؟", "go": "انتقل إلى تطبيق Mentor", "localeTitle": "البلد واللغة", "localeHint": "نفس أسلوب Man Power. اختر البلد ثم اللغة.", "country": "1. البلد", "languageSection": "2. اللغة", "done": "تم", "missingNote": "إن نقصت الترجمة يُعرض English."}, "ur": {"login": "لاگ اِن", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "کیریئر اور AI رہنمائی", "pack": "فلیکسیبل پیکیجنگ", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "ملک اور زبان", "localeHint": "Man Power جیسا انتخاب۔ ملک منتخب کریں، پھر زبان۔", "country": "1. ملک", "languageSection": "2. زبان", "done": "ہو گیا", "missingNote": "ترجمہ نہ ہو تو English۔"}, "zh": {"login": "登录", "start": "开始免费模块", "badge": "一对一指导 · 职业与AI · 软包装", "hero": "向处理真实工厂与 AI 问题的导师学习。", "openApp": "打开 Mentor 应用", "seeTracks": "查看轨道与费率", "twoTracks": "两条付费轨道", "career": "职业与 AI 指导", "pack": "软包装", "how": "预约如何进行", "free": "免费模块", "ready": "准备好专注的一小时了吗？", "go": "前往 Mentor 应用", "localeTitle": "国家与语言", "localeHint": "与 Man Power 相同的选择方式。先选国家，再选语言。", "country": "1. 国家", "languageSection": "2. 语言", "done": "完成", "missingNote": "若缺少翻译则显示 English。"}, "de": {"login": "Anmelden", "start": "Kostenlose Module starten", "badge": "1:1-Mentoring · Karriere & KI · Flexible Packaging", "hero": "Lernen Sie mit einem Mentor, der echte Werk- und KI-Probleme bearbeitet.", "openApp": "Mentor-App öffnen", "seeTracks": "Tracks & Preise ansehen", "twoTracks": "Zwei kostenpflichtige Tracks", "career": "Karriere- & KI-Begleitung", "pack": "Flexible Packaging", "how": "So funktioniert die Buchung", "free": "Kostenlose Module", "ready": "Bereit für eine fokussierte Stunde?", "go": "Zur Mentor-App", "localeTitle": "Land & Sprache", "localeHint": "Wie bei Man Power: zuerst Land, dann Sprache wählen.", "country": "1. Land", "languageSection": "2. Sprache", "done": "Fertig", "missingNote": "Fehlende Texte → English."}, "fr": {"login": "Connexion", "start": "Démarrer les modules gratuits", "badge": "Mentorat 1:1 · Carrière & IA · Emballage flexible", "hero": "Apprenez avec un mentor qui traite de vrais problèmes d’usine et d’IA.", "openApp": "Ouvrir l’app Mentor", "seeTracks": "Voir les parcours et tarifs", "twoTracks": "Deux parcours payants", "career": "Carrière et IA", "pack": "Emballage flexible", "how": "Comment réserver", "free": "Modules gratuits", "ready": "Prêt pour une heure ciblée ?", "go": "Aller à l’app Mentor", "localeTitle": "Pays et langue", "localeHint": "Comme Man Power : choisissez le pays, puis la langue.", "country": "1. Pays", "languageSection": "2. Langue", "done": "Terminé", "missingNote": "Traduction manquante → English."}, "es": {"login": "Iniciar sesión", "start": "Empezar módulos gratis", "badge": "Mentoría 1:1 · Carrera e IA · Embalaje flexible", "hero": "Aprende con un mentor que trabaja en problemas reales de planta e IA.", "openApp": "Abrir app Mentor", "seeTracks": "Ver rutas y tarifas", "twoTracks": "Dos rutas de pago", "career": "Carrera e IA", "pack": "Embalaje flexible", "how": "Cómo funciona la reserva", "free": "Módulos gratis", "ready": "¿Listo para una hora enfocada?", "go": "Ir a la app Mentor", "localeTitle": "País e idioma", "localeHint": "Igual que Man Power: elige país y luego idioma.", "country": "1. País", "languageSection": "2. Idioma", "done": "Listo", "missingNote": "Si falta traducción → English."}, "tr": {"login": "Giriş", "start": "Ücretsiz modülleri başlat", "badge": "1:1 mentorluk · Kariyer & YZ · Esnek ambalaj", "hero": "Gerçek tesis ve YZ sorunları üzerinde çalışan bir mentorle öğrenin.", "openApp": "Mentor uygulamasını aç", "seeTracks": "Parçaları ve ücretleri gör", "twoTracks": "İki ücretli parça", "career": "Kariyer ve Yapay Zeka", "pack": "Esnek ambalaj", "how": "Rezervasyon nasıl çalışır", "free": "Ücretsiz modüller", "ready": "Odaklanmış bir saate hazır mısınız?", "go": "Mentor uygulamasına git", "localeTitle": "Ülke ve dil", "localeHint": "Man Power gibi: önce ülke, sonra dil.", "country": "1. Ülke", "languageSection": "2. Dil", "done": "Tamam", "missingNote": "Çeviri yoksa English."}, "it": {"login": "Accedi", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "Carriera e IA", "pack": "Imballaggio flessibile", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "Paese e lingua", "localeHint": "Come Man Power: scegli il paese, poi la lingua.", "country": "1. Paese", "languageSection": "2. Lingua", "done": "Fatto", "missingNote": "Traduzione mancante → English."}, "pt": {"login": "Entrar", "start": "Começar módulos grátis", "badge": "Mentoria 1:1 · Carreira e IA · Embalagem flexível", "hero": "Aprenda com um mentor que atua em problemas reais de fábrica e IA.", "openApp": "Abrir app Mentor", "seeTracks": "Ver trilhas e valores", "twoTracks": "Duas trilhas pagas", "career": "Carreira e IA", "pack": "Embalagem flexível", "how": "Como funciona a reserva", "free": "Módulos grátis", "ready": "Pronto para uma hora focada?", "go": "Ir ao app Mentor", "localeTitle": "País e idioma", "localeHint": "Como o Man Power: escolha o país e depois o idioma.", "country": "1. País", "languageSection": "2. Idioma", "done": "Concluído", "missingNote": "Sem tradução → English."}, "th": {"login": "เข้าสู่ระบบ", "start": "Start free modules", "badge": "1:1 mentorship · Career & AI · Flexible packaging", "hero": "Learn with a mentor who works on real plant & AI problems.", "openApp": "Open Mentor app", "seeTracks": "See tracks & rates", "twoTracks": "Two paid tracks", "career": "อาชีพและ AI", "pack": "บรรจุภัณฑ์ยืดหยุ่น", "how": "How booking works", "free": "Free modules", "ready": "Ready for a focused hour?", "go": "Go to Mentor app", "localeTitle": "ประเทศและภาษา", "localeHint": "เหมือน Man Power: เลือกประเทศแล้วเลือกภาษา", "country": "1. ประเทศ", "languageSection": "2. ภาษา", "done": "เสร็จสิ้น", "missingNote": "ถ้าไม่มีคำแปลจะแสดง English"}, "id": {"login": "Masuk", "start": "Mulai modul gratis", "badge": "Mentoring 1:1 · Karier & AI · Kemasan fleksibel", "hero": "Belajar dengan mentor yang menangani masalah pabrik & AI nyata.", "openApp": "Buka aplikasi Mentor", "seeTracks": "Lihat jalur & tarif", "twoTracks": "Dua jalur berbayar", "career": "Karier & AI", "pack": "Kemasan fleksibel", "how": "Cara kerja pemesanan", "free": "Modul gratis", "ready": "Siap untuk satu jam fokus?", "go": "Ke aplikasi Mentor", "localeTitle": "Negara & bahasa", "localeHint": "Seperti Man Power: pilih negara, lalu bahasa.", "country": "1. Negara", "languageSection": "2. Bahasa", "done": "Selesai", "missingNote": "Tanpa terjemahan → English."}, "vi": {"login": "Đăng nhập", "start": "Bắt đầu module miễn phí", "badge": "Mentorship 1:1 · Sự nghiệp & AI · Bao bì linh hoạt", "hero": "Học cùng mentor xử lý vấn đề nhà máy & AI thực tế.", "openApp": "Mở ứng dụng Mentor", "seeTracks": "Xem lộ trình & mức phí", "twoTracks": "Hai lộ trình trả phí", "career": "Sự nghiệp & AI", "pack": "Bao bì linh hoạt", "how": "Cách đặt lịch", "free": "Module miễn phí", "ready": "Sẵn sàng cho một giờ tập trung?", "go": "Vào ứng dụng Mentor", "localeTitle": "Quốc gia & ngôn ngữ", "localeHint": "Giống Man Power: chọn quốc gia, rồi ngôn ngữ.", "country": "1. Quốc gia", "languageSection": "2. Ngôn ngữ", "done": "Xong", "missingNote": "Thiếu bản dịch → English."}};
-  function getLang(){try{var l=(localStorage.getItem(KEY)||localStorage.getItem('mp_lang')||'en').toLowerCase();if(l==='hindi')l='hi';return l||'en';}catch(e){return'en';}}
-  function setLang(l){l=String(l||'en').toLowerCase();if(l==='hindi')l='hi';try{localStorage.setItem(KEY,l);localStorage.setItem('mp_lang',l);}catch(e){}return l;}
-  function getCountry(){try{var c=localStorage.getItem(CK)||'IN';return LOCALES[c]?c:'IN';}catch(e){return'IN';}}
-  function setCountry(c){if(!LOCALES[c])c='IN';try{localStorage.setItem(CK,c);}catch(e){}return c;}
-  function ui(){var l=getLang();return STR[l]?l:'en';}
-  function t(k){var p=STR[ui()]||STR.en;return p[k]!=null?p[k]:((STR.en||{})[k]||k);}
-  function apply(){
-    document.documentElement.lang=ui();
-    document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(k)el.textContent=t(k);});
-    var b=document.getElementById('mentorLandingLang');
-    if(b){var l=getLang();b.textContent=l==='hi'?'हिं':(l==='en'?'EN':String(l).slice(0,2).toUpperCase());}
-  }
-  window.mentorLandingOpenPicker=function(){
-    var curC=getCountry(),curL=getLang();
-    var old=document.getElementById('mentorLandLocale');if(old)old.remove();
-    function langBtns(c){
-      return (LOCALES[c].langs||[]).map(function(L){
-        var on=L.code===curL;
-        return '<button type="button" data-lang="'+L.code+'" style="padding:8px 12px;border-radius:12px;border:1px solid '+(on?'#10b981':'#e2e8f0')+';background:'+(on?'#ecfdf5':'#fff')+';font-weight:700;cursor:pointer"><div>'+L.label+'</div><div style="font-size:10px;opacity:.7">'+L.title+'</div></button>';
-      }).join('');
-    }
-    var cHtml=ORDER.map(function(c){
-      var loc=LOCALES[c],on=c===curC;
-      return '<button type="button" data-country="'+c+'" style="padding:10px 8px;border-radius:12px;cursor:pointer;text-align:center;border:2px solid '+(on?'#f97316':'#e2e8f0')+';background:'+(on?'rgba(249,115,22,.12)':'#fff')+'"><div>'+loc.flag+'</div><div style="font-size:11px;opacity:.7">'+c+'</div><div style="font-weight:700;font-size:13px">'+loc.name+'</div></button>';
-    }).join('');
-    var modal=document.createElement('div');
-    modal.id='mentorLandLocale';
-    modal.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);padding:12px';
-    modal.innerHTML='<div style="background:#f8fafc;border-radius:16px;max-width:480px;width:100%;padding:20px;max-height:90vh;overflow:auto">'+
-      '<div style="font-weight:800;font-size:18px;margin-bottom:4px">🌐 '+t('localeTitle')+'</div>'+
-      '<div style="font-size:12px;color:#64748b;margin-bottom:14px">'+t('localeHint')+'</div>'+
-      '<div style="font-size:12px;font-weight:700;margin-bottom:8px">'+t('country')+'</div>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="mnLandC">'+cHtml+'</div>'+
-      '<div style="font-size:12px;font-weight:700;margin-bottom:8px">'+t('languageSection')+'</div>'+
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px" id="mnLandL">'+langBtns(curC)+'</div>'+
-      '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px">'+t('missingNote')+'</div>'+
-      '<button type="button" id="mnLandDone" style="width:100%;padding:14px;border:none;border-radius:12px;background:#ea580c;color:#fff;font-weight:800;cursor:pointer">✅ '+t('done')+'</button></div>';
-    document.body.appendChild(modal);
-    function close(){try{modal.remove();}catch(e){}}
-    modal.onclick=function(e){if(e.target===modal)close();};
-    document.getElementById('mnLandC').querySelectorAll('[data-country]').forEach(function(btn){
-      btn.onclick=function(){setCountry(btn.getAttribute('data-country'));close();window.mentorLandingOpenPicker();};
-    });
-    document.getElementById('mnLandL').querySelectorAll('[data-lang]').forEach(function(btn){
-      btn.onclick=function(){setLang(btn.getAttribute('data-lang'));apply();close();};
-    });
-    document.getElementById('mnLandDone').onclick=close;
-  };
-  window.mentorLandingToggleLang=function(){
-    var cur=(function(){try{return (localStorage.getItem('mentor_lang')||localStorage.getItem('mp_lang')||'en').toLowerCase();}catch(e){return'en';}})();
-    var next = (cur==='hi') ? 'en' : 'hi';
-    try{localStorage.setItem('mentor_lang',next);localStorage.setItem('mp_lang',next);}catch(e){}
-    var btn=document.getElementById('mentorLandingLang');
-    if(btn) btn.textContent = next==='hi' ? '🌐 हिं' : '🌐 EN';
-    if(typeof apply==='function') apply();
-    else location.reload();
-  };
-  // Keep openPicker available but do not auto-use on landing
-  
-  
-  function bindMnChips(){
-    document.querySelectorAll('.mn-chip[data-set-lang]').forEach(function(btn){
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        var code=btn.getAttribute('data-set-lang');
-        if(!code) return;
-        setLang(code);
-        apply();
-        document.querySelectorAll('.mn-chip[data-set-lang]').forEach(function(b){ b.style.borderColor=''; b.style.boxShadow=''; });
-        btn.style.borderColor='#2563eb';
-        btn.style.boxShadow='0 0 0 2px rgba(37,99,235,.2)';
-      });
-    });
-  }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){apply();try{bindMnChips();}catch(e){}});else{apply();try{bindMnChips();}catch(e){}}
-})();
-</script>
-
-
-
-
-<script>
-/* Testimonials — source of truth:
-   https://github.com/vkstecho/manpower/tree/main/testimonials
-   Data: htmls/testimonials.html  (TESTIMONIALS array)
-   Photos: Images/<Folder>/avatar.jpg|png|svg
-*/
-(function(){
-  var grid = document.getElementById('testimonialsGrid');
-  if(!grid) return;
-
-  var RAW = 'https://raw.githubusercontent.com/vkstecho/manpower/main/testimonials/';
-  var CDN = 'https://cdn.jsdelivr.net/gh/vkstecho/manpower@main/testimonials/';
-  var HTML_URLS = [RAW + 'htmls/testimonials.html', CDN + 'htmls/testimonials.html'];
-
-  function esc(s){
-    return String(s==null?'':s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function parseTestimonials(html){
-    var m = html.match(/const\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
-    if(!m) m = html.match(/var\s+TESTIMONIALS\s*=\s*(\[[\s\S]*?\]);/);
-    if(!m) return null;
-    try {
-      return (new Function('return (' + m[1] + ')'))();
-    } catch(e){
-      console.warn('Testimonials parse error', e);
-      return null;
-    }
-  }
-
-  function avatarFallbacks(folder){
-    if(!folder || folder === 'placeholder'){
-      return [RAW + 'Images/placeholder-avatar.svg', CDN + 'Images/placeholder-avatar.svg'];
-    }
-    var f = encodeURIComponent(folder);
-    return [
-      RAW + 'Images/' + f + '/avatar.jpg',
-      RAW + 'Images/' + f + '/avatar.png',
-      RAW + 'Images/' + f + '/avatar.svg',
-      CDN + 'Images/' + f + '/avatar.jpg',
-      CDN + 'Images/' + f + '/avatar.png',
-      CDN + 'Images/' + f + '/avatar.svg',
-      RAW + 'Images/placeholder-avatar.svg'
-    ];
-  }
-
-  function bindImgFallback(img, urls){
-    var i = 0;
-    img.onerror = function(){
-      i++;
-      if(i < urls.length) img.src = urls[i];
-      else img.style.display = 'none';
-    };
-  }
-
-  function render(list){
-    if(!Array.isArray(list) || !list.length){
-      grid.innerHTML = '<div class="acard" style="text-align:center;padding:28px 18px;color:#64748b">Testimonials will appear here shortly.</div>';
-      return;
-    }
-    list = list.slice().sort(function(a,b){ return (b.featured?1:0)-(a.featured?1:0); });
-
-    grid.innerHTML = list.map(function(t){
-      var stars = '★'.repeat(Math.min(5, Math.max(1, Number(t.stars)||5)));
-      var urls = avatarFallbacks(t.imageFolder);
-      var path = t.path ? '<div style="font-size:12px;color:#64748b;margin-top:4px;line-height:1.4">'+esc(t.path)+'</div>' : '';
-      var role = [t.role, t.plant].filter(Boolean).join(' · ');
-      return (
-        '<article class="acard reveal" style="text-align:left;display:flex;flex-direction:column;gap:10px">' +
-          '<div style="display:flex;gap:12px;align-items:center">' +
-            '<img data-avatar="1" src="'+esc(urls[0])+'" alt="" width="48" height="48" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#f1f5f9" loading="lazy"/>' +
-            '<div style="min-width:0">' +
-              '<div style="font-weight:700;font-size:0.95rem;color:#0f172a">'+esc(t.name||'')+'</div>' +
-              '<div style="font-size:0.8rem;color:#64748b">'+esc(role)+'</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="color:#ea580c;letter-spacing:2px;font-size:12px">'+stars+'</div>' +
-          '<p style="font-size:0.92rem;line-height:1.65;color:#1e293b;flex:1">"'+esc(t.quote||t.text||'')+'"</p>' +
-          path +
-        '</article>'
-      );
-    }).join('');
-
-    var imgs = grid.querySelectorAll('img[data-avatar]');
-    list.forEach(function(t, idx){
-      if(imgs[idx]) bindImgFallback(imgs[idx], avatarFallbacks(t.imageFolder));
-    });
-    try{ grid.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('visible'); }); }catch(e){}
-  }
-
-  function tryFetch(i){
-    if(i >= HTML_URLS.length){ render([]); return; }
-    fetch(HTML_URLS[i], {cache:'no-cache'})
-      .then(function(r){ if(!r.ok) throw new Error('fail'); return r.text(); })
-      .then(function(html){
-        var list = parseTestimonials(html);
-        if(!list) throw new Error('parse');
-        render(list);
-      })
-      .catch(function(){ tryFetch(i+1); });
-  }
-  tryFetch(0);
-})();
-</script>
-
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
