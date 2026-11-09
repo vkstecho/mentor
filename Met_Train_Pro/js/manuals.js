@@ -357,9 +357,10 @@ var MANUAL_CATS=[
 // ══════════════════════════════════════════════════════
 var _manCurCat='all',_manSearch='';
 function rManuals(pg){
+  var hi=(typeof LANG!=='undefined'&&LANG==='hi');
   var h='<div class="ph"><div class="ph-code">OEM MANUAL LIBRARY — '+MANUAL_DB.length+' EQUIPMENT PDFs</div>'
-    +'<div class="ph-title">OEM <span>मैनुअल</span></div>'
-    +'<div class="ph-desc">BOBST K5 Expert और सभी auxiliary equipment के OEM manuals, datasheets और schematics — PDF viewer में पढ़ें।</div>'
+    +'<div class="ph-title">'+(hi?'OEM <span>मैनुअल</span>':'OEM <span>Manuals</span>')+'</div>'
+    +'<div class="ph-desc">'+(hi?'BOBST K5 Expert और ALL auxiliary equipment के OEM manuals, datasheets और schematics — PDF viewer में पढ़ें।':'BOBST K5 Expert and all auxiliary equipment OEM manuals, datasheets and schematics — read in the PDF viewer.')+'</div>'
     +'<div class="tags"><span class="tag a">'+MANUAL_DB.length+' PDFs</span><span class="tag c">15+ Categories</span><span class="tag g">Inline Viewer</span></div></div>';
   // Search
   h+='<input class="man-search" id="manSearch" placeholder="🔍 Search manuals... (e.g. ATV71, Cobra, SKF, Festo)" oninput="_manSearch=this.value;filterManuals()" value="'+escH(_manSearch)+'">';
@@ -390,7 +391,7 @@ function filterManuals(){
   });
   // Update count
   var ci=document.getElementById('manCountInfo');
-  if(ci) ci.innerHTML='<strong>'+items.length+'</strong> / '+MANUAL_DB.length+' मैनुअल दिखा रहे हैं';
+  if(ci) ci.innerHTML='<strong>'+items.length+'</strong> / '+MANUAL_DB.length+' '+(hi?'मैनुअल दिखा रहे हैं':'manuals showing')+'';
   // Update category chips
   var chips=document.querySelectorAll('.man-cat');
   chips.forEach(function(c,i){c.classList.toggle('on',MANUAL_CATS[i].id===cat);});

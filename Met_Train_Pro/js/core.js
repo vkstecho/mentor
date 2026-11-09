@@ -284,70 +284,55 @@ function applyBilingualContent(root){
   if(!root) return;
   var wantHi = (typeof LANG!=='undefined' && LANG==='hi');
 
-  // 1) Elements that embed English in <span class="en">
-  var nodes=root.querySelectorAll('.fs, .st, .ph-desc, .card-desc, .ban-txt, .lock-txt, .gdesc, .step .st, li.step .st, .alert div, .cb-body li, .cb-body p');
+  // Any node that has a direct/nested .en child: show only English when not HI
+  var nodes = root.querySelectorAll('.st, .fs, .ph-desc, .card-desc, .ban-txt, .lock-txt, .gdesc, .step .st, li.step .st, .alert > div, .cb-body p, .cb-body li, .cb-title, .cb-sub');
   nodes.forEach(function(el){
-    var enEl=el.querySelector(':scope > .en, .en');
+    var enEl = el.querySelector('.en');
     if(!enEl) return;
     if(!el.getAttribute('data-mt-hi')){
       el.setAttribute('data-mt-hi', el.innerHTML);
       el.setAttribute('data-mt-en', (enEl.textContent||enEl.innerHTML||'').trim());
     }
     if(wantHi){
-      el.innerHTML=el.getAttribute('data-mt-hi');
+      el.innerHTML = el.getAttribute('data-mt-hi');
     } else {
-      el.innerHTML='<span class="en-as-main">'+el.getAttribute('data-mt-en')+'</span>';
+      el.innerHTML = '<span class="en-as-main">'+el.getAttribute('data-mt-en')+'</span>';
     }
   });
 
-  // 2) Any element with data-en attribute
+  // data-en attribute
   root.querySelectorAll('[data-en]').forEach(function(el){
     if(!el.getAttribute('data-mt-hi-title')) el.setAttribute('data-mt-hi-title', el.innerHTML);
-    if(wantHi) el.innerHTML=el.getAttribute('data-mt-hi-title');
-    else el.innerHTML=el.getAttribute('data-en');
+    el.innerHTML = wantHi ? el.getAttribute('data-mt-hi-title') : el.getAttribute('data-en');
   });
 
-  // 3) CB titles / subs that carry data-en-title / data-en-sub
-  root.querySelectorAll('.cb-title[data-en-title]').forEach(function(el){
-    if(!el.getAttribute('data-mt-hi-t')) el.setAttribute('data-mt-hi-t', el.textContent);
-    el.textContent = wantHi ? el.getAttribute('data-mt-hi-t') : el.getAttribute('data-en-title');
-  });
-  root.querySelectorAll('.cb-sub[data-en-sub]').forEach(function(el){
-    if(!el.getAttribute('data-mt-hi-s')) el.setAttribute('data-mt-hi-s', el.textContent);
-    el.textContent = wantHi ? el.getAttribute('data-mt-hi-s') : el.getAttribute('data-en-sub');
-  });
-
-  // 4) Known Hindi CB titles → English (fallback map when no data attrs)
+  // CB title map fallback
   if(!wantHi){
     var titleMap = {
       'मेटलाइज़ेशन प्रक्रिया — 10 चरण':'Metallisation process — 10 steps',
       'मेटलाइजेशन प्रक्रिया — 10 चरण':'Metallisation process — 10 steps',
       'मशीन सेटअप — शुरू करने से पहले':'Machine setup — before start',
       'बोट चेंज प्रक्रिया':'Boat change procedure',
-      'वैक्यूम एवं चैंबर':'Vacuum & chamber',
-      'पैरामीटर सेटिंग्स':'Parameter settings',
-      'रोल हैंडलिंग':'Roll handling',
+      'बोट चेंज प्रोग्राम':'Boat change program',
+      'ऑपरेटिंग पैरामीटर':'Operating parameters',
       'वेस्ट नियंत्रण':'Waste control',
-      'ब्लेड प्रबंधन':'Blade management',
-      'कॉर्क टेप':'Cork tape',
+      'ब्लेड बदलने की प्रक्रिया':'Blade change procedure',
+      'Rewinder पर कॉर्क टेप':'Cork tape on rewinder',
       'क्रिटिकल कस्टमर आवश्यकताएं':'Critical customer requirements',
       'ग्रेड प्रणाली और रोल स्थिति':'Grade system & roll status',
       'रिपल-फ्री स्लिटिंग पैरामीटर':'Ripple-free slitting parameters',
-      'स्लिटिंग प्रक्रिया':'Slitting process',
-      'रोल ग्रेडिंग':'Roll grading'
+      'वैक्यूम मेटलाइज़ेशन क्या है?':'What is vacuum metallisation?',
+      'फिल्म स्लिटिंग क्या है?':'What is film slitting?',
+      'मशीन डेटा — Metalliser-1 और Metalliser-2':'Machine data — Metalliser-1 & Metalliser-2'
     };
     root.querySelectorAll('.cb-title').forEach(function(el){
-      var k = (el.textContent||'').trim();
+      var k=(el.textContent||'').trim();
       if(titleMap[k]) el.textContent = titleMap[k];
     });
-    // Table headers often pure Hindi
-    var thMap = {
-      'पैरामीटर':'Parameter','मान':'Value','इकाई':'Unit','लक्ष्य':'Target','नोट':'Note',
-      'रोल संख्या':'Roll count','स्थिति कोड':'Status code'
-    };
+    var thMap={'पैरामीटर':'Parameter','मान':'Value','इकाई':'Unit','लक्ष्य':'Target','नोट':'Note','रोल संख्या':'Roll count','स्थिति कोड':'Status code'};
     root.querySelectorAll('th').forEach(function(th){
       var k=(th.textContent||'').trim();
-      if(thMap[k]) th.textContent = thMap[k];
+      if(thMap[k]) th.textContent=thMap[k];
     });
   }
 }

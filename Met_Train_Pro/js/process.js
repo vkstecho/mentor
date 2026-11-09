@@ -264,7 +264,7 @@ function rTerms(pg){
   sections.forEach(function(s){s.items.forEach(function(i){allItems[i.a]=i.f;});});
   var flashH=flashItems.map(function(a){
     return '<div class="fcard" onclick="var ans=this.querySelector(\'.fcard-ans\');ans.style.display=ans.style.display===\'none\'?\'block\':\'none\'">'
-      +'<div class="fcard-term">'+a+'</div><div class="fcard-hint">टैप करें → Full Form देखें</div>'
+      +'<div class="fcard-term">'+a+'</div><div class="fcard-hint">'+((typeof LANG!=='undefined'&&LANG==='hi')?'टैप करें → Full Form देखें':'Tap → see full form')+'</div>'
       +'<div class="fcard-ans">'+(allItems[a]||'')+'</div></div>';
   }).join('');
 
@@ -283,10 +283,10 @@ function rTerms(pg){
     +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'औद्योगिक <span>शब्दावली</span>':'Industrial <span>terms</span>')+'</div>'
     +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'SOP, WI, 5S, TPM के 8 Pillars, Kaizen, KPI, OEE, Lean और अन्य — Full Forms, अर्थ और हिंदी में पूर्ण व्याख्या।':'SOP, WI, 5S, TPM 8 pillars, Kaizen, KPI, OEE, Lean and more — full forms and clear explanations.')+'</div>'
     +'<div class="tags"><span class="tag a">5S</span><span class="tag c">TPM 8 Pillars</span><span class="tag g">Kaizen</span><span class="tag">Lean</span></div></div>'
-    +Al('i','💡','नीचे दिए गए Cards पर टैप करके Full Form देखें। खुद को Test करें — फिर विस्तृत जानकारी नीचे देखें!')
+    +Al('i','💡',(typeof LANG!=='undefined'&&LANG==='hi')?'नीचे दिए गए Cards पर टैप करके Full Form देखें। खुद को Test करें — फिर विस्तृत जानकारी नीचे देखें!':'Tap the cards below for full forms. Test yourself — then read the detail underneath.')
     +Al('w','📝','इन सभी शब्दों पर ज्ञान परीक्षा में प्रश्न हैं! Quiz में जाएं और अपनी तैयारी जांचें।')
     +'<div style="margin-bottom:20px">'
-    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin-bottom:10px">⚡ Full-Form Flash Cards — टैप करके देखें</div>'
+    +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);margin-bottom:10px">⚡ '+((typeof LANG!=='undefined'&&LANG==='hi')?'Full-Form Flash Cards — टैप करके देखें':'Full-form flash cards — tap to reveal')+'</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:8px">'+flashH+'</div></div>'
     +sectH;
 }

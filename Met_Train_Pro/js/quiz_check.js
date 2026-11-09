@@ -67,7 +67,7 @@ function rQuiz(pg){
     +'<div class="quiz-wrap">'
     +'<div id="qprog" style="margin-bottom:12px">'
     +'<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:\'Share Tech Mono\',monospace;margin-bottom:4px">'
-    +'<span id="qpl">प्रश्न 1 / '+set.length+'</span><span id="qps">अंक: 0</span></div>'
+    +'<span id="qpl">'+((typeof LANG!=='undefined'&&LANG==='hi')?'प्रश्न 1 / ':'Question 1 / ')+set.length+'</span><span id="qps">'+((typeof LANG!=='undefined'&&LANG==='hi')?'अंक: 0':'Score: 0')+'</span></div>'
     +'<div class="prog"><div class="prog-fill" id="qpb" style="width:0%"></div></div></div>'
     +'<div id="qarea"></div>'
     +'<div class="scorebox" id="scorebox">'
@@ -81,20 +81,21 @@ function showQ(){
   var q=qState.q,set=qState.set;
   if(q>=set.length){showScore();return;}
   var d=set[q],pct=Math.round(q/set.length*100);
-  document.getElementById('qpl').textContent='प्रश्न '+(q+1)+' / '+set.length;
-  document.getElementById('qps').textContent='अंक: '+qState.score;
+  var _hi=(typeof LANG!=='undefined'&&LANG==='hi');
+  document.getElementById('qpl').textContent=(_hi?'प्रश्न ':'Question ')+(q+1)+' / '+set.length;
+  document.getElementById('qps').textContent=(_hi?'अंक: ':'Score: ')+qState.score;
   document.getElementById('qpb').style.width=pct+'%';
   var oH=d.o.map(function(o,i){
     return '<div class="opt" onclick="ansQ(this,'+i+','+d.a+')">'
       +'<div class="ol">'+String.fromCharCode(65+i)+'</div><div>'+o+'</div></div>';
   }).join('');
   document.getElementById('qarea').innerHTML=
-    '<div class="qcard"><div class="qnum">प्रश्न '+(q+1)+' / '+set.length+'</div>'
+    '<div class="qcard"><div class="qnum">'+((typeof LANG!=='undefined'&&LANG==='hi')?'प्रश्न ':'Question ')+(q+1)+' / '+set.length+'</div>'
     +'<div class="qtext">'+d.q+'</div>'
     +'<div class="opts">'+oH+'</div>'
     +'<div class="qfb" id="qfb"></div>'
-    +'<div class="qnav"><button class="btn btn-p" id="qnext" onclick="nextQ()" disabled>अगला →</button>'
-    +'<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--muted);margin-left:auto">उत्तीर्णांक: 70%</span></div></div>';
+    +'<div class="qnav"><button class="btn btn-p" id="qnext" onclick="nextQ()" disabled>'+((typeof LANG!=='undefined'&&LANG==='hi')?'अगला →':'Next →')+'</button>'
+    +'<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--muted);margin-left:auto">'+((typeof LANG!=='undefined'&&LANG==='hi')?'उत्तीर्णांक: 70%':'Pass: 70%')+'</span></div></div>';
 }
 
 function ansQ(el,i,correct){
@@ -118,8 +119,9 @@ function showScore(){
   var pct=Math.round(qState.score/qState.set.length*100),pass=pct>=70;
   document.getElementById('spct').textContent=pct+'%';
   document.getElementById('spct').className='spct '+(pass?'pass':'fail');
-  document.getElementById('smsg').textContent=pass?'उत्तीर्ण! 🎉':'अधिक अध्ययन करें 📚';
-  document.getElementById('ssub').textContent=qState.score+' / '+qState.set.length+' सही — '+(pass?'शानदार! आपने सामग्री में महारत हासिल कर ली।':'प्रशिक्षण मॉड्यूल दोबारा पढ़ें और फिर प्रयास करें।');
+  var _hi2=(typeof LANG!=='undefined'&&LANG==='hi');
+  document.getElementById('smsg').textContent=pass?(_hi2?'उत्तीर्ण! 🎉':'Passed! 🎉'):(_hi2?'अधिक अध्ययन करें 📚':'Study more 📚');
+  document.getElementById('ssub').textContent=qState.score+' / '+qState.set.length+(_hi2?' सही — ':' correct — ')+(pass?(_hi2?'शानदार! आपने सामग्री में महारत हासिल कर ली।':'Great! You have mastered the material.'):(_hi2?'प्रशिक्षण मॉड्यूल दोबारा पढ़ें और फिर प्रयास करें।':'Re-read the training modules and try again.'));
 }
 
 function resetQuiz(){var pg=document.getElementById('pg-quiz');delete pg.dataset.r;rQuiz(pg);}

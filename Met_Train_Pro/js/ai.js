@@ -1936,22 +1936,23 @@ function renderMobNav(){
   var el=document.getElementById('mob-nav');
   if(CUR==='landing'){if(el)el.innerHTML='';return;}
   var g=MODE==='free';
+  var hi=(typeof LANG!=='undefined' && LANG==='hi');
   var items=[
-    {id:'home',ico:'🏠',l:'होम'},
-    {id:'defect',ico:'🔴',l:'Defects'},
+    {id:'home',ico:'🏠',l:hi?'होम':'Home'},
+    {id:'defect',ico:'🔴',l:hi?'डिफेक्ट':'Defects'},
     {id:'askai',ico:'🤖',l:'AI Expert'},
-    {id:'met',ico:'⚡',l:'मेट'},
-    {id:'slit',ico:'✂️',l:'स्लिटर'},
-    {id:'safety',ico:'🦺',l:'सुरक्षा'},
+    {id:'met',ico:'⚡',l:hi?'मेट':'Met'},
+    {id:'slit',ico:'✂️',l:hi?'स्लिटर':'Slitter'},
+    {id:'safety',ico:'🦺',l:hi?'सुरक्षा':'Safety'},
     {id:'sops',ico:'📋',l:'SOPs'},
     'sep',
-    {id:'genmet',ico:'🔥',l:'धाकड़ मेट'},
-    {id:'genslit',ico:'🔧',l:'धाकड़ स्लिट'},
-    {id:'terms',ico:'📚',l:'शब्दावली'},
+    {id:'genmet',ico:'🔥',l:hi?'धाकड़ मेट':'Dhakad Met'},
+    {id:'genslit',ico:'🔧',l:hi?'धाकड़ स्लिट':'Dhakad Slit'},
+    {id:'terms',ico:'📚',l:hi?'शब्दावली':'Terms'},
     'sep',
-    {id:'manuals',ico:'📖',l:'OEM Manual'},
-    {id:'quiz',ico:'📝',l:'परीक्षा'},
-    {id:'check',ico:'✅',l:'चेकलिस्ट'},
+    {id:'manuals',ico:'📖',l:'OEM'},
+    {id:'quiz',ico:'📝',l:hi?'परीक्षा':'Quiz'},
+    {id:'check',ico:'✅',l:hi?'चेकलिस्ट':'Checklist'},
   ];
   if(g){
     items.splice(5,0,{id:'sap',ico:'💻',l:'SAP'},{id:'maint',ico:'🛠️',l:'PM'});
