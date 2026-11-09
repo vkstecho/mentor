@@ -1089,8 +1089,8 @@ function rAskAI(pg){
   // Welcome message
   if(_aiHistory.length===0){
     html+='<div class="ai-msg ai-bot"><div class="ai-avatar">🤖</div><div class="ai-bubble ai-bubble-bot">';
-    html+='<b>नमस्ते! मैं MetTrain AI Expert हूँ 🙏</b><br><br>';
-    html+='मुझसे BOBST K5 Expert मशीन और सभी auxiliary equipment के बारे में कुछ भी पूछो:<br>';
+    html+=''+((typeof LANG!=='undefined'&&LANG==='hi')?'<b>नमस्ते! मैं MetTrain AI Expert हूँ 🙏</b>':'<b>Hello! I am MetTrain AI Expert 🙏</b>')+'<br><br>';
+    html+=''+((typeof LANG!=='undefined'&&LANG==='hi')?'मुझसे BOBST K5 Expert मशीन और सभी auxiliary equipment के बारे में कुछ भी पूछो:':'Ask me anything about the BOBST K5 Expert machine and auxiliary equipment:')+'<br>';
     html+='• Vacuum system — Cobra pump, Aerzen booster, diffusion pump<br>• Evaporation — boats, wire feeders (Stögra), thyristors (Thyro-A)<br>• Winding & tension — drives (ATV71, G120C, Unidrive SP)<br>• Sensors — MKS Baratron, Pirani, IFM flow/temp/proximity<br>• Chiller system — GRE 24-80kW heater-chiller<br>• PLC & automation — B&R X20, Siemens ET200, Profibus<br>• Pneumatics — Festo cylinders, valves, FRL<br>• Alarms & troubleshooting • PM schedule<br>• Plasma treater • AlBond/AlOx process<br>• OD control & Hawkeye • Recipes & HMI<br>';
 
     html+='</div></div>';
@@ -1115,7 +1115,7 @@ function rAskAI(pg){
 
   // Quick question chips
   html+='<div id="ai-quick" style="padding:6px 12px;overflow-x:auto;white-space:nowrap">';
-  var chips=[
+  var chipsHi=[
     'Vacuum pump sequence क्या है?',
     'Boat warmup कैसे करें?',
     'Web break हो जाए तो?',
@@ -1139,6 +1139,31 @@ function rAskAI(pg){
     'Festo cylinder speed adjust',
     'IFM flow sensor check'
   ];
+  var chipsEn=[
+    'What is vacuum pump sequence?',
+    'How to warm up boats?',
+    'What if web breaks?',
+    'How does OD control work?',
+    'What is Alarm 348?',
+    'Weekly PM checklist',
+    'AlBond process steps',
+    'Annual budget format metalliser',
+    'What to include in budget?',
+    'Tension settings for PET 12μm',
+    'Plasma treater arcing fix',
+    'Cobra pump maintenance',
+    'Thyro-A error LED meaning?',
+    'Chiller alarm troubleshoot',
+    'Stepper motor wire feeder setup',
+    'Kickert spreader angle setting',
+    'ATV71 trip code meaning?',
+    'Profibus node failure fix',
+    'MKS Baratron calibration',
+    'Pirani gauge range?',
+    'Festo cylinder speed adjust',
+    'IFM flow sensor check'
+  ];
+  var chips=(typeof LANG!=='undefined'&&LANG==='hi')?chipsHi:chipsEn;
   for(var c=0;c<chips.length;c++){
     html+='<button class="ai-quick-btn" onclick="askAI(\''+chips[c].replace(/'/g,"\\'")+'\')">'+chips[c]+'</button>';
   }
@@ -1147,7 +1172,7 @@ function rAskAI(pg){
   // Input area
   html+='<div class="ai-input-wrap" id="ai-input-area">';
   html+='<div style="display:flex;gap:8px;align-items:flex-end">';
-  html+='<textarea id="ai-inp" rows="2" placeholder="🔍 कोई भी सवाल पूछो... (Hindi, English या Hinglish)" style="flex:1;padding:14px;border-radius:14px;border:2px solid #444;background:#1a1a2e;color:#fff;font-size:15px;resize:none;max-height:100px;font-family:inherit;outline:none" onfocus="this.style.borderColor=\'#8b5cf6\'" onblur="this.style.borderColor=\'#444\'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>';
+  html+='<textarea id="ai-inp" rows="2" placeholder="'+((typeof LANG!=='undefined'&&LANG==='hi')?'🔍 कोई भी सवाल पूछो... (Hindi, English या Hinglish)':'🔍 Ask any question... (Hindi, English or Hinglish)')+'" style="flex:1;padding:14px;border-radius:14px;border:2px solid #444;background:#1a1a2e;color:#fff;font-size:15px;resize:none;max-height:100px;font-family:inherit;outline:none" onfocus="this.style.borderColor=\'#8b5cf6\'" onblur="this.style.borderColor=\'#444\'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();askAI();}"></textarea>';
   html+='<button id="ai-send-btn" onclick="askAI()" style="width:48px;height:48px;border-radius:14px;border:none;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(139,92,246,.3)">➤</button>';
   html+='</div>';
   html+='<div style="text-align:center;padding:6px;font-size:11px;color:#666">🆓 671 Expert Answers — FREE Offline • Hindi + English + Hinglish'+(hasKey?' • 🤖 Gemini AI Active':'')+'</div>';

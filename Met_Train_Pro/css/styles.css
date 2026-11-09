@@ -1532,28 +1532,180 @@ body.light .stat-l{
 }
 
 
-/* ── Scroll / access fix (2.6.6) ── */
-html, body { height: 100%; }
-#body { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-#mt-main {
+/* ============================================================
+   RESPONSIVENESS FIX 2.6.10 — layout, scroll, click stack
+   ============================================================ */
+
+/* Root shell: column = topbar + body row */
+html, body {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  margin: 0;
+}
+body {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Desktop: sidebar | main side-by-side */
+#body {
+  display: flex !important;
+  flex-direction: row !important;
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
-  padding-bottom: 96px !important;
+  overflow: hidden !important;
+  height: auto !important;
 }
-.pg { min-height: min-content; }
-.sos-panel { z-index: 9000; pointer-events: auto; }
-.sos-panel:not(.open) { pointer-events: none; }
-.card, .btn, .home-quick button { position: relative; z-index: 2; pointer-events: auto; }
 
+#sidebar {
+  flex: 0 0 230px;
+  width: 230px;
+  max-width: 230px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
 
-/* Checklist layout fix 2.6.8 */
-.cli{display:flex!important;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--bdr);cursor:pointer;width:100%;box-sizing:border-box}
-.cli .cltxt{flex:1;line-height:1.5}
-.cli.readonly{opacity:.85;cursor:default}
-.ck-date-chip{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ck-shift-wrap{display:flex;gap:6px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+/* THE scroll host — must fill remaining width/height */
+#mt-main,
+#content {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 24px 28px 40px !important;
+  background: var(--bg);
+  position: relative;
+  z-index: 1;
+}
+
+/* Pages must not trap scroll */
+.pg { display: none; }
+.pg.on {
+  display: block !important;
+  min-height: min-content;
+  height: auto !important;
+  overflow: visible !important;
+  max-width: 920px;
+  margin: 0 auto;
+  padding-bottom: 24px;
+}
+
+/* Mobile: hide sidebar, stack, pad for bottom nav */
+@media (max-width: 768px) {
+  #body {
+    flex-direction: column !important;
+  }
+  #sidebar {
+    display: none !important;
+  }
+  #mt-main,
+  #content {
+    padding: 12px 12px 96px !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+  #mob-nav {
+    display: flex !important;
+  }
+}
+
+/* Overlays: NEVER block when closed */
+.sos-panel {
+  z-index: 9000;
+  pointer-events: none !important;
+}
+.sos-panel.open {
+  pointer-events: auto !important;
+}
+.search-overlay {
+  pointer-events: none !important;
+}
+.search-overlay.open {
+  pointer-events: auto !important;
+}
+.pay-modal,
+.cert-modal,
+.pdf-modal {
+  pointer-events: none !important;
+}
+.pay-modal.open,
+.cert-modal.open,
+.pdf-modal.open {
+  pointer-events: auto !important;
+}
+.toast-container {
+  pointer-events: none !important;
+}
+.toast {
+  pointer-events: auto;
+}
+
+/* Clickable controls always receive taps */
+.cb-h,
+.sb-item,
+.card,
+.tab,
+.cli,
+.mnb,
+button,
+a,
+.land-btn-gls,
+.land-btn-pro,
+[onclick] {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto !important;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(37, 211, 102, 0.18);
+}
+
+.cb-body { display: none; }
+.cb-body.open { display: block !important; }
+
+/* Checklist rows */
+.cli {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--bdr);
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+.cli .cltxt { flex: 1; line-height: 1.5; }
+.cli.readonly { opacity: 0.85; cursor: default; }
+.ck-date-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ck-shift-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* Bilingual EN visibility */
+body.lang-en .en-as-main {
+  display: block !important;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--txt);
+  font-family: var(--font-body);
+}
+body.lang-en .st > .en,
+body.lang-en .fs > .en {
+  display: none;
+}

@@ -73,13 +73,21 @@ function renderSB(){
   });
   document.getElementById('sidebar').innerHTML=h;
 }
+function closeBlockingOverlays(){
+  try{
+    var ids=['sosPanel','searchOverlay','payModal','certModal'];
+    ids.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){ el.classList.remove('open'); if(el.style){ /* leave display for pay */ } }
+    });
+    document.querySelectorAll('.search-overlay.open,.sos-panel.open,.pay-modal.open,.cert-modal.open,.pdf-modal.open').forEach(function(el){
+      el.classList.remove('open');
+    });
+  }catch(e){}
+}
 function nav(id){
   CUR=id;
-  // Close overlays that can block clicks / scroll
-  try{
-    var sos=document.getElementById('sosPanel');
-    if(sos) sos.classList.remove('open');
-  }catch(e){}
+  closeBlockingOverlays();
   document.querySelectorAll('.pg').forEach(function(p){
     p.classList.remove('on');
   });
@@ -272,31 +280,81 @@ function applyLangChrome(){
 }
 /** Swap Hindi + <span class="en"> blocks when LANG is en */
 function applyBilingualContent(root){
+  if(!root) root = document.getElementById('mt-main')||document.getElementById('content')||document.body;
   if(!root) return;
-  // Multi-lang: if LANG not hi/en, prefer English blocks already in HTML
+  var wantHi = (typeof LANG!=='undefined' && LANG==='hi');
 
-  var nodes=root.querySelectorAll('.fs, .st, .ph-desc, .card-desc, .ban-txt, .lock-txt, .gdesc');
+  // 1) Elements that embed English in <span class="en">
+  var nodes=root.querySelectorAll('.fs, .st, .ph-desc, .card-desc, .ban-txt, .lock-txt, .gdesc, .step .st, li.step .st, .alert div, .cb-body li, .cb-body p');
   nodes.forEach(function(el){
-    var enEl=el.querySelector('.en');
+    var enEl=el.querySelector(':scope > .en, .en');
     if(!enEl) return;
     if(!el.getAttribute('data-mt-hi')){
       el.setAttribute('data-mt-hi', el.innerHTML);
-      el.setAttribute('data-mt-en', enEl.textContent||enEl.innerHTML);
+      el.setAttribute('data-mt-en', (enEl.textContent||enEl.innerHTML||'').trim());
     }
-    if(LANG==='hi'){
+    if(wantHi){
       el.innerHTML=el.getAttribute('data-mt-hi');
     } else {
-      // English or any other language: prefer English dual text (clean, not mixed)
       el.innerHTML='<span class="en-as-main">'+el.getAttribute('data-mt-en')+'</span>';
     }
   });
-  // Page titles with optional data-en
+
+  // 2) Any element with data-en attribute
   root.querySelectorAll('[data-en]').forEach(function(el){
     if(!el.getAttribute('data-mt-hi-title')) el.setAttribute('data-mt-hi-title', el.innerHTML);
-    if(LANG==='hi') el.innerHTML=el.getAttribute('data-mt-hi-title');
+    if(wantHi) el.innerHTML=el.getAttribute('data-mt-hi-title');
     else el.innerHTML=el.getAttribute('data-en');
   });
+
+  // 3) CB titles / subs that carry data-en-title / data-en-sub
+  root.querySelectorAll('.cb-title[data-en-title]').forEach(function(el){
+    if(!el.getAttribute('data-mt-hi-t')) el.setAttribute('data-mt-hi-t', el.textContent);
+    el.textContent = wantHi ? el.getAttribute('data-mt-hi-t') : el.getAttribute('data-en-title');
+  });
+  root.querySelectorAll('.cb-sub[data-en-sub]').forEach(function(el){
+    if(!el.getAttribute('data-mt-hi-s')) el.setAttribute('data-mt-hi-s', el.textContent);
+    el.textContent = wantHi ? el.getAttribute('data-mt-hi-s') : el.getAttribute('data-en-sub');
+  });
+
+  // 4) Known Hindi CB titles → English (fallback map when no data attrs)
+  if(!wantHi){
+    var titleMap = {
+      'मेटलाइज़ेशन प्रक्रिया — 10 चरण':'Metallisation process — 10 steps',
+      'मेटलाइजेशन प्रक्रिया — 10 चरण':'Metallisation process — 10 steps',
+      'मशीन सेटअप — शुरू करने से पहले':'Machine setup — before start',
+      'बोट चेंज प्रक्रिया':'Boat change procedure',
+      'वैक्यूम एवं चैंबर':'Vacuum & chamber',
+      'पैरामीटर सेटिंग्स':'Parameter settings',
+      'रोल हैंडलिंग':'Roll handling',
+      'वेस्ट नियंत्रण':'Waste control',
+      'ब्लेड प्रबंधन':'Blade management',
+      'कॉर्क टेप':'Cork tape',
+      'क्रिटिकल कस्टमर आवश्यकताएं':'Critical customer requirements',
+      'ग्रेड प्रणाली और रोल स्थिति':'Grade system & roll status',
+      'रिपल-फ्री स्लिटिंग पैरामीटर':'Ripple-free slitting parameters',
+      'स्लिटिंग प्रक्रिया':'Slitting process',
+      'रोल ग्रेडिंग':'Roll grading'
+    };
+    root.querySelectorAll('.cb-title').forEach(function(el){
+      var k = (el.textContent||'').trim();
+      if(titleMap[k]) el.textContent = titleMap[k];
+    });
+    // Table headers often pure Hindi
+    var thMap = {
+      'पैरामीटर':'Parameter','मान':'Value','इकाई':'Unit','लक्ष्य':'Target','नोट':'Note',
+      'रोल संख्या':'Roll count','स्थिति कोड':'Status code'
+    };
+    root.querySelectorAll('th').forEach(function(th){
+      var k=(th.textContent||'').trim();
+      if(thMap[k]) th.textContent = thMap[k];
+    });
+  }
 }
+
+/** Bilingual helper for titles at render time */
+function BT(hi, en){ return (typeof LANG!=='undefined' && LANG==='hi') ? hi : en; }
+
 
 function clearR(){document.querySelectorAll('.pg').forEach(function(p){delete p.dataset.r;});}
 // ── HTML helpers ──
@@ -347,6 +405,18 @@ function renderPage(id,pg){
   else if(id==='askai')rAskAI(pg);
   else if(id==='manuals')rManuals(pg);
   else if(id==='defect')rDefect(pg);
+  // Always swap bilingual blocks after HTML is injected
+  try{ applyBilingualContent(pg); }catch(e){}
+  // Auto-open first accordion so content is visible (mobile/desktop)
+  try{
+    var first = pg.querySelector('.cb .cb-h');
+    var firstBody = pg.querySelector('.cb .cb-body');
+    if(first && firstBody && !firstBody.classList.contains('open')){
+      first.classList.add('open');
+      var arr=first.querySelector('.cb-arr'); if(arr) arr.classList.add('open');
+      firstBody.classList.add('open');
+    }
+  }catch(e){}
 }
 
 // ══════════════════════════════════════════════════════
@@ -643,3 +713,18 @@ function showToast(msg){
   c.appendChild(t);
   setTimeout(function(){ try{t.remove();}catch(e){} }, 2200);
 }
+
+
+/* mt-interaction-boot 2.6.10 */
+(function(){
+  function safe(){ try{ closeBlockingOverlays(); }catch(e){} }
+  document.addEventListener('DOMContentLoaded', function(){
+    safe();
+    // Escape closes overlays
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Escape') safe();
+    });
+  });
+  // If script loads after DOM ready
+  if(document.readyState!=='loading') safe();
+})();

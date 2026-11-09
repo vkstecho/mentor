@@ -573,7 +573,7 @@ function rDefect(pg){
     +'<div class="tags"><span class="tag" style="background:rgba(229,57,53,.2);color:#e53935;border-color:rgba(229,57,53,.4)">16 Defects</span><span class="tag a">Hindi + English</span><span class="tag c">Real-Time Steps</span></div></div>'
     +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 12px 20px">'+grid+'</div>'
     +'<div style="padding:0 16px 12px">'
-    +CB('📋','Master Defect Guide — सभी Defects एक नज़र में','Quick Reference',
+    +CB('📋',BT('Master Defect Guide — सभी Defects एक नज़र में','Master defect guide — all defects at a glance'),'Quick Reference',
       '<div style="font-size:13px;color:#aaa;line-height:1.6">'
       +'<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:rgba(229,57,53,.15)"><th style="padding:6px;text-align:left;color:#e53935">#</th><th style="padding:6px;text-align:left;color:#e53935">Defect</th><th style="padding:6px;text-align:left;color:#e53935">#1 कारण</th><th style="padding:6px;text-align:left;color:#e53935">Quick Fix</th></tr></thead><tbody>'
       +'<tr style="border-bottom:1px solid #222"><td>1</td><td>Low OD</td><td>Wire feed</td><td>Groove/spout</td></tr>'
@@ -640,7 +640,7 @@ function rMet(pg){
     ]
   );
 
-  var glsM=g?CB('🏭','मशीन डेटा — Metalliser-1 और Metalliser-2','केवल आंतरिक',
+  var glsM=g?CB('🏭',BT('मशीन डेटा — Metalliser-1 और Metalliser-2','Machine data — Metalliser-1 & Metalliser-2'),BT('केवल आंतरिक','Internal only'),
     '<div class="compare">'
     +'<div class="cbox"><div class="cbox-t">Metalliser-1 — BOBST K5 (3300mm)</div>'
     +'<div class="cr"><span class="ck">SAP कोड</span><span class="cv">3-M1_W | GP03</span></div>'
@@ -669,7 +669,7 @@ function rMet(pg){
     +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'वैक्युम मेटलाइज़ेशन: प्रक्रिया अवलोकन, चेंबर संचालन, पैरामीटर, बोट चेंज, रोल हैंडलिंग और वेस्ट नियंत्रण।':'Vacuum metallisation: process overview, chamber operation, parameters, boat change, roll handling and waste control.')+'</div>'
     +'<div class="tags"><span class="tag a">SOP 01–07</span><span class="tag c">WI 04,10,16,24</span></div></div>'
 
-    +CB('📖','मेटलाइज़ेशन प्रक्रिया — 10 चरण','MET SOP 01',
+    +CB('📖',BT('मेटलाइज़ेशन प्रक्रिया — 10 चरण','Metallisation process — 10 steps'),'MET SOP 01',
       '<div class="flow">'
       +F(1,'फिल्म चयन एवं योजना','प्लानिंग फॉर्मेट MET F-04 देखें। बेयर रोल की Surface Energy >54 Dynes जांचें। रोल चौड़ाई के अनुसार Shield Plate चुनें।<span class="en">Film Selection & Planning — Check MET F-04 planning. Surface energy >54 Dynes. Select shield per width.</span>')
       +F(2,'रोल को मेटलाइज़र तक लाना','Conveyor conveyor start से conveyor end। Crane से 5MT से अधिक क्षमता का Sling Belt उपयोग करें। Safety Helmet अनिवार्य। रोल के दोनों सिरों पर Foam Sheet लगाएं।<span class="en">Roll Transport — Conveyor conveyor start/23. Crane sling belt >5MT. Safety Helmet mandatory.</span>')
@@ -683,9 +683,9 @@ function rMet(pg){
       +F(10,'SAP प्रविष्टि और ग्रेडिंग','COR1 + ZPP_METJUMBO (plant SAP T-code) T-Code। ग्रेड: 2/3/5/6/7/8। दोष दर्ज करें। स्लिटर को पास करें।<span class="en">COR1 + ZPP_METJUMBO (plant SAP T-code). Grade 2/3/5/6/7/8. Record defects. Pass to slitter.</span>')
       +'</div>',true)
 
-    +CB('⚙️','ऑपरेटिंग पैरामीटर','SOP 04 / 05 / 06',params)
+    +CB('⚙️',BT('ऑपरेटिंग पैरामीटर','Operating parameters'),'SOP 04 / 05 / 06',params)
     +glsM
-    +CB('🚢','बोट चेंज प्रोग्राम','WI-04',
+    +CB('🚢',BT('बोट चेंज प्रोग्राम','Boat change program'),'WI-04',
       '<ul class="steps">'
       +S('A','<strong>Evaporator साइड</strong> को अच्छी तरह साफ करें — सभी Al Oxide जमाव हटाएं।<span class="en">Clean evaporator side thoroughly — remove all Al oxide deposits.</span>',true)
       +S('B','Drum और Shield साफ करें — Al Oxide से पूरी तरह मुक्त करें।<span class="en">Clean Drum and Shield — free from all Al oxide residue.</span>',true)
@@ -695,7 +695,7 @@ function rMet(pg){
       +S('F','सभी Rollers और Plasma Unit साफ करें।<span class="en">Clean all rollers and plasma unit.</span>',true)
       +'</ul>')
 
-    +CB('📏','वेस्ट नियंत्रण','WI-24',
+    +CB('📏',BT('वेस्ट नियंत्रण','Waste control'),'WI-24',
       '<div class="stats">'
       +'<div class="stat"><div class="stat-v">0.14%</div><div class="stat-l">स्टार्ट-स्टॉप<br>100m/72km</div></div>'
       +'<div class="stat"><div class="stat-v">0.54%</div><div class="stat-l">ट्रिम वेस्ट<br>15mm/2900mm</div></div>'
@@ -726,7 +726,7 @@ function rSlit(pg){
     +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मशीन सेटअप, ब्लेड प्रबंधन, कॉर्क टेप, क्रिटिकल कस्टमर, रोल ग्रेडिंग और जॉइंट की पूरी जानकारी।':'Machine setup, blade management, cork tape, critical customer, roll grading and joints.')+'</div>'
     +'<div class="tags"><span class="tag a">SL WI 01–10</span><span class="tag c">SOP 09</span><span class="tag g">WI 19, 25</span></div></div>'
 
-    +CB('📋','मशीन सेटअप — शुरू करने से पहले','SL WI-02',
+    +CB('📋',BT('मशीन सेटअप — शुरू करने से पहले','Machine setup — before start'),'SL WI-02',
       '<ul class="steps">'
       +S(1,'प्लानिंग फॉर्मेट <strong>MET F-04</strong> में स्लिटिंग चौड़ाई जांचें।<span class="en">Check planning format MET F-04 for slitting widths.</span>')
       +S(2,'प्लान के अनुसार सही मेटलाइज़्ड Jumbo Roll चुनें।<span class="en">Select correct metallised jumbo roll as per plan.</span>')
@@ -738,7 +738,7 @@ function rSlit(pg){
       +S(8,'फिल्म मोटाई (8/10/12/19µ) और रोल लंबाई (24,000/36,000m) जांचें।<span class="en">Verify film thickness (8/10/12/19µ) and roll length (24,000/36,000m).</span>')
       +'</ul>',true)
 
-    +CB('🔪','ब्लेड बदलने की प्रक्रिया','SL WI-03',
+    +CB('🔪',BT('ब्लेड बदलने की प्रक्रिया','Blade change procedure'),'SL WI-03',
       '<ul class="steps">'
       +S(1,'ब्लेड काम से पहले <strong>मशीन पूरी तरह बंद करें</strong>।<span class="en">STOP machine completely before any blade work.</span>')
       +S(2,'ब्लेड हाथ में लेने से पहले कट-रेज़िस्टेंट <strong>दस्ताने पहनें</strong>।<span class="en">Wear cut-resistant gloves before handling blades.</span>')
@@ -750,7 +750,7 @@ function rSlit(pg){
       +'</ul>'
       +Al('d','⛔','खुले हाथ से ब्लेड कभी न छुएं। Blade Log हमेशा अद्यतन रखें। घिसे ब्लेड से Edge Defect और Downgrade होता है।'))
 
-    +CB('🌀','Rewinder पर कॉर्क टेप','WI-19',
+    +CB('🌀',BT('Rewinder पर कॉर्क टेप','Cork tape on rewinder'),'WI-19',
       '<table class="t"><thead><tr><th>कोण</th><th>फायदा</th><th>सिफारिश</th></tr></thead><tbody>'
       +'<tr><td class="tv">30°</td><td>सबसे मजबूत पकड़</td><td>हाई स्पीड >800 m/min</td></tr>'
       +'<tr><td class="tv">35°–40°</td><td>हाई-स्पीड के लिए सर्वोत्तम</td><td>✅ अनुशंसित</td></tr>'
@@ -764,7 +764,7 @@ function rSlit(pg){
       +S(4,'<strong>समाप्ति:</strong> 0° पर 2 सपाट लपेट। High-Temp चिपकने से सुरक्षित करें। Heat Cure 80–100°C (वैकल्पिक)।<span class="en">End with 2 flat turns at 0°. Secure with epoxy. Heat cure 80-100°C optional.</span>')
       +'</ul>')
 
-    +CB('⭐','क्रिटिकल कस्टमर आवश्यकताएं','WI-25',
+    +CB('⭐',BT('क्रिटिकल कस्टमर आवश्यकताएं','Critical customer requirements'),'WI-25',
       Al('d','⛔','क्रिटिकल: JAYESH | PEPSICO | AMCOR | UMAX | EXPORT — विशेष अनिवार्य नियम।')
       +'<ul class="steps">'
       +S(1,'मेटलाइज़ेशन के बाद प्लानिंग फाइल में क्रिटिकल कस्टमर की स्लिटिंग चौड़ाई जांचें।<span class="en">After metallisation check planning file for critical customer widths.</span>')
@@ -774,7 +774,7 @@ function rSlit(pg){
       +S(5,'यदि दोष Job Card में नहीं है और रोल Downgrade हो — तो ऑपरेटर की लापरवाही मानी जाएगी।<span class="en">Defect not in Job Card and roll downgrades = Operator Negligence ruling.</span>')
       +'</ul>')
 
-    +CB('📊','ग्रेड प्रणाली और रोल स्थिति','SAP ZPP_SLIT',
+    +CB('📊',BT('ग्रेड प्रणाली और रोल स्थिति','Grade system & roll status'),'SAP ZPP_SLIT',
       grades
       +'<table class="t"><thead><tr><th>रोल संख्या</th><th>स्थिति कोड</th><th>नोट</th></tr></thead><tbody>'
       +'<tr><td>3 रोल</td><td class="tv">L / C / R</td><td>Operator → Center → Drive</td></tr>'
@@ -784,7 +784,7 @@ function rSlit(pg){
       +'</tbody></table>'
       +Al('w','⚠️','ग्रेड 3/5/8 के लिए — उदाहरण टिप्पणी: "Downgrade Reason: Low OD | Remark: Low OD Edge 20mm, OD 1.6-1.9"'))
 
-    +CB('📋','रिपल-फ्री स्लिटिंग पैरामीटर','SOP 09',
+    +CB('📋',BT('रिपल-फ्री स्लिटिंग पैरामीटर','Ripple-free slitting parameters'),'SOP 09',
       '<table class="t"><thead><tr><th>पैरामीटर</th><th>मान</th><th>इकाई</th></tr></thead><tbody>'
       +'<tr><td>Rewinding Tension</td><td class="tv">90</td><td>N/M</td></tr>'
       +'<tr><td>Nip Pressure</td><td class="tv">700</td><td>N/m²</td></tr>'
