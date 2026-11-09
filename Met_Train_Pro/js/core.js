@@ -57,7 +57,7 @@ function lb(k){
 
 var SB_CFG=[
   {s:'s2',items:[{id:'home',ico:'🏠'},{id:'defect',ico:'🔴'},{id:'askai',ico:'🤖'},{id:'met',ico:'⚡'},{id:'slit',ico:'✂️'},{id:'safety',ico:'🦺'},{id:'sops',ico:'📋'}]},
-  {s:'s1',items:[{id:'sap',ico:'💻',gls:1},{id:'maint',ico:'🛠️',gls:1}]},
+  {s:'s1',items:[{id:'maint',ico:'🛠️',gls:1}]},
   {s:'s3',items:[{id:'genmet',ico:'🔬'},{id:'genslit',ico:'🔧'},{id:'terms',ico:'📚'},{id:'manuals',ico:'📖'}]},
   {s:'s4',items:[{id:'quiz',ico:'📝'},{id:'check',ico:'✅'}]}
 ];
@@ -112,7 +112,7 @@ function nav(id){
 }
 function setMode(m){
   MODE=m;
-  if(m==='gen'&&(CUR==='sap'||CUR==='maint'))CUR='home';
+  if(m==='gen'&&(CUR==='maint'))CUR='home';
   clearR();nav(CUR);
   renderMobNav();
   updateTopbar();
@@ -384,7 +384,7 @@ function renderPage(id,pg){
   pg.dataset.r='1';
   if(id==='landing')rLanding(pg);
   else if(id==='home')rHome(pg);else if(id==='met')rMet(pg);else if(id==='slit')rSlit(pg);
-  else if(id==='safety')rSafety(pg);else if(id==='sops')rSOPs(pg);else if(id==='sap')rSAP(pg);
+  else if(id==='safety')rSafety(pg);else if(id==='sops')rSOPs(pg);
   else if(id==='maint')rMaint(pg);else if(id==='genmet')rGenMet(pg);else if(id==='genslit')rGenSlit(pg);
   else if(id==='terms')rTerms(pg);else if(id==='quiz')rQuiz(pg);else if(id==='check')rCheck(pg);
   else if(id==='askai')rAskAI(pg);
@@ -428,8 +428,8 @@ function rLanding(pg){
   var pick = hi ? 'शिफ्ट से पहले अपना मोड चुनें' : 'Choose your mode before the shift';
   var empTitle = hi ? 'कर्मचारी' : 'Employee';
   var empSub = hi
-    ? 'ऑपरेटर / सुपरवाइज़र — Defect · SOP · PM · SAP · Quiz'
-    : 'Operator / Supervisor — Defect · SOP · PM · SAP · Quiz';
+    ? 'ऑपरेटर / सुपरवाइज़र — Defect · SOP · PM · Quiz'
+    : 'Operator / Supervisor — Defect · SOP · PM · Quiz';
   var freeBadge = hi ? '✓ फ्री' : '✓ FREE';
   var dhakTitle = hi ? 'धाकड़ ज्ञान' : 'Dhakad Gyaan';
   var dhakSub = hi
@@ -651,7 +651,6 @@ function rHome(pg){
   var hi = (LANG==='hi');
   if(g){
     cards = cards.slice();
-    cards.push({id:'sap',ico:'💻',t:'SAP Entry',d: hi ? 'COR1 + ZPP_METJUMBO और ZPP_SLIT — SAP में production entry।' : 'COR1 + ZPP_METJUMBO and ZPP_SLIT — production entry in SAP.',cc:'#e07800',m:'Free'});
     cards.push({id:'maint',ico:'🛠️',t:'Maintenance (PM)',d: hi ? 'Metalliser-1/2 के लिए daily, weekly, monthly PM checklist।' : 'Daily, weekly, monthly PM checklist for Metalliser-1 and Metalliser-2.',cc:'var(--muted)',m:'Free'});
   }
   var cH = cards.map(function(c){
@@ -664,7 +663,7 @@ function rHome(pg){
   var ban = '';
   if(g){
     ban = '<div class="banner"><div class="ban-ico">🏭</div><div class="ban-txt"><strong>Metalliser Plant</strong><br><span style="opacity:.95">'
-      + (hi ? 'Mode active है। Machine data, SAP, KPI और internal SOPs उपलब्ध हैं।' : 'Mode active. Machine data, SAP, KPI and internal SOPs are available.')
+      + (hi ? 'Mode active है। Machine data, KPI और internal SOPs उपलब्ध हैं।' : 'Mode active. Machine data, KPI and internal SOPs are available.')
       + '</span></div></div>'
       + '<div class="home-quick" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 8px">'
       + '<button type="button" class="btn btn-p" style="width:100%" onclick="nav(\'sops\')">📋 SOPs</button>'

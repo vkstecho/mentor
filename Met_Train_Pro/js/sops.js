@@ -883,7 +883,7 @@ function rSOPs(pg){
         +'</div>'
         +'<div class="card-title">'+c.title+'</div>'
         +'<div class="card-desc">'+c.sub+'</div>'
-        +'<div class="card-meta">→ पूरा SOP देखें</div>'
+        +'<div class="card-meta">'+((typeof LANG!=='undefined'&&LANG==='hi')?'→ पूरा SOP देखें':'→ View full SOP')+'</div>'
         +'</div>';
     }).join('');
   }
@@ -892,7 +892,7 @@ function rSOPs(pg){
     '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मॉड्यूल 4 — SOPs, WIs एवं फॉर्मेट':'Module 4 — SOPs, WIs & formats')+'</div>'
     +'<div class="ph-title">'+(typeof LANG!=='undefined'&&LANG==='hi'?'SOPs, WIs एवं <span>फॉर्मेट</span>':'SOPs, WIs & <span>Formats</span>')+'</div>'
     +'<div class="ph-desc">'+(typeof LANG!=='undefined'&&LANG==='hi'?'सम्पूर्ण दस्तावेज़ लाइब्रेरी — प्रत्येक SOP/WI का पूरा विवरण देखने के लिए Card पर Click करें।':'Full document library — tap a card for the complete SOP/WI detail.')+'</div>'
-    +'<div class="tags"><span class="tag a">8 SOPs</span><span class="tag c">17 WIs</span><span class="tag g">पूरी जानकारी उपलब्ध</span></div></div>'
+    +'<div class="tags"><span class="tag a">8 SOPs</span><span class="tag c">17 WIs</span><span class="tag g">'+((typeof LANG!=='undefined'&&LANG==='hi')?'पूरी जानकारी उपलब्ध':'Full detail available')+'</span></div></div>'
     +(!g?Al('i','ℹ️','सामान्य सारांश दिखाए जा रहे हैं। कोड और आंतरिक KPI मोड में दिखेंगे।'):'')
     +'<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;padding:4px 0;border-bottom:1px solid var(--bdr)">📄 Standard Operating Procedures (SOPs)</div>'
     +'<div class="cards">'+makeCards(sopCards)+'</div>'

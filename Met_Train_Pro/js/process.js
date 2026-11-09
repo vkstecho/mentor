@@ -3,66 +3,11 @@
 // SAP — HINDI
 // ══════════════════════════════════════════════════════
 function rSAP(pg){
-  if(MODE!=='free'){pg.innerHTML=Lock();return;}
-  pg.innerHTML=
-    phHeader(
-      'मॉड्यूल 5 — SAP Entry','SAP Entry एवं <span>Records</span>','Met Jumbo (COR1 + ZPP_METJUMBO) और Slitting (ZPP_SLIT) — step-by-step SAP production entry।',
-      'Module 5 — SAP Entry','SAP Entry & <span>Records</span>','Step-by-step SAP production entry for Met Jumbo (COR1 + ZPP_METJUMBO) and Slitting (ZPP_SLIT).'
-    )
-    +(LANG==='hi'
-      ? '<div class="tags"><span class="tag a">Free</span><span class="tag c">ZPP_METJUMBO</span><span class="tag g">ZPP_SLIT</span></div>'
-      : '<div class="tags"><span class="tag a">Free</span><span class="tag c">ZPP_METJUMBO</span><span class="tag g">ZPP_SLIT</span></div>')
-    +Al('i','💻','Login: POLY_MATEL_E | System: PROD | Plant: 3001 | Controlling Area: 3000 | Semi-Finished: 3SF-G… | Finished: 3FG-G…')
-    +Tabs(['Met Jumbo (COR1 + ZPP_METJUMBO (plant SAP T-code))','Slitting (ZPP_SLIT)','Quick Reference'],[
-      Al('i','📋','प्रवाह: COR1 (Order बनाएं) → ZPP_METJUMBO (plant SAP T-code) (डेटा भरें) → Ctrl+S')
-      +'<ul class="steps">'
-      +S(1,'SAP खोलें → <strong>PROD</strong> पर डबल-क्लिक करें → POLY_MATEL_E से Login करें।')
-      +S(2,'T-Code: <strong>COR1</strong> → Process Order बनाएं।')
-      +S(3,'भरें: Material (3SF-G…), Plant code, Quantity (KG), Order Type: <strong>GP03</strong> (Metalliser-1) या <strong>GP05</strong> (Metalliser-2)।')
-      +S(4,'Enter दबाएं → Quantity → Enter → <strong>Green Flag</strong> (Release) → <strong>Ctrl+S → Yes → Order Number नोट करें।</strong>')
-      +S(5,'T-Code: <strong>ZPP_METJUMBO (plant SAP T-code)</strong> → Plant: 3001 → Order No. → Execute (Clock Icon)।')
-      +S(6,'Logbook से भरें: Posting Date (Auto), Base Roll ID (List से चुनें), Consumed Length, Met Width।')
-      +S(7,'सभी TIME भरें: Chamber Closing Time और Vacuum Time (दोनों एक जैसे)।')
-      +S(8,'Machine Speed जांचें → Supervisor नाम (Comma से अलग करें) → Downtime (मिनट) → Remark (P/M/E/O)।')
-      +S(9,'<strong>Base Film</strong> पर क्लिक करें → मेटलाइज़ किए गए Bare Film का वज़न भरें।')
-      +S(10,'<strong>Process Jumbo</strong> → फिर <strong>Raw & Waste</strong> पर क्लिक करें।')
-      +S(11,'Excel Formula Sheet खोलें → SAP की Top/Bottom Values भरें → Wire qty (दशमलव नहीं) भरें।')
-      +S(12,'Boat qty (दशमलव नहीं) भरें → <strong>Ctrl+S → Controlling Area: 3000 → Save।</strong>')
-      +'</ul>',
-
-      Al('i','📋','प्रवाह: ZPP_SLIT → Header → Enter → Grade/Width/Position → Order → Save')
-      +'<ul class="steps">'
-      +S(1,'T-Code: <strong>ZPP_SLIT</strong>।')
-      +S(2,'भरें: Material (3FG-G…), Rolls की संख्या (2/3/4/5), Machine: <strong>3-M1_S</strong> (Metalliser-1) या <strong>3-M2_S</strong> (Metalliser-2)।')
-      +S(3,'Core Thickness (13/15/16), Core ID (3/6/8"), Core Type (RC/नई)।')
-      +S(4,'Film Thickness (8/10/12/19µ), Length (24000/36000), Treatment, Chemical, Metal Side (I/O)।')
-      +S(5,'<strong>Enter</strong> दबाएं → Batch No. Logbook से मिलाएं।')
-      +S(6,'हर रोल के लिए: Width (Logbook से), Grade (2/3/5/6/7/8), Position (L/C/R या L/A/B/R)।')
-      +S(7,'Joint (संख्या), Joint from Top (मीटर में लंबाई)।')
-      +S(8,'ग्रेड 3/5/8 के लिए: Downgrade Reason चुनें + पूरी Remark लिखें। उदाहरण: "Low OD Edge 20mm 1.6-1.9"')
-      +S(9,'Posting Date जांचें → <strong>Create Process Order → Ctrl+S → Area 3000 → Save।</strong>')
-      +'</ul>',
-
-      '<table class="t"><thead><tr><th>विवरण</th><th>मान</th></tr></thead><tbody>'
-      +'<tr><td>SAP Login ID</td><td class="tv">POLY_MATEL_E</td></tr>'
-      +'<tr><td>System</td><td class="tv">PROD</td></tr>'
-      +'<tr><td>Plant</td><td class="tv">3001</td></tr>'
-      +'<tr><td>Controlling Area</td><td class="tv">3000</td></tr>'
-      +'<tr><td>Metalliser-1 Machine Code</td><td class="tv">3-M1_W | GP03</td></tr>'
-      +'<tr><td>Metalliser-2 Machine Code</td><td class="tv">3-M2_W | GP05</td></tr>'
-      +'<tr><td>Slitter-1 Code</td><td class="tv">3-M1_S</td></tr>'
-      +'<tr><td>Slitter-2 Code</td><td class="tv">3-M2_S</td></tr>'
-      +'<tr><td>T-Code Order बनाने के लिए</td><td class="tv">COR1</td></tr>'
-      +'<tr><td>T-Code Met Jumbo</td><td class="tv">ZPP_METJUMBO (plant SAP T-code)</td></tr>'
-      +'<tr><td>T-Code Slitting</td><td class="tv">ZPP_SLIT</td></tr>'
-      +'<tr><td>Downtime कोड</td><td class="tv">P=Process | M=Mech | E=E&amp;I | O=Others</td></tr>'
-      +'</tbody></table>'
-    ]);
+  /* SAP module removed per product request */
+  if(typeof nav==='function'){ nav('home'); return; }
+  pg.innerHTML='<div class="ph"><div class="ph-title">Module removed</div><div class="ph-desc">SAP Entry is not part of this app.</div></div>';
 }
 
-// ══════════════════════════════════════════════════════
-// MAINTENANCE — HINDI
-// ══════════════════════════════════════════════════════
 function rMaint(pg){
   if(MODE!=='free'){pg.innerHTML=Lock();return;}
   pg.innerHTML=
@@ -71,7 +16,7 @@ function rMaint(pg){
       'Module 6 — Maintenance (PM)','Preventive <span>Maintenance (PM)</span>','Daily, weekly, monthly and quarterly PM for Metalliser-1 and Metalliser-2. Formats: MET F-07/08/09/10/11.'
     )
     +'<div class="tags"><span class="tag a">Free</span><span class="tag c">MET F-07 to F-11</span></div>'
-    +Tabs(['दैनिक (F-07)','साप्ताहिक (F-08)','मासिक (F-09)','त्रैमासिक/वार्षिक'],[
+    +Tabs((typeof LANG!=='undefined'&&LANG==='hi')?['दैनिक (F-07)','साप्ताहिक (F-08)','मासिक (F-09)','त्रैमासिक/वार्षिक']:['Daily (F-07)','Weekly (F-08)','Monthly (F-09)','Quarterly/Yearly'],[
       Al('i','📋','हर Shift — Process Team ज़िम्मेदार। MET F-07 में सभी बिंदु दर्ज करें।')
       +'<ul class="steps">'
       +S('D1','हर Cycle की शुरुआत में Vacuum Level और Pump Performance जांचें।',true)

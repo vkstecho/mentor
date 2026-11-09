@@ -1955,7 +1955,7 @@ function renderMobNav(){
     {id:'check',ico:'✅',l:hi?'चेकलिस्ट':'Checklist'},
   ];
   if(g){
-    items.splice(5,0,{id:'sap',ico:'💻',l:'SAP'},{id:'maint',ico:'🛠️',l:'PM'});
+    items.splice(5,0,{id:'maint',ico:'🛠️',l:'PM'});
   }
   var h='';
   items.forEach(function(it){

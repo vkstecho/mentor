@@ -562,7 +562,7 @@ function rDefect(pg){
     return '<button onclick="nav(\'askai\');setTimeout(function(){askAI(\''+d.q+'\')},300)" style="background:linear-gradient(135deg,'+d.c+'22,'+d.c+'08);border:2px solid '+d.c+'66;border-radius:14px;padding:14px 12px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .2s;font-family:inherit" ontouchstart="" onmousedown="this.style.transform=\'scale(.95)\'" onmouseup="this.style.transform=\'\'" onmouseleave="this.style.transform=\'\'">'
     +'<div style="font-size:28px">'+d.ico+'</div>'
     +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:15px;font-weight:900;color:'+d.c+';text-transform:uppercase;letter-spacing:.02em;line-height:1.2">'+d.t+'</div>'
-    +'<div style="font-size:11px;color:rgba(255,255,255,.55);font-family:\'Mukta\',\'Hind\',sans-serif;line-height:1.3">'+d.h+'</div>'
+    +((typeof LANG!=='undefined'&&LANG==='hi')?('<div style="font-size:11px;color:rgba(255,255,255,.55);font-family:\'Mukta\',\'Hind\',sans-serif;line-height:1.3">'+d.h+'</div>'):'')
     +'</button>';
   }).join('');
 
