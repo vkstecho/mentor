@@ -387,8 +387,13 @@ function Tabs(tabs,panels){
   return '<div class="tabs">'+th+'</div>'+ph;
 }
 function tCB(el,id){
-  el.classList.toggle('open');el.querySelector('.cb-arr').classList.toggle('open');
-  var b=document.getElementById(id);if(b)b.classList.toggle('open');
+  try{
+    el.classList.toggle('open');
+    var arr=el.querySelector('.cb-arr'); if(arr) arr.classList.toggle('open');
+    var b=document.getElementById(id);
+    if(!b && el.nextElementSibling) b=el.nextElementSibling;
+    if(b){ b.classList.toggle('open'); b.style.display = b.classList.contains('open') ? 'block' : 'none'; }
+  }catch(e){ console.warn('tCB',e); }
 }
 function tTab(btn,uid,i){
   btn.closest('.tabs').querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');

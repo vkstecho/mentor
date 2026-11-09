@@ -69,7 +69,7 @@ function rMaint(pg){
 // GENERAL MET — HINDI
 // ══════════════════════════════════════════════════════
 function rGenMet(pg){
-  if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
+  /* always available */
   var hi=(typeof LANG!=='undefined'&&LANG==='hi');
   var h = PH(
     hi?'धाकड़ ज्ञान — वैक्यूम मेटलाइज़ेशन':'Dhakad Gyaan — Vacuum Metallisation',
@@ -117,7 +117,7 @@ function rGenMet(pg){
 }
 
 function rGenSlit(pg){
-  if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
+  /* always available */
   var hi=(typeof LANG!=='undefined'&&LANG==='hi');
   var h = PH(
     hi?'धाकड़ ज्ञान — स्लिटिंग':'Dhakad Gyaan — Slitting',
@@ -179,7 +179,7 @@ function rGenSlit(pg){
 }
 
 function rTerms(pg){
-  if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
+  /* always available */
   var sections=[
     {t:'📋 दस्तावेज़ एवं गुणवत्ता प्रणाली',c:'var(--gold)',items:[
       {a:'SOP',f:'Standard Operating Procedure',d:'किसी task को consistently और correctly करने के लिए documented step-by-step instructions। में 10 SOPs हैं।'},
