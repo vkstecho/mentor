@@ -55,10 +55,10 @@ try{
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="">
-<a id="mt-skip-link" href="#mt-main" class="mt-skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:10000">Skip to content</a>
+<a id="mt-skip-link" href="#content" class="mt-skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:10000">Skip to content</a>
 <style>
 .mt-skip-link:focus{position:fixed!important;left:8px!important;top:8px!important;width:auto!important;height:auto!important;overflow:visible!important;padding:10px 14px;background:#0f172a;color:#fff;border-radius:8px;z-index:10000;text-decoration:none;font-weight:600}
-#mt-main:focus{outline:2px solid #25d366;outline-offset:2px}
+#content:focus{outline:2px solid #25d366;outline-offset:2px}
 </style>
 
 <div id="topbar">
@@ -92,7 +92,9 @@ try{
 </div>
   <div id="body">
   <div id="sidebar"></div>
-  <div id="mt-main">
+  <!-- Mobile Bottom Nav -->
+  <nav id="mob-nav"></nav>
+  <div id="content">
     <div class="pg on" id="pg-landing"></div>
     <div class="pg" id="pg-home"></div>
     <div class="pg" id="pg-met"></div>
@@ -110,8 +112,6 @@ try{
     <div class="pg" id="pg-defect"></div>
   </div>
 </div>
-<!-- Mobile Bottom Nav (fixed, outside #body so it does not break flex height) -->
-<nav id="mob-nav"></nav>
 
 <!-- ══ PAYMENT MODAL ══ -->
 <div id="payModal" style="display:none"></div>

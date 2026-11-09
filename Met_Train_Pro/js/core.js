@@ -89,7 +89,7 @@ function nav(id){
   CUR=id;
   closeBlockingOverlays();
   try{
-    var mtMain=document.getElementById('mt-main')||document.getElementById('content');
+    var mtMain=document.getElementById('content')||document.getElementById('mt-main');
     if(mtMain){ mtMain.scrollTop=0; }
   }catch(e){}
   document.querySelectorAll('.pg').forEach(function(p){
@@ -272,7 +272,7 @@ function applyLangChrome(){
     }
   }
   // Apply bilingual swap on visible content
-  applyBilingualContent(document.getElementById('mt-main')||document.getElementById('content')||document.body);
+  applyBilingualContent(document.getElementById('content')||document.getElementById('mt-main')||document.body);
 
   // Translate [data-mt-key] using SB_LABELS / mtT
   try{
@@ -285,7 +285,7 @@ function applyLangChrome(){
 }
 /** Swap Hindi + <span class="en"> blocks when LANG is en */
 function applyBilingualContent(root){
-  if(!root) root = document.getElementById('mt-main')||document.getElementById('content')||document.body;
+  if(!root) root = document.getElementById('content')||document.getElementById('mt-main')||document.body;
   if(!root) return;
   var wantHi = (typeof LANG!=='undefined' && LANG==='hi');
 
@@ -726,7 +726,7 @@ function showToast(msg){
 (function(){
   function safe(){ try{ closeBlockingOverlays();
   try{
-    var mtMain=document.getElementById('mt-main')||document.getElementById('content');
+    var mtMain=document.getElementById('content')||document.getElementById('mt-main');
     if(mtMain){ mtMain.scrollTop=0; }
   }catch(e){} }catch(e){} }
   document.addEventListener('DOMContentLoaded', function(){

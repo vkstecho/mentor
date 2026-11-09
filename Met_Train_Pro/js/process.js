@@ -69,82 +69,115 @@ function rMaint(pg){
 // GENERAL MET — HINDI
 // ══════════════════════════════════════════════════════
 function rGenMet(pg){
-  if(!window._proUnlocked){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
-  pg.innerHTML=
-    phHeader(
-      '🔥 धाकड़ ज्ञान — Vacuum Metallisation','Vacuum <span>Metallisation</span>','Vacuum metallisation का industry-standard knowledge — operators, trainees और engineers के लिए।',
-      '🔥 Dhakad Gyaan — Vacuum Metallisation','Vacuum <span>Metallisation</span>','Industry-standard knowledge of vacuum metallisation — for operators, trainees and engineers.'
-    )
-    +(LANG==='hi'
-      ? '<div class="tags"><span class="tag a">धाकड़ ज्ञान</span><span class="tag g">Industry Standard</span></div>'
-      : '<div class="tags"><span class="tag a">Dhakad Gyaan</span><span class="tag g">Industry Standard</span></div>')
-    +CB('📖','वैक्युम मेटलाइज़ेशन क्या है?','PVD प्रक्रिया',
+  if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
+  var hi=(typeof LANG!=='undefined'&&LANG==='hi');
+  var h = PH(
+    hi?'धाकड़ ज्ञान — वैक्यूम मेटलाइज़ेशन':'Dhakad Gyaan — Vacuum Metallisation',
+    hi?'वैक्यूम <span>मेटलाइज़ेशन</span>':'Vacuum <span>Metallisation</span>',
+    hi?'ऑपरेटर, ट्रेनी और इंजीनियरों के लिए वैक्यूम मेटलाइज़ेशन का उद्योग-मानक ज्ञान।':'Industry-standard knowledge of vacuum metallisation — for operators, trainees and engineers.'
+  );
+  h += hi
+    ? '<div class="tags"><span class="tag a">धाकड़ ज्ञान</span><span class="tag g">Industry Standard</span></div>'
+    : '<div class="tags"><span class="tag a">Dhakad Gyaan</span><span class="tag g">Industry Standard</span></div>';
+
+  if(hi){
+    h += CB('📖','वैक्यूम मेटलाइज़ेशन क्या है?','PVD प्रक्रिया',
       '<ul class="steps">'
-      +S(1,'वैक्युम मेटलाइज़ेशन एक Physical Vapour Deposition (PVD) प्रक्रिया है जो Plastic Films (PET, BOPP, CPP) पर पतली Aluminium परत चढ़ाती है।')
+      +S(1,'वैक्यूम मेटलाइज़ेशन एक Physical Vapour Deposition (PVD) प्रक्रिया है जो Plastic Films (PET, BOPP, CPP) पर पतली Aluminium परत चढ़ाती है।')
       +S(2,'यह प्रक्रिया ~10⁻⁴ mbar के Vacuum Chamber में होती है — ताकि Al फिल्म तक पहुंचने से पहले Oxidise न हो।')
       +S(3,'Al Wire को Ceramic Boats में 700–1000°C तक गर्म किया जाता है। Al पिघलता है और वाष्प बन जाता है।')
-      +S(4,'फिल्म ठंडे Drum (-20°C) के ऊपर से गुज़रती है। Al वाष्प फिल्म पर 20–50nm की धात्विक परत बनाता है।')
+      +S(4,'फिल्म ठंडे Drum (-20°C) के ऊपर से गुजरती है। Al वाष्प फिल्म पर 20–50nm की धात्विक परत बनाता है।')
       +S(5,'Optical Density (OD) Al परत की मोटाई नापता है। अधिक OD = मोटी परत = बेहतर Light और Oxygen Barrier।')
-      +S(6,'AlBond / AlOx मेटलाइज़ेशन में Plasma Treatment या Oxide Layer जोड़ी जाती है — Adhesion और Barrier बेहतर होता है।')
-      +'</ul>',true)
-    +CB('📐','Optical Density (OD) को समझना','गुणवत्ता माप',
+      +S(6,'AlBond / AlOx मेटलाइज़ेशन में Plasma Treatment से Oxide Layer जोड़ी जाती है — Adhesion और Barrier बेहतर होता है।')
+      +'</ul>',true);
+    h += CB('📐','Optical Density (OD) की समझ','मूलभूत माप',
       '<ul class="steps">'
-      +S(1,'OD = -log₁₀(Transmittance)। मेटलाइज़्ड फिल्म की अपारदर्शिता नापता है।')
-      +S(2,'OD 2.2 = ~0.63% Transmittance। OD 2.5 = ~0.32%। OD 2.8 = ~0.16%।')
-      +S(3,'अधिक OD = मोटा Al = बेहतर Light और Oxygen Barrier।')
-      +S(4,'बहुत अधिक OD = अत्यधिक Al खपत, Pinhole की संभावना। बहुत कम OD = खराब Barrier, कस्टमर शिकायत।')
-      +S(5,'रोल चौड़ाई में OD की एकरूपता ज़रूरी है — किनारे से किनारे तक ±5% सीमा के अंदर।')
-      +'</ul>')
-    +CB('⚡','मेटलाइज़्ड फिल्म के सामान्य दोष','गुणवत्ता नियंत्रण',
-      '<table class="t"><thead><tr><th>दोष</th><th>कारण</th><th>रोकथाम</th></tr></thead><tbody>'
-      +'<tr><td class="tv r">कम OD</td><td>धीमी Wire Feed, Boat खराब, अधिक गति</td><td>Hawk-Eye Monitor करें, Boats पहले जांचें</td></tr>'
-      +'<tr><td class="tv r">Pinholes</td><td>Boat Spitting, फिल्म सतह दोष</td><td>Boats साफ करें, फिल्म गुणवत्ता जांचें</td></tr>'
-      +'<tr><td class="tv r">खरोंचें</td><td>Roller क्षति, Felt संदूषण</td><td>नियमित Roller निरीक्षण</td></tr>'
-      +'<tr><td class="tv r">OD Bands</td><td>असमान वाष्पीकरण</td><td>Boat Position और Shield Setting जांचें</td></tr>'
-      +'<tr><td class="tv r">Crease</td><td>Tension भिन्नता, Roller गलत</td><td>Tension और Roller Alignment जांचें</td></tr>'
-      +'</tbody></table>');
+      +S(1,'OD = −log₁₀(Transmittance)। OD 2.0 ≈ 1% light passes; OD 2.5 ≈ 0.3%。')
+      +S(2,'Typical packaging: OD 2.0–2.5। Higher OD = better barrier, more Al consumption।')
+      +S(3,'Hawk-Eye / online gauge continuous OD monitor करता है — process को stabilise रखने के लिए।')
+      +'</ul>');
+  } else {
+    h += CB('📖','What is vacuum metallisation?','PVD process',
+      '<ul class="steps">'
+      +S(1,'Vacuum metallisation is a Physical Vapour Deposition (PVD) process that deposits a thin aluminium layer on plastic films (PET, BOPP, CPP).')
+      +S(2,'It runs in a vacuum chamber at about 10⁻⁴ mbar so aluminium does not oxidise before it reaches the film.')
+      +S(3,'Al wire is heated in ceramic boats to 700–1000°C. Aluminium melts and forms vapour.')
+      +S(4,'Film passes over a cold drum (about −20°C). Al vapour condenses as a 20–50 nm metallic layer.')
+      +S(5,'Optical Density (OD) measures layer thickness. Higher OD = thicker layer = better light and oxygen barrier.')
+      +S(6,'AlBond / AlOx processes add plasma treatment and an oxide layer for better adhesion and barrier.')
+      +'</ul>',true);
+    h += CB('📐','Understanding Optical Density (OD)','Core measure',
+      '<ul class="steps">'
+      +S(1,'OD = −log₁₀(Transmittance). OD 2.0 ≈ 1% light passes; OD 2.5 ≈ 0.3%.')
+      +S(2,'Typical packaging targets OD 2.0–2.5. Higher OD improves barrier but uses more aluminium.')
+      +S(3,'Hawk-Eye / online gauges monitor OD continuously to keep the process stable.')
+      +'</ul>');
+  }
+  pg.innerHTML = h;
 }
 
-// ══════════════════════════════════════════════════════
-// GENERAL SLITTER — HINDI
-// ══════════════════════════════════════════════════════
 function rGenSlit(pg){
-  if(!window._proUnlocked){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
-  pg.innerHTML=
-    phHeader(
-      '🔥 धाकड़ ज्ञान — Slitting','Slitting <span>Technique</span>','Slitting का industry knowledge — operators और engineers के लिए।',
-      '🔥 Dhakad Gyaan — Slitting','Slitting <span>Technique</span>','Industry knowledge of film slitting — for operators and engineers.'
-    )
-    +(LANG==='hi'
-      ? '<div class="tags"><span class="tag a">धाकड़ ज्ञान</span><span class="tag g">Industry Standard</span></div>'
-      : '<div class="tags"><span class="tag a">Dhakad Gyaan</span><span class="tag g">Industry Standard</span></div>')
-    +CB('📖','फिल्म स्लिटिंग क्या है?','उद्योग ज्ञान',
+  if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
+  var hi=(typeof LANG!=='undefined'&&LANG==='hi');
+  var h = PH(
+    hi?'धाकड़ ज्ञान — स्लिटिंग':'Dhakad Gyaan — Slitting',
+    hi?'स्लिटिंग <span>तकनीक</span>':'Slitting <span>Technique</span>',
+    hi?'ऑपरेटर और इंजीनियरों के लिए फिल्म स्लिटिंग का उद्योग ज्ञान।':'Industry knowledge of film slitting — for operators and engineers.'
+  );
+  h += hi
+    ? '<div class="tags"><span class="tag a">धाकड़ ज्ञान</span><span class="tag g">Industry Standard</span></div>'
+    : '<div class="tags"><span class="tag a">Dhakad Gyaan</span><span class="tag g">Industry Standard</span></div>';
+
+  if(hi){
+    h += CB('📖','फिल्म स्लिटिंग क्या है?','उद्योग ज्ञान',
       '<ul class="steps">'
       +S(1,'Film Slitting एक चौड़े "Jumbo" या "Master" Roll को कस्टमर ऑर्डर की विशिष्ट चौड़ाई के संकरे रोल में काटती है।')
       +S(2,'स्लिटर Jumbo को Unwind करता है, Blade Station से pre-set चौड़ाई पर काटता है, और हर चौड़ाई को अलग Rewind करता है।')
       +S(3,'मेटलाइज़्ड फिल्म के लिए गति: 400–800 m/min — फिल्म प्रकार और कस्टमर के अनुसार।')
       +S(4,'मुख्य गुणवत्ता कारक: Edge Quality, OD Uniformity, Winding Tension, Telescoping, Core Seating।')
       +S(5,'Rewinder Rollers पर Cork Tape एकसमान वाइंडिंग के लिए नियंत्रित Friction देता है।')
-      +'</ul>',true)
-    +CB('🔪','ब्लेड प्रकार और चयन','ब्लेड तकनीक',
+      +'</ul>',true);
+    h += CB('🔪','ब्लेड प्रकार और चयन','ब्लेड तकनीक',
       '<table class="t"><thead><tr><th>प्रकार</th><th>उपयोग</th><th>फायदा</th></tr></thead><tbody>'
       +'<tr><td class="tv">Lutz Razor Blade</td><td>PET, BOPP, CPP</td><td>अत्यंत तेज़, साफ किनारा, लंबा जीवन</td></tr>'
       +'<tr><td class="tv">Paper Cutter Blade</td><td>मोटी फिल्में</td><td>उच्च बल काटने के लिए मजबूत</td></tr>'
       +'<tr><td class="tv">Circular Shear</td><td>भारी Gauge फिल्में</td><td>Blade कंपन नहीं</td></tr>'
       +'</tbody></table>'
-      +Al('w','⚠️','ब्लेड इंस्टॉल तारीख, Batch Number और मीटर दर्ज करें। नियमित बदलें — घिसे ब्लेड से Edge Defects और Scrap।'))
-    +CB('⚡','सामान्य स्लिटिंग दोष','QC संदर्भ',
+      +Al('w','⚠️','ब्लेड इंस्टॉल तारीख, Batch Number और मीटर दर्ज करें। नियमित बदलें — घिसे ब्लेड से Edge Defects और Scrap।'));
+    h += CB('⚡','सामान्य स्लिटिंग दोष','QC संदर्भ',
       '<table class="t"><thead><tr><th>दोष</th><th>कारण</th><th>उपाय</th></tr></thead><tbody>'
       +'<tr><td class="tv r">Ripple (लहर)</td><td>गलत Tension, घिसी Cork Tape</td><td>गति कम करें, Nip और Tension जांचें</td></tr>'
       +'<tr><td class="tv r">Telescoping</td><td>कम Rewinder Tension, असमान Nip</td><td>Tension बढ़ाएं, Roller Alignment जांचें</td></tr>'
       +'<tr><td class="tv r">खराब किनारा</td><td>घिसा ब्लेड, गलत प्रकार</td><td>ब्लेड तुरंत बदलें</td></tr>'
       +'<tr><td class="tv r">चौड़ाई भिन्नता</td><td>Blade Setting खिसकना</td><td>Blade Position रीसेट, मजबूती से Lock करें</td></tr>'
       +'</tbody></table>');
+  } else {
+    h += CB('📖','What is film slitting?','Industry knowledge',
+      '<ul class="steps">'
+      +S(1,'Film slitting cuts a wide “Jumbo” or “Master” roll into narrower rolls at the customer’s ordered widths.')
+      +S(2,'The slitter unwinds the jumbo, cuts at the blade station to pre-set widths, and rewinds each width separately.')
+      +S(3,'Typical speed for metallised film: 400–800 m/min — depends on film type and customer.')
+      +S(4,'Key quality factors: edge quality, OD uniformity, winding tension, telescoping, core seating.')
+      +S(5,'Cork tape on rewinder rollers gives controlled friction for even winding.')
+      +'</ul>',true);
+    h += CB('🔪','Blade types and selection','Blade technique',
+      '<table class="t"><thead><tr><th>Type</th><th>Use</th><th>Benefit</th></tr></thead><tbody>'
+      +'<tr><td class="tv">Lutz razor blade</td><td>PET, BOPP, CPP</td><td>Very sharp, clean edge, long life</td></tr>'
+      +'<tr><td class="tv">Paper cutter blade</td><td>Thicker films</td><td>Strong for high cutting force</td></tr>'
+      +'<tr><td class="tv">Circular shear</td><td>Heavy gauge films</td><td>Less blade vibration</td></tr>'
+      +'</tbody></table>'
+      +Al('w','⚠️','Record install date, batch number and meters. Change regularly — worn blades cause edge defects and scrap.'));
+    h += CB('⚡','Common slitting defects','QC reference',
+      '<table class="t"><thead><tr><th>Defect</th><th>Cause</th><th>Action</th></tr></thead><tbody>'
+      +'<tr><td class="tv r">Ripple</td><td>Wrong tension, worn cork tape</td><td>Reduce speed; check nip and tension</td></tr>'
+      +'<tr><td class="tv r">Telescoping</td><td>Low rewinder tension, uneven nip</td><td>Increase tension; check roller alignment</td></tr>'
+      +'<tr><td class="tv r">Poor edge</td><td>Worn or wrong blade</td><td>Replace blade immediately</td></tr>'
+      +'<tr><td class="tv r">Width variation</td><td>Blade setting shifted</td><td>Reset blade position and lock firmly</td></tr>'
+      +'</tbody></table>');
+  }
+  pg.innerHTML = h;
 }
 
-// ══════════════════════════════════════════════════════
-// TERMS — HINDI
-// ══════════════════════════════════════════════════════
 function rTerms(pg){
   if(!window._proUnlocked&&MODE!=='free'){pg.innerHTML='<div style="padding:20px">'+GENLock()+'</div>';return;}
   var sections=[
