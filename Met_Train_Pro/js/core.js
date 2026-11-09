@@ -88,6 +88,10 @@ function closeBlockingOverlays(){
 function nav(id){
   CUR=id;
   closeBlockingOverlays();
+  try{
+    var mtMain=document.getElementById('mt-main')||document.getElementById('content');
+    if(mtMain){ mtMain.scrollTop=0; }
+  }catch(e){}
   document.querySelectorAll('.pg').forEach(function(p){
     p.classList.remove('on');
   });
@@ -240,6 +244,7 @@ function applyLangChrome(){
   document.documentElement.setAttribute('lang', LANG||'en');
   document.documentElement.setAttribute('dir', (LANG==='ar'||LANG==='ur') ? 'rtl' : 'ltr');
   document.body.classList.toggle('lang-en', LANG==='en');
+  try{ document.documentElement.lang = (LANG==='hi'?'hi':'en'); }catch(e){}
   document.body.classList.toggle('lang-hi', LANG==='hi');
   document.body.setAttribute('data-lang', LANG||'en');
   // Language buttons: match by data-lang (reliable)
@@ -345,7 +350,25 @@ function clearR(){document.querySelectorAll('.pg').forEach(function(p){delete p.
 // ── HTML helpers ──
 function Al(type,ico,txt){return '<div class="alert '+type+'"><span class="ai">'+ico+'</span><div>'+txt+'</div></div>';}
 function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st">'+h+'</div></li>';}
-function F(n,t2,d){return '<div class="fi"><div class="fn">'+n+'</div><div class="fb"><div class="ft">'+t2+'</div><div class="fs">'+d+'</div></div></div>';}
+function F(n,t2,d){
+  var title=t2;
+  if(typeof LANG!=='undefined'&&LANG!=='hi'){
+    var tm={
+      'फिल्म चयन एवं योजना':'Film selection & planning',
+      'रोल को मेटलाइज़र तक लाना':'Bring roll to metalliser',
+      'Unwinder पर रोल लोडिंग — WI-10':'Roll loading on unwinder — WI-10',
+      'Chamber बंद और Pump Down':'Close chamber & pump down',
+      'Boat Warm-up और Process Start':'Boat warm-up & process start',
+      'Production Run — OD Monitor':'Production run — OD monitor',
+      'रोल समाप्ति — Shutter और Vent':'Roll end — shutter & vent',
+      'रोल अनलोडिंग — WI-10':'Roll unloading — WI-10',
+      'Logbook प्रविष्टि — MET F-01':'Logbook entry — MET F-01',
+      'SAP प्रविष्टि और ग्रेडिंग':'Production entry & grading'
+    };
+    if(tm[t2]) title=tm[t2];
+  }
+  return '<div class="fi"><div class="fn">'+n+'</div><div class="fb"><div class="ft">'+title+'</div><div class="fs">'+d+'</div></div></div>';
+}
 function G(num,name,desc,col){return '<div class="gc" style="--gc:'+col+'"><div class="gn">'+num+'</div><div class="gname">'+name+'</div><div class="gdesc">'+desc+'</div></div>';}
 function Lock(){
   if(MODE==='free') return '';
@@ -701,7 +724,11 @@ function showToast(msg){
 
 /* mt-interaction-boot 2.6.10 */
 (function(){
-  function safe(){ try{ closeBlockingOverlays(); }catch(e){} }
+  function safe(){ try{ closeBlockingOverlays();
+  try{
+    var mtMain=document.getElementById('mt-main')||document.getElementById('content');
+    if(mtMain){ mtMain.scrollTop=0; }
+  }catch(e){} }catch(e){} }
   document.addEventListener('DOMContentLoaded', function(){
     safe();
     // Escape closes overlays
