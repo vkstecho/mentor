@@ -640,28 +640,8 @@ function rMet(pg){
     ]
   );
 
-  var glsM=g?CB('🏭',BT('मशीन डेटा — Metalliser-1 और Metalliser-2','Machine data — Metalliser-1 & Metalliser-2'),BT('केवल आंतरिक','Internal only'),
-    '<div class="compare">'
-    +'<div class="cbox"><div class="cbox-t">Metalliser-1 — BOBST K5 (3300mm)</div>'
-    +'<div class="cr"><span class="ck">SAP कोड</span><span class="cv">3-M1_W | GP03</span></div>'
-    +'<div class="cr"><span class="ck">12µ ABM22 गति</span><span class="cv">625 m/min</span></div>'
-    +'<div class="cr"><span class="ck">G301 M22 गति</span><span class="cv">750 m/min</span></div>'
-    +'<div class="cr"><span class="ck">रोल/दिन लक्ष्य</span><span class="cv">8 रोल</span></div>'
-    +'<div class="cr"><span class="ck">सेटअप लक्ष्य</span><span class="cv">10–15 मिनट</span></div>'
-    +'<div class="cr"><span class="ck">Unwinder Stop 6" Steel</span><span class="cv">181 mm</span></div>'
-    +'<div class="cr"><span class="ck">Unwinder Stop 6" Paper 12mm</span><span class="cv">184 mm</span></div>'
-    +'</div>'
-    +'<div class="cbox"><div class="cbox-t">Metalliser-2 — BOBST K5 (3650mm)</div>'
-    +'<div class="cr"><span class="ck">SAP कोड</span><span class="cv">3-M2_W | GP05</span></div>'
-    +'<div class="cr"><span class="ck">12µ ABM25 गति</span><span class="cv">600 m/min</span></div>'
-    +'<div class="cr"><span class="ck">CPP गति</span><span class="cv">660 m/min</span></div>'
-    +'<div class="cr"><span class="ck">रोल/दिन लक्ष्य</span><span class="cv">7 रोल (12µ)</span></div>'
-    +'<div class="cr"><span class="ck">Vacuum+Heat समय</span><span class="cv">20 मिनट</span></div>'
-    +'<div class="cr"><span class="ck">Unwinder Stop 8" Steel</span><span class="cv">222 mm</span></div>'
-    +'<div class="cr"><span class="ck">Unwinder Stop 8" Paper 17mm</span><span class="cv">241 mm</span></div>'
-    +'</div></div>'
-    +Al('i','📊','दिसंबर 2025 Boat परीक्षण: TOMOE Engineering Di-Met 125×38×9.5MM, Group 7 (3200-3600 µΩ·cm) — प्रदर्शन मौजूदा supplier के समकक्ष।'),
-  true):'';
+  var glsM=''; /* Metalliser-1/2 company data removed */
+
 
   pg.innerHTML=
     '<div class="ph"><div class="ph-code">'+(typeof LANG!=='undefined'&&LANG==='hi'?'मॉड्यूल 1 — मेटलाइज़र ऑपरेशन':'Module 1 — Metalliser operation')+'</div>'
@@ -684,7 +664,7 @@ function rMet(pg){
       +'</div>',true)
 
     +CB('⚙️',BT('ऑपरेटिंग पैरामीटर','Operating parameters'),'SOP 04 / 05 / 06',params)
-    +glsM
+    +''
     +CB('🚢',BT('बोट चेंज प्रोग्राम','Boat change program'),'WI-04',
       '<ul class="steps">'
       +S('A','<strong>Evaporator साइड</strong> को अच्छी तरह साफ करें — सभी Al Oxide जमाव हटाएं।<span class="en">Clean evaporator side thoroughly — remove all Al oxide deposits.</span>',true)

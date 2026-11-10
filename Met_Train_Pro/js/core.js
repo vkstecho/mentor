@@ -344,12 +344,15 @@ function applyBilingualContent(root){
 
 /** Bilingual helper for titles at render time */
 function BT(hi, en){ return (typeof LANG!=='undefined' && LANG==='hi') ? hi : en; }
+function PH(code, title, desc){
+  return '<div class="ph"><div class="ph-code">'+code+'</div><div class="ph-title">'+title+'</div><div class="ph-desc">'+desc+'</div></div>';
+}
 
 
 function clearR(){document.querySelectorAll('.pg').forEach(function(p){delete p.dataset.r;});}
 // ── HTML helpers ──
 function Al(type,ico,txt){return '<div class="alert '+type+'"><span class="ai">'+ico+'</span><div>'+txt+'</div></div>';}
-function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st">'+h+'</div></li>';}
+function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st" style="color:#ffffff!important">'+h+'</div></li>';}
 function F(n,t2,d){
   var title=t2;
   if(typeof LANG!=='undefined'&&LANG!=='hi'){
@@ -367,7 +370,7 @@ function F(n,t2,d){
     };
     if(tm[t2]) title=tm[t2];
   }
-  return '<div class="fi"><div class="fn">'+n+'</div><div class="fb"><div class="ft">'+title+'</div><div class="fs">'+d+'</div></div></div>';
+  return '<div class="fi" style="background:#1a1a1a!important;color:#fff!important"><div class="fn">'+n+'</div><div class="fb"><div class="ft" style="color:#4ade80!important">'+title+'</div><div class="fs" style="color:#ffffff!important">'+d+'</div></div></div>';
 }
 function G(num,name,desc,col){return '<div class="gc" style="--gc:'+col+'"><div class="gn">'+num+'</div><div class="gname">'+name+'</div><div class="gdesc">'+desc+'</div></div>';}
 function Lock(){

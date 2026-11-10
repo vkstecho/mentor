@@ -1204,6 +1204,16 @@ function rAskAI(pg){
 
   html+='</div>';
   pg.innerHTML=html;
+  try{ document.body.classList.add('ai-fullscreen'); }catch(e){}
+  try{
+    var wrap=pg.querySelector('.ai-chat-wrap');
+    var msgs=document.getElementById('ai-msgs');
+    if(wrap){ wrap.style.cssText='display:flex;flex-direction:column;height:100%;min-height:calc(100vh - 56px);width:100%'; }
+    if(msgs){ msgs.style.minHeight='40vh'; msgs.style.flex='1 1 auto'; msgs.style.overflowY='auto'; }
+    var inp=document.getElementById('ai-inp');
+    if(inp){ inp.style.minHeight='100px'; inp.style.fontSize='16px'; }
+  }catch(e){}
+;
 
   // Auto-scroll to bottom
   setTimeout(function(){

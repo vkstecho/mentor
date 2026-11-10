@@ -469,7 +469,7 @@ table.t tr:hover td{background:rgba(240,165,0,.015)}
 
   /* ── TABLES ── */
   .cb-body{overflow-x:auto}
-  table.t{min-width:400px;font-size:12px}
+  table.t{min-width:0;width:100%;font-size:12px}
   table.t th{font-size:8px;padding:7px 9px}
   table.t td{padding:8px 9px;font-size:12px}
 
@@ -556,7 +556,7 @@ table.t tr:hover td{background:rgba(240,165,0,.015)}
   .ph-title{font-size:21px}
   .tb-mode{padding:5px 10px;font-size:11px}
   .cb-title{font-size:13px}
-  table.t{min-width:300px}
+  table.t{min-width:0;width:100%}
 }
 
 /* ═══════════════════════════════════════
@@ -1436,3 +1436,51 @@ body.ai-fullscreen #mob-nav { display: none !important; }
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
+
+
+/* 2.6.20 — visibility + AI + tables */
+.fi, .fi .fs, .fi .fs span, .fi .en-as-main { color: #ffffff !important; }
+.fi .ft { color: #4ade80 !important; }
+.cb, .cb-body, .cb .st, .cb td, .cb .st span { color: #ffffff !important; }
+.cb { background: #1a1a1a !important; }
+.cb-title { color: #ffffff !important; }
+.st { color: #ffffff !important; }
+table.t { width: 100% !important; min-width: 0 !important; }
+table.t td, table.t th {
+  white-space: normal !important;
+  word-break: break-word !important;
+  color: #ffffff !important;
+}
+table.t th { color: #4ade80 !important; }
+.ph-title { color: #0f172a !important; }
+.ph-desc { color: #334155 !important; }
+html:not([data-theme="light"]) .ph-title { color: #f8fafc !important; }
+html:not([data-theme="light"]) .ph-desc { color: #e2e8f0 !important; }
+body.ai-fullscreen #content {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+body.ai-fullscreen #pg-askai {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+body.ai-fullscreen .ai-chat-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: calc(100vh - 56px) !important;
+}
+body.ai-fullscreen #ai-msgs {
+  flex: 1 1 auto !important;
+  min-height: 40vh !important;
+  overflow-y: auto !important;
+}
+body.ai-fullscreen #sidebar,
+body.ai-fullscreen #mob-nav { display: none !important; }
+#ai-inp { min-height: 100px !important; font-size: 16px !important; color: #fff !important; }
