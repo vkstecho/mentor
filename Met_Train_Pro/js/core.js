@@ -352,7 +352,7 @@ function PH(code, title, desc){
 function clearR(){document.querySelectorAll('.pg').forEach(function(p){delete p.dataset.r;});}
 // ── HTML helpers ──
 function Al(type,ico,txt){return '<div class="alert '+type+'"><span class="ai">'+ico+'</span><div>'+txt+'</div></div>';}
-function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st" style="color:#ffffff!important">'+h+'</div></li>';}
+function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st" style="color:#0f172a!important">'+h+'</div></li>';}
 function F(n,t2,d){
   var title=t2;
   if(typeof LANG!=='undefined'&&LANG!=='hi'){

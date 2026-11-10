@@ -1238,159 +1238,132 @@ html[data-theme="light"] .lb.on, body.light .lb.on{
 
 
 /* ============================================================
-   2.6.21 — FULL SECTION CONTRAST AUDIT
-   Rule: dark surface → white text | light surface → dark text
+   2.6.22 — correct contrast: light body = dark text, dark card = white
    ============================================================ */
 
-/* ── 1. Content cards / accordions: always DARK + WHITE text ── */
+/* Light accordion bodies (default open look) → DARK text */
 .cb {
-  background: #1a1a1a !important;
-  border-color: rgba(255,255,255,.12) !important;
-  color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+  color: #0f172a !important;
 }
 .cb-h {
-  color: #ffffff !important;
-}
-.cb-title,
-.cb-sub {
-  color: #ffffff !important;
-}
-.cb-body,
-.cb-body.open {
   background: #1a1a1a !important;
   color: #ffffff !important;
 }
+.cb-title { color: #ffffff !important; }
+.cb-sub { color: #94a3b8 !important; }
 .cb-body,
-.cb-body *,
-.cb .st,
-.cb .st *,
-.cb li,
-.cb td,
-.cb p,
-.cb span:not(.sn):not(.ft):not(.tv):not(.tag) {
-  color: #ffffff !important;
+.cb-body.open {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+.cb-body,
+.cb-body .st,
+.cb-body li,
+.cb-body p,
+.cb-body td,
+.cb-body span:not(.sn):not(.tag) {
+  color: #0f172a !important;
 }
 
-/* ── 2. Step cards (.fi from F()): always DARK + WHITE ── */
+/* Step lists in light panels → dark text */
+.step .st,
+.st {
+  color: #0f172a !important;
+}
+.st strong { color: #0d9488 !important; }
+.st .en { color: #64748b !important; }
+.sn {
+  background: #ecfdf5 !important;
+  color: #0d9488 !important;
+  border: 1px solid rgba(13,148,136,.35) !important;
+}
+
+/* Dark step cards (.fi metalliser) → white text */
 .fi {
   background: #1a1a1a !important;
   border-color: rgba(255,255,255,.1) !important;
   color: #ffffff !important;
 }
-.fi .fb,
 .fi .fs,
 .fi .fs *,
-.fi .en-as-main,
-.fi span {
-  color: #ffffff !important;
+.fi .en-as-main {
+  color: #e2e8f0 !important;
 }
-.fi .ft {
-  color: #4ade80 !important;
-}
+.fi .ft { color: #4ade80 !important; }
 .fi .fn {
   color: #4ade80 !important;
-  border-color: rgba(74,222,128,.45) !important;
-  background: rgba(74,222,128,.12) !important;
+  border-color: rgba(74,222,128,.4) !important;
+  background: rgba(74,222,128,.1) !important;
 }
 
-/* ── 3. List steps (.step / .st from S()) ── */
-.step .st,
-.st {
-  color: #ffffff !important;
-}
-.st strong {
-  color: #4ade80 !important;
-}
-.st .en,
-.fs .en {
-  color: #94a3b8 !important;
-}
-.sn {
-  color: #4ade80 !important;
-}
-
-/* ── 4. Tables inside dark cards ── */
+/* Tables on light body */
 table.t {
   width: 100% !important;
   min-width: 0 !important;
   table-layout: auto !important;
 }
 table.t th {
-  color: #4ade80 !important;
-  background: rgba(74,222,128,.08) !important;
+  color: #0d9488 !important;
+  background: #f0fdfa !important;
 }
 table.t td {
-  color: #ffffff !important;
+  color: #0f172a !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
-.tv { color: #4ade80 !important; }
 
-/* ── 5. Stat tiles / cbox (machine KPIs) ── */
-.stat,
-.cbox {
+/* Industrial terms stacked rows (no broken 3-col table) */
+.term-list { display: flex; flex-direction: column; gap: 10px; }
+.term-row {
+  background: #f8fafc;
+  border: 1px solid rgba(15,23,42,.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.term-a {
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.term-f {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a !important;
+  margin-bottom: 4px;
+}
+.term-d {
+  font-size: 12px;
+  color: #475569 !important;
+  line-height: 1.55;
+}
+
+/* Stat tiles stay dark + readable */
+.stat, .cbox {
   background: #1f1f1f !important;
-  border-color: rgba(255,255,255,.1) !important;
   color: #ffffff !important;
 }
 .stat-v { color: #4ade80 !important; }
-.stat-l,
-.stat-l * {
-  color: #cbd5e1 !important;
-}
-.cbox-t { color: #4ade80 !important; }
-.cbox, .cbox * { color: #ffffff !important; }
+.stat-l, .stat-l * { color: #cbd5e1 !important; }
+.cbox, .cbox * { color: #e2e8f0 !important; }
 .cbox-t { color: #4ade80 !important; }
 
-/* ── 6. Alerts — LIGHT tinted backgrounds → DARK text ── */
-.alert {
-  color: #0f172a !important;
-}
+/* Alerts — light tint + dark text */
+.alert { color: #0f172a !important; }
 .alert * { color: inherit !important; }
-.alert.d { background: #fef2f2 !important; color: #991b1b !important; border-color: #fecaca !important; }
-.alert.w { background: #fff7ed !important; color: #9a3412 !important; border-color: #fed7aa !important; }
-.alert.i { background: #eff6ff !important; color: #1e40af !important; border-color: #bfdbfe !important; }
-.alert.s { background: #f0fdf4 !important; color: #166534 !important; border-color: #bbf7d0 !important; }
+.alert.d { background: #fef2f2 !important; color: #991b1b !important; }
+.alert.w { background: #fff7ed !important; color: #9a3412 !important; }
+.alert.i { background: #eff6ff !important; color: #1e40af !important; }
+.alert.s { background: #f0fdf4 !important; color: #166534 !important; }
 
-/* ── 7. Page headers — follow page theme ── */
+/* Headers on light page */
 .ph-title { color: #0f172a !important; }
 .ph-desc { color: #334155 !important; }
 .ph-code { color: #0d9488 !important; }
-html:not([data-theme="light"]) .ph-title { color: #f8fafc !important; }
-html:not([data-theme="light"]) .ph-desc { color: #e2e8f0 !important; }
-html:not([data-theme="light"]) .ph-code { color: #4ade80 !important; }
 
-/* ── 8. Home cards / grade cards ── */
-.card, .gc {
-  color: var(--txt);
-}
-html[data-theme="light"] .card,
-html[data-theme="light"] .gc,
-body.light .card,
-body.light .gc {
-  background: #ffffff !important;
-  color: #0f172a !important;
-}
-
-/* ── 9. Quiz / checklist / options ── */
-.qtext, .opt, .cli, .qfb {
-  color: var(--txt);
-}
-html:not([data-theme="light"]) .qtext,
-html:not([data-theme="light"]) .opt,
-html:not([data-theme="light"]) .cli {
-  color: #ffffff !important;
-}
-
-/* ── 10. Sidebar readable on light chrome ── */
-html[data-theme="light"] .sb-item,
-body.light .sb-item { color: #0f172a !important; }
-html[data-theme="light"] .sb-item.on,
-body.light .sb-item.on { color: #0f766e !important; }
-html:not([data-theme="light"]) .sb-item { color: #cbd5e1 !important; }
-html:not([data-theme="light"]) .sb-item.on { color: #4ade80 !important; }
-
-/* ── 11. AI chat ── */
+/* AI: smaller input, more message space */
 body.ai-fullscreen #content {
   padding: 0 !important;
   display: flex !important;
@@ -1413,21 +1386,29 @@ body.ai-fullscreen .ai-chat-wrap {
 }
 body.ai-fullscreen #ai-msgs {
   flex: 1 1 auto !important;
-  min-height: 40vh !important;
+  min-height: 45vh !important;
   overflow-y: auto !important;
 }
 body.ai-fullscreen #sidebar,
 body.ai-fullscreen #mob-nav { display: none !important; }
-#ai-inp {
-  min-height: 100px !important;
-  font-size: 16px !important;
+.ai-input-wrap {
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom,0px)) !important;
+}
+#ai-inp,
+.ai-input-wrap textarea {
+  min-height: 48px !important;
+  max-height: 96px !important;
+  font-size: 15px !important;
+  padding: 12px 14px !important;
   color: #ffffff !important;
   background: #1a1a2e !important;
 }
-.ai-bubble-bot { color: #f8fafc !important; }
-.ai-bubble-user { color: #ffffff !important; }
+.ai-send-btn {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+}
 
-/* ── 12. Scroll host ── */
 #body { min-height: 0; }
 #content {
   flex: 1 1 auto;

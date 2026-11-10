@@ -246,14 +246,21 @@ function rTerms(pg){
       +'<div class="fcard-ans">'+(allItems[a]||'')+'</div></div>';
   }).join('');
 
+  var hiT=(typeof LANG!=='undefined'&&LANG==='hi');
   var sectH=sections.map(function(s){
     var rows=s.items.map(function(i){
-      return '<tr><td style="min-width:130px"><span style="font-family:\'Share Tech Mono\',monospace;font-weight:600;color:'+s.c+';font-size:11px">'+i.a+'</span></td>'
-        +'<td style="font-size:11px;font-style:italic;color:var(--txt);min-width:160px">'+i.f+'</td>'
-        +'<td style="font-size:11px;color:var(--muted);line-height:1.6">'+i.d+'</td></tr>';
+      return '<div class="term-row">'
+        +'<div class="term-a" style="color:'+s.c+'">'+i.a+'</div>'
+        +'<div class="term-f">'+i.f+'</div>'
+        +'<div class="term-d">'+i.d+'</div>'
+        +'</div>';
     }).join('');
-    return CB(s.t.split(' ')[0],s.t.replace(/^.\s/,''),s.items.length+' शब्द',
-      '<table class="t"><thead><tr><th>शब्द / संक्षिप्ति</th><th>Full Form / अर्थ</th><th>हिंदी में व्याख्या</th></tr></thead><tbody>'+rows+'</tbody></table>');
+    var sub = s.items.length+(hiT?' शब्द':' terms');
+    var title = s.t;
+    if(!hiT){
+      // light EN title cleanup: strip leading emoji already handled by CB
+    }
+    return CB(s.t.split(' ')[0], s.t.replace(/^.\s/,''), sub, '<div class="term-list">'+rows+'</div>');
   }).join('');
 
   pg.innerHTML=
