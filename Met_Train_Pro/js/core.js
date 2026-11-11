@@ -352,7 +352,7 @@ function PH(code, title, desc){
 function clearR(){document.querySelectorAll('.pg').forEach(function(p){delete p.dataset.r;});}
 // ── HTML helpers ──
 function Al(type,ico,txt){return '<div class="alert '+type+'"><span class="ai">'+ico+'</span><div>'+txt+'</div></div>';}
-function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st" style="color:#0f172a!important">'+h+'</div></li>';}
+function S(n,h,b){return '<li class="step"><div class="sn'+(b?' b':'')+'">'+n+'</div><div class="st" style="color:#ffffff!important">'+h+'</div></li>';}
 function F(n,t2,d){
   var title=t2;
   if(typeof LANG!=='undefined'&&LANG!=='hi'){
@@ -370,7 +370,7 @@ function F(n,t2,d){
     };
     if(tm[t2]) title=tm[t2];
   }
-  return '<div class="fi" style="background:#1a1a1a!important;color:#fff!important"><div class="fn">'+n+'</div><div class="fb"><div class="ft" style="color:#4ade80!important">'+title+'</div><div class="fs" style="color:#ffffff!important">'+d+'</div></div></div>';
+  return '<div class="fi" style="background:#1a1a1a!important;color:#ffffff!important"><div class="fn" style="color:#4ade80!important">'+n+'</div><div class="fb"><div class="ft" style="color:#4ade80!important">'+title+'</div><div class="fs" style="color:#ffffff!important">'+String(d).replace(/class="en"/g,'class="en" style="color:#cbd5e1!important"')+'</div></div></div>';
 }
 function G(num,name,desc,col){return '<div class="gc" style="--gc:'+col+'"><div class="gn">'+num+'</div><div class="gname">'+name+'</div><div class="gdesc">'+desc+'</div></div>';}
 function Lock(){
@@ -381,7 +381,7 @@ function Lock(){
 function GENLock(){return '';}
 function CB(ico,title,sub,body,open){
   var id='cb'+(++_tc);
-  return '<div class="cb"><div class="cb-h'+(open?' open':'')+'" onclick="tCB(this,\''+id+'\')"><span class="cb-ico">'+ico+'</span><div class="cb-title">'+title+'</div><span class="cb-sub">'+sub+'</span><span class="cb-arr'+(open?' open':'')+'">▼</span></div><div class="cb-body'+(open?' open':'')+'" id="'+id+'">'+body+'</div></div>';
+  return '<div class="cb" style="background:#1a1a1a!important;color:#ffffff!important;border:1px solid rgba(255,255,255,.12)!important">' +'<div class="cb-h'+(open?' open':'')+'" onclick="tCB(this,\''+id+'\')" style="background:#111!important;color:#fff!important">' +'<span class="cb-ico">'+ico+'</span><div class="cb-title" style="color:#ffffff!important">'+title+'</div>' +'<span class="cb-sub" style="color:#94a3b8!important">'+sub+'</span>' +'<span class="cb-arr'+(open?' open':'')+'">▼</span></div>' +'<div class="cb-body'+(open?' open':'')+'" id="'+id+'" style="background:#1a1a1a!important;color:#ffffff!important">'+body+'</div></div>';
 }
 function Tabs(tabs,panels){
   var uid='t'+(++_tc);
@@ -495,11 +495,6 @@ function rLanding(pg){
     +'<div style="width:60px;height:3px;background:linear-gradient(90deg,#0d9488,#25d366);border-radius:2px;margin:14px auto 0"></div>'
     +'</div>'
     +'<div style="font-size:15px;color:'+cPick+';text-align:center;margin-bottom:20px;font-family:inherit;font-weight:600">'+pick+'</div>'
-    +modeBtn('enterFree()',
-      'linear-gradient(135deg,rgba(24,201,122,.15),rgba(24,201,122,.06))','rgba(24,201,122,.5)',
-      'linear-gradient(135deg,rgba(24,201,122,.3),rgba(24,201,122,.1))','🏭', isLight ? '#059669' : '#18c97a',
-      empTitle, empSub,
-      'rgba(24,201,122,.2)','rgba(24,201,122,.4)', isLight ? '#047857' : '#18c97a','rgba(24,201,122,.6)')
     +modeBtn('enterGen()',
       'linear-gradient(135deg,rgba(240,165,0,.15),rgba(240,165,0,.06))','rgba(240,165,0,.5)',
       'linear-gradient(135deg,rgba(240,165,0,.3),rgba(240,165,0,.1))','🔥', isLight ? '#c2410c' : '#f0a500',
@@ -521,8 +516,9 @@ function rLanding(pg){
 
 
 function enterGen(){
+  // Dhakad Gyaan entry — full free access (Employee entry removed as duplicate)
   window._proUnlocked = true;
-  MODE = 'gen';
+  MODE = 'free';
   clearR();
   nav('home');
   updateTopbar();

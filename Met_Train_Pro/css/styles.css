@@ -1238,119 +1238,97 @@ html[data-theme="light"] .lb.on, body.light .lb.on{
 
 
 /* ============================================================
-   2.6.22 — correct contrast: light body = dark text, dark card = white
+   2.6.23 — DARK panels + WHITE text (matches live screenshots)
    ============================================================ */
-
-/* Light accordion bodies (default open look) → DARK text */
 .cb {
-  background: #ffffff !important;
-  border: 1px solid rgba(15,23,42,.12) !important;
-  color: #0f172a !important;
-}
-.cb-h {
   background: #1a1a1a !important;
+  border-color: rgba(255,255,255,.12) !important;
   color: #ffffff !important;
 }
+.cb-h { color: #ffffff !important; }
 .cb-title { color: #ffffff !important; }
 .cb-sub { color: #94a3b8 !important; }
 .cb-body,
 .cb-body.open {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 .cb-body,
-.cb-body .st,
-.cb-body li,
-.cb-body p,
-.cb-body td,
-.cb-body span:not(.sn):not(.tag) {
-  color: #0f172a !important;
+.cb-body *,
+.cb .st,
+.cb .st *,
+.cb li,
+.cb p,
+.cb td,
+.cb span:not(.sn):not(.ft):not(.tv):not(.tag):not(.stat-v) {
+  color: #ffffff !important;
 }
+.cb .st strong,
+.cb strong { color: #4ade80 !important; }
 
-/* Step lists in light panels → dark text */
+/* Step list text */
 .step .st,
 .st {
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
-.st strong { color: #0d9488 !important; }
-.st .en { color: #64748b !important; }
+.st .en { color: #94a3b8 !important; }
 .sn {
-  background: #ecfdf5 !important;
-  color: #0d9488 !important;
-  border: 1px solid rgba(13,148,136,.35) !important;
+  color: #4ade80 !important;
+  border-color: rgba(74,222,128,.4) !important;
+  background: rgba(74,222,128,.12) !important;
 }
 
-/* Dark step cards (.fi metalliser) → white text */
+/* Metalliser F() cards */
 .fi {
-  background: #1a1a1a !important;
-  border-color: rgba(255,255,255,.1) !important;
+  background: #141414 !important;
   color: #ffffff !important;
+  border-color: rgba(255,255,255,.1) !important;
 }
 .fi .fs,
 .fi .fs *,
-.fi .en-as-main {
-  color: #e2e8f0 !important;
+.fi .en-as-main,
+.fi span {
+  color: #e8eef5 !important;
 }
 .fi .ft { color: #4ade80 !important; }
 .fi .fn {
   color: #4ade80 !important;
+  background: rgba(74,222,128,.12) !important;
   border-color: rgba(74,222,128,.4) !important;
-  background: rgba(74,222,128,.1) !important;
 }
 
-/* Tables on light body */
-table.t {
-  width: 100% !important;
-  min-width: 0 !important;
-  table-layout: auto !important;
-}
+/* Tables */
+table.t { width: 100% !important; min-width: 0 !important; }
 table.t th {
-  color: #0d9488 !important;
-  background: #f0fdfa !important;
+  color: #4ade80 !important;
+  background: rgba(74,222,128,.08) !important;
 }
 table.t td {
-  color: #0f172a !important;
+  color: #ffffff !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
+.tv { color: #4ade80 !important; }
 
-/* Industrial terms stacked rows (no broken 3-col table) */
+/* Term cards (stacked) on dark parent stay readable */
 .term-list { display: flex; flex-direction: column; gap: 10px; }
 .term-row {
-  background: #f8fafc;
-  border: 1px solid rgba(15,23,42,.08);
+  background: #222 !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
   border-radius: 10px;
   padding: 12px 14px;
 }
-.term-a {
-  font-family: var(--font-mono), monospace;
-  font-weight: 700;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-.term-f {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f172a !important;
-  margin-bottom: 4px;
-}
-.term-d {
-  font-size: 12px;
-  color: #475569 !important;
-  line-height: 1.55;
-}
+.term-a { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #4ade80 !important; }
+.term-f { font-size: 13px; font-weight: 600; color: #ffffff !important; margin-bottom: 4px; }
+.term-d { font-size: 12px; color: #cbd5e1 !important; line-height: 1.55; }
 
-/* Stat tiles stay dark + readable */
-.stat, .cbox {
-  background: #1f1f1f !important;
-  color: #ffffff !important;
-}
+/* Stats */
+.stat, .cbox { background: #1f1f1f !important; color: #fff !important; }
 .stat-v { color: #4ade80 !important; }
 .stat-l, .stat-l * { color: #cbd5e1 !important; }
-.cbox, .cbox * { color: #e2e8f0 !important; }
 .cbox-t { color: #4ade80 !important; }
 
-/* Alerts — light tint + dark text */
+/* Alerts stay light tint + dark text */
 .alert { color: #0f172a !important; }
 .alert * { color: inherit !important; }
 .alert.d { background: #fef2f2 !important; color: #991b1b !important; }
@@ -1358,31 +1336,26 @@ table.t td {
 .alert.i { background: #eff6ff !important; color: #1e40af !important; }
 .alert.s { background: #f0fdf4 !important; color: #166534 !important; }
 
-/* Headers on light page */
+/* Page headers on light chrome */
 .ph-title { color: #0f172a !important; }
 .ph-desc { color: #334155 !important; }
 .ph-code { color: #0d9488 !important; }
 
-/* AI: smaller input, more message space */
+/* AI compact input */
 body.ai-fullscreen #content {
   padding: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
 }
-body.ai-fullscreen #pg-askai {
-  display: flex !important;
-  flex: 1 !important;
-  flex-direction: column !important;
-  height: 100% !important;
-  max-width: none !important;
-  padding: 0 !important;
-}
+body.ai-fullscreen #pg-askai,
 body.ai-fullscreen .ai-chat-wrap {
   display: flex !important;
   flex-direction: column !important;
   flex: 1 !important;
   min-height: calc(100vh - 56px) !important;
+  max-width: none !important;
+  padding: 0 !important;
 }
 body.ai-fullscreen #ai-msgs {
   flex: 1 1 auto !important;
@@ -1391,22 +1364,12 @@ body.ai-fullscreen #ai-msgs {
 }
 body.ai-fullscreen #sidebar,
 body.ai-fullscreen #mob-nav { display: none !important; }
-.ai-input-wrap {
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom,0px)) !important;
-}
-#ai-inp,
-.ai-input-wrap textarea {
+#ai-inp, .ai-input-wrap textarea {
   min-height: 48px !important;
   max-height: 96px !important;
   font-size: 15px !important;
-  padding: 12px 14px !important;
-  color: #ffffff !important;
+  color: #fff !important;
   background: #1a1a2e !important;
-}
-.ai-send-btn {
-  width: 48px !important;
-  height: 48px !important;
-  min-width: 48px !important;
 }
 
 #body { min-height: 0; }
@@ -1416,4 +1379,25 @@ body.ai-fullscreen #mob-nav { display: none !important; }
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+
+/* 2.6.24 — Metalliser steps MUST be white on dark */
+.fi,
+.fi .fb,
+.fi .fs,
+.fi .fs span,
+.fi .fs .en,
+.fi .en-as-main {
+  color: #ffffff !important;
+}
+.fi .fs .en {
+  color: #cbd5e1 !important;
+}
+.fi .ft,
+.fi .fn {
+  color: #4ade80 !important;
+}
+.fi {
+  background: #1a1a1a !important;
 }

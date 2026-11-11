@@ -149,6 +149,109 @@ function rSafety(pg){
 
 var SOP_DETAIL = {
 
+'SOP-01': {
+  code:'MET/SOP/01', title:'Main Metallization Process — Master 10-Step Cycle',
+  scope:'Metallizer', resp:['Metallizer Operator','Shift In-charge','Supervisor'],
+  body: function(){
+    var hi=(typeof LANG!=='undefined'&&LANG==='hi');
+    return CB(hi?'📋':'📋', hi?'उद्देश्य / Purpose':'Purpose','',
+      Al('i','ℹ️', hi
+        ? 'Film selection से SAP entry तक पूरा metallisation cycle — 10 चरण।'
+        : 'Complete metallisation cycle from film selection to production entry — 10 steps.'))
+    +CB(hi?'🔢':'🔢', hi?'चरण-दर-चरण निर्देश':'Step-by-step instructions','Master cycle',
+      '<ul class="steps">'
+      +S(1, hi
+        ? '<strong>फिल्म चयन एवं योजना</strong> — Planning sheet, film type, width, surface energy >54 Dynes।'
+        : '<strong>Film selection & planning</strong> — Planning sheet, film type, width, surface energy >54 Dynes.')
+      +S(2, hi
+        ? '<strong>रोल को मेटलाइज़र तक लाना</strong> (SOP-02) — Conveyor, Crane, Safety Helmet।'
+        : '<strong>Bring roll to metalliser</strong> (SOP-02) — Conveyor, crane, safety helmet.')
+      +S(3, hi
+        ? '<strong>Unwinder पर रोल लोडिंग</strong> (WI-10) — Shaft, Chuck, Tension off, I/O direction verify।'
+        : '<strong>Roll loading on unwinder</strong> (WI-10) — Shaft, chucks, tension off, verify I/O direction.')
+      +S(4, hi
+        ? '<strong>बोट चेंज और मशीन सेटअप</strong> (WI-04) — Boats, Shield, Graphite foil, Wire।'
+        : '<strong>Boat change & machine setup</strong> (WI-04) — Boats, shield, graphite foil, wire.')
+      +S(5, hi
+        ? '<strong>Vacuum Pump Down और हीटिंग</strong> — Target ~10⁻⁴ mbar, heat to run temperature।'
+        : '<strong>Vacuum pump down & heating</strong> — Target ~10⁻⁴ mbar, heat to run temperature.')
+      +S(6, hi
+        ? '<strong>मेटलाइज़ेशन रन</strong> (WI-11) — Boat heat, Wire feed, Shutter open, Speed up, OD monitor।'
+        : '<strong>Metallisation run</strong> (WI-11) — Boat heat, wire feed, shutter open, speed up, OD monitor.')
+      +S(7, hi
+        ? '<strong>रोल समाप्ति — Shutter और Vent</strong> — Stop diameter, close shutter, controlled vent।'
+        : '<strong>Roll end — shutter & vent</strong> — Stop diameter, close shutter, controlled vent.')
+      +S(8, hi
+        ? '<strong>रोल अनलोडिंग</strong> (WI-10) — Cut film, unlock chucks, crane to felt।'
+        : '<strong>Roll unloading</strong> (WI-10) — Cut film, unlock chucks, crane onto felt.')
+      +S(9, hi
+        ? '<strong>Logbook प्रविष्टि</strong> (MET/F-01) — Cycle time, OD, speed, wire/boat qty, downtime।'
+        : '<strong>Logbook entry</strong> (MET/F-01) — Cycle time, OD, speed, wire/boat qty, downtime.')
+      +S(10, hi
+        ? '<strong>Production entry एवं ग्रेडिंग</strong> — Grade 2/3/5/6/7/8, defects, pass to slitter।'
+        : '<strong>Production entry & grading</strong> — Grade 2/3/5/6/7/8, record defects, pass to slitter.')
+      +'</ul>'
+      +Al('w','⚠️', hi
+        ? 'पूरा cycle आमतौर पर 60–120 min। Target: ~10 rolls/shift।'
+        : 'Full cycle is typically 60–120 min. Target: about 10 rolls per shift.'))
+  }
+},
+
+'SOP-03': {
+  code:'MET/SOP/03', title:'Vacuum System Operation',
+  scope:'Metallizer', resp:['Metallizer Operator','Maintenance'],
+  body: function(){
+    var hi=(typeof LANG!=='undefined'&&LANG==='hi');
+    return CB(hi?'📋':'📋', hi?'उद्देश्य / Purpose':'Purpose','',
+      Al('i','ℹ️', hi
+        ? 'Chamber को atmospheric से high vacuum (~10⁻⁴ mbar) तक सुरक्षित pump-down करना।'
+        : 'Safe pump-down of the chamber from atmospheric pressure to high vacuum (~10⁻⁴ mbar).'))
+    +CB(hi?'⬇️':'⬇️', hi?'Pump Down क्रम':'Pump-down sequence','Roughing → Booster → DP → Cryo',
+      '<ul class="steps">'
+      +S(1, hi
+        ? '<strong>Chamber close</strong> — Seal verify, door interlock OK।'
+        : '<strong>Chamber close</strong> — Verify seal and door interlock.')
+      +S(2, hi
+        ? '<strong>Roughing pump START</strong> — Atmospheric से ~1 mbar।'
+        : '<strong>Roughing pump START</strong> — Atmospheric to about 1 mbar.')
+      +S(3, hi
+        ? '<strong>Backing pump</strong> — Foreline vacuum maintain करें।'
+        : '<strong>Backing pump</strong> — Maintain foreline vacuum.')
+      +S(4, hi
+        ? '<strong>Mechanical Booster START</strong> — ~1 mbar से ~10⁻² mbar।'
+        : '<strong>Mechanical booster START</strong> — About 1 mbar to ~10⁻² mbar.')
+      +S(5, hi
+        ? '<strong>High Vacuum valve (VV7) OPEN</strong> — केवल backing vacuum OK होने पर।'
+        : '<strong>High vacuum valve (VV7) OPEN</strong> — Only when backing vacuum is OK.')
+      +S(6, hi
+        ? '<strong>Diffusion Pump</strong> — ~10⁻² से ~10⁻⁴ mbar।'
+        : '<strong>Diffusion pump</strong> — About 10⁻² to ~10⁻⁴ mbar.')
+      +S(7, hi
+        ? '<strong>Cryo-Generator</strong> — Water vapour trapping, stable high vacuum।'
+        : '<strong>Cryo-generator</strong> — Water vapour trapping, stable high vacuum.')
+      +'</ul>')
+    +CB(hi?'⬆️':'⬆️', hi?'Venting क्रम':'Venting sequence','Reverse order',
+      '<ul class="steps">'
+      +S(1, hi
+        ? 'Shutter close → Wire feed stop → Boat heating off।'
+        : 'Close shutter → stop wire feed → boat heating off.')
+      +S(2, hi
+        ? 'VV7 valve close।'
+        : 'Close VV7 valve.')
+      +S(3, hi
+        ? 'Vent valve open → N₂ backfill to atmospheric।'
+        : 'Open vent valve → N₂ backfill to atmospheric.')
+      +S(4, hi
+        ? 'Chamber open (WI-12) — area clear, rail clear।'
+        : 'Open chamber (WI-12) — area clear, rail clear.')
+      +'</ul>'
+      +Al('d','⛔', hi
+        ? 'Backing vacuum के बिना VV7 कभी न खोलें — DP oil backstreaming का खतरा!'
+        : 'Never open VV7 without backing vacuum — DP oil backstreaming risk!'))
+  }
+},
+
+
 'SOP-02': {
   code:'MET/SOP/02', title:'Jumbo Roll Movement — Metallised Floor',
   scope:'Metallizer', resp:['Metallizer Operator','Metallizer Trainee Operator'],
@@ -813,7 +916,16 @@ function showSOPDetail(code) {
   _sopViewCode = code;
   var pg = document.getElementById('pg-sops');
   var d = SOP_DETAIL[code];
-  if (!d) return;
+  if (!d) {
+    if (pg) {
+      pg.innerHTML = '<div style="padding:20px">'
+        +'<button class="btn btn-s" onclick="rSOPs(document.getElementById(\'pg-sops\'))" style="margin-bottom:12px">← Back to SOPs</button>'
+        +'<div class="ph-title">'+code+'</div>'
+        +'<div class="alert w"><span class="ai">⚠️</span><div>Detail for '+code+' is not available yet.</div></div>'
+        +'</div>';
+    }
+    return;
+  }
   var respH = d.resp.map(function(r){return '<span class="tag c">'+r+'</span>';}).join('');
   pg.innerHTML =
     '<div style="margin-bottom:14px">'
