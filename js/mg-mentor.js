@@ -5,8 +5,15 @@
 'use strict';
 // ========== Payment History ==========
 MG.openHistory = async function() {
+  function statusLabel(st) {
+    st = String(st || 'pending').toLowerCase();
+    if (st === 'approved' || st === 'paid' || st === 'success') return { t: (MG.t ? MG.t('payApproved') : 'Approved'), c: 'bg-emerald-100 text-emerald-800', n: (MG.t ? MG.t('payNextApproved') : 'Topic unlocked') };
+    if (st === 'rejected' || st === 'failed') return { t: (MG.t ? MG.t('payRejected') : 'Rejected'), c: 'bg-red-100 text-red-800', n: '' };
+    return { t: (MG.t ? MG.t('payPending') : 'Pending review'), c: 'bg-amber-100 text-amber-900', n: (MG.t ? MG.t('payNextPending') : 'Mentor will confirm shortly') };
+  }
+
   const container = MG.$('#historyContent');
-  if (container) container.innerHTML = '<p class="text-center text-slate-400 py-10">Loading payments…</p>';
+  if (container) container.innerHTML = '<p class="text-center text-slate-400 py-10">' + (MG.t ? MG.t('loadingPayments') : 'Loading payments…') + '</p>';
   MG.$('#historyModal')?.classList.remove('hidden');
   MG.$('#historyModal')?.classList.add('flex');
 
@@ -104,18 +111,15 @@ MG.openHistory = async function() {
     .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
 
   if (!payments.length) {
-    container.innerHTML = '<p class="text-center text-slate-400 py-10">No payments yet' +
-      (MG.state.isMentor && !viewing ? ' from any student' : ' for this mobile number') + '.</p>';
+    container.innerHTML = '<p class="text-center text-slate-400 py-10">' + (MG.t ? MG.t('noPayments') : 'No payments yet') +
+      (MG.state.isMentor && !viewing ? ' (all students)' : '') + '.</p>';
     return;
   }
 
   container.innerHTML = payments.map(function(p) {
     const targetMobile = p._mobile || p.studentMobile || p.mobile || MG.state.viewingAs || MG.state.mobile;
-    const statusClass = p.status === 'confirmed'
-      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-      : (p.status === 'rejected'
-        ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
-        : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300');
+    const stInfo = statusLabel(p.status === 'confirmed' ? 'approved' : p.status);
+    const statusClass = stInfo.c;
     let actionBtns = '';
     if (MG.state.isMentor && (p.status === 'pending' || p.status === 'pay_intent')) {
       actionBtns = '<div class="flex flex-wrap gap-1.5 mt-2">' +
@@ -130,7 +134,9 @@ MG.openHistory = async function() {
       '<p class="font-semibold text-sm">' + MG.esc(p.topicTitle || 'Session') + '</p>' +
       '<p class="text-xs text-slate-500 mt-0.5">' + (p.trackName ? MG.esc(p.trackName) + ' · ' : '') + MG.formatDate(p.ts) + ' · ' + (p.hours || 1) + ' Hr</p></div>' +
       '<div class="text-right shrink-0"><p class="font-bold text-brand-600">₹' + Number(p.amount || 0).toLocaleString('en-IN') + '</p>' +
-      '<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + statusClass + '">' + MG.esc(p.status || 'pending') + '</span></div></div>' +
+      '<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + statusClass + '">' + stInfo.t + '</span>' +
+      (stInfo.n ? '<p class="text-[10px] text-slate-500 mt-0.5">' + stInfo.n + '</p>' : '') +
+      '</div></div>' +
       '<p class="text-[11px] text-slate-500 mt-1">Mobile: +91 ' + MG.esc(String(targetMobile || '')) + '</p>' +
       '<p class="text-[11px] text-slate-400 mt-0.5 font-mono truncate">UTR: ' + MG.esc(p.utr || '') + '</p>' +
       (p.preferredSlot ? '<p class="text-[11px] text-slate-500 mt-0.5">Time pref: ' + MG.esc(p.preferredSlot) + '</p>' : '') +
@@ -156,7 +162,7 @@ MG.exportCsv = function() {
   }
   const header = 'Date,Track,Topic,Focus,Hours,Rate,Amount,UTR,Status\n';
   const rows = payments.map(p =>
-    `"${MG.formatDate(p.ts)}","${p.trackName||''}","${p.topicTitle}","${p.focusTopic||''}",${p.hours},${p.hourlyRate||''},${p.amount},"${p.utr}","${p.status}"`
+    `"${MG.formatDate(p.ts)}","${p.trackName||''}","${p.topicTitle}","${p.focusTopic||''}",${p.hours},${p.hourlyRate||''},${p.amount},"${p.utr}","${stInfo.t}"`
   ).join('\n');
   const blob = new Blob([header + rows], { type: 'text/csv' });
   const a = document.createElement('a');
@@ -347,10 +353,32 @@ MG.enableMentorMode = function(opts) {
 MG.refreshStudentList = async function() {
   const sel = MG.$('#studentSelect');
   if (!sel) return;
-  sel.innerHTML = '<option value="">Loading students…</option>';
+  sel.innerHTML = '<option value="">' + (MG.t ? MG.t('loadingStudents') : 'Loading students…') + '</option>';
   const mobiles = await MG.getAllStudentMobilesAsync();
-  sel.innerHTML = '<option value="">— My own view (Mentor) —</option>' +
-    mobiles.map(m => `<option value="${m}">+91 ${m}</option>`).join('');
+  async function labelFor(m) {
+    var name = '';
+    try {
+      var p = (typeof MG.getProfile === 'function') ? MG.getProfile(m) : null;
+      if (p && (p.name || p.fullName)) name = String(p.name || p.fullName).trim();
+    } catch (e0) {}
+    if (!name) {
+      try {
+        var ud = await MG.loadUserDataAsync(m);
+        if (ud && ud.profile && (ud.profile.name || ud.profile.fullName)) {
+          name = String(ud.profile.name || ud.profile.fullName).trim();
+        }
+      } catch (e1) {}
+    }
+    if (name) return name + ' · +91 ' + m;
+    return '+91 ' + m;
+  }
+  var opts = ['<option value="">' + (MG.t ? MG.t('myOwnView') : '— My own view (Mentor) —') + '</option>'];
+  for (var i = 0; i < mobiles.length; i++) {
+    var m = mobiles[i];
+    var lab = await labelFor(m);
+    opts.push('<option value="' + m + '">' + String(lab).replace(/</g, '&lt;') + '</option>');
+  }
+  sel.innerHTML = opts.join('');
   if (MG.state.viewingAs) sel.value = MG.state.viewingAs;
   const st = window._mentorFbStatus || {};
   if (mobiles.length) {
@@ -372,7 +400,22 @@ MG.switchStudent = async function(mob) {
   const target = MG.state.viewingAs || MG.state.mobile;
   MG.state.data = await MG.loadUserDataAsync(target);
   MG.startRealtimeFor(target);
-  MG.$('#mobileDisplay').textContent = '+91 ' + target + (MG.state.viewingAs ? ' (viewing)' : '');
+  (function(){
+    var el = MG.$('#mobileDisplay');
+    if (!el) return;
+    var suffix = MG.state.viewingAs ? ' (viewing)' : '';
+    var name = '';
+    try {
+      var p = (MG.state.data && MG.state.data.profile) || (typeof MG.getProfile === 'function' ? MG.getProfile(target) : null) || {};
+      name = String(p.name || p.fullName || '').trim();
+    } catch (eN) {}
+    var primary = name ? (name + suffix) : ('+91 ' + target + suffix);
+    var tip = name ? (name + ' · +91 ' + target + suffix) : ('+91 ' + target + suffix);
+    el.textContent = primary;
+    el.title = tip;
+    var el2 = document.getElementById('mobileDisplayMobile');
+    if (el2) { el2.textContent = name ? (name + suffix) : (target.slice(0,2)+'••'+target.slice(-4)+suffix); el2.title = tip; }
+  })();
   if (MG.state.currentTopicId) {
     if (MG.state.data.unlocked[MG.state.currentTopicId] || MG.state.isMentor) {
       MG.openWorkspace(MG.state.currentTopicId);

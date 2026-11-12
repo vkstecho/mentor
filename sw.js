@@ -1,4 +1,4 @@
-const CACHE = 'mentor-pwa-v9-desktop-install';
+const CACHE = 'mentor-pwa-v10-i18n-ux';
 const PRECACHE = [
   '/',
   '/mentor.html',
@@ -21,7 +21,10 @@ const PRECACHE = [
   '/js/mg-workspace.js',
   '/js/mg-mentor.js',
   '/js/mg-profile.js',
-  '/js/mg-app.js'
+  '/js/mg-app.js',
+  '/js/mg-i18n.js',
+  '/index.html',
+  '/privacy.html'
 ];
 self.addEventListener('install', (e) => {
   e.waitUntil(

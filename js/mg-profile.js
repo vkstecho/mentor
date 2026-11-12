@@ -173,22 +173,71 @@ MG.openProfileModal = function () {
     }
     MG.saveProfileLocal(mobile, profile);
     MG.refreshProfileButton();
+    try {
+      var _n = (profile && profile.name) || '';
+      var ban = document.getElementById('addNameBanner');
+      if (ban && _n) ban.classList.add('hidden');
+    } catch (eB) {}
     MG.showToast('Profile saved');
     close();
   };
 };
 
+
+/** Prefer profile name in header; fall back to mobile. */
+MG.updateSignedInLabel = function () {
+  try {
+    var m = String((MG.state && MG.state.mobile) || '').replace(/\D/g, '').slice(-10);
+    var p = (typeof MG.getProfile === 'function') ? (MG.getProfile(m) || {}) : {};
+    if ((!p || !p.name) && MG.state && MG.state.data && MG.state.data.profile) {
+      p = MG.state.data.profile;
+    }
+    var name = String((p && (p.name || p.fullName)) || '').trim();
+    var full = m ? ('+91 ' + m) : '';
+    var masked = m.length === 10 ? (m.slice(0, 2) + '••••' + m.slice(-4)) : (m || '••••');
+    var el = document.getElementById('mobileDisplay');
+    var el2 = document.getElementById('mobileDisplayMobile');
+    var labelSpan = el && el.previousElementSibling;
+    // Keep "Signed in" micro-label; primary line = name or number
+    if (name) {
+      if (el) {
+        el.textContent = name;
+        el.title = name + (full ? (' · ' + full) : '');
+        el.classList.remove('tabular-nums');
+      }
+      if (el2) {
+        el2.textContent = name;
+        el2.title = name + (full ? (' · ' + full) : '');
+        el2.classList.remove('tabular-nums');
+      }
+    } else {
+      if (el) {
+        el.textContent = full || '••••••••••';
+        el.title = full || '';
+        el.classList.add('tabular-nums');
+      }
+      if (el2) {
+        el2.textContent = masked;
+        el2.title = full || '';
+        el2.classList.add('tabular-nums');
+      }
+    }
+  } catch (e) {}
+};
+
 MG.refreshProfileButton = function () {
   var btn = document.getElementById('profileAvatarBtn');
-  if (!btn) return;
-  var p = MG.getProfile(MG.state.mobile);
+  var p = MG.getProfile(MG.state.mobile) || {};
   var label = (p.name || MG.state.mobile || '?').toString();
-  if (p.photoURL) {
-    btn.innerHTML = '<img src="' + p.photoURL + '" alt="" class="w-full h-full object-cover rounded-full"/>';
-  } else {
-    btn.textContent = label.charAt(0).toUpperCase();
+  if (btn) {
+    if (p.photoURL) {
+      btn.innerHTML = '<img src="' + p.photoURL + '" alt="" class="w-full h-full object-cover rounded-full"/>';
+    } else {
+      btn.textContent = label.charAt(0).toUpperCase();
+    }
+    btn.title = p.name ? (p.name + ' · +91 ' + (MG.state.mobile || '')) : ('+91 ' + (MG.state.mobile || ''));
   }
-  btn.title = p.name ? p.name + ' · +91 ' + MG.state.mobile : '+91 ' + (MG.state.mobile || '');
+  try { MG.updateSignedInLabel(); } catch (e0) {}
 };
 
 MG.initProfileUi = function () {

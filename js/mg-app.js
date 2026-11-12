@@ -103,16 +103,38 @@ MG.startApp = async function(mob) {
   MG.state.isMentor = false;
   MG.state.data = MG.loadUserData(MG.state.mobile); // instant from cache
   try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e0) {}
-  (function(){
-    var m = MG.state.mobile || '';
-    var masked = m.length === 10 ? (m.slice(0,2) + '••••' + m.slice(-4)) : m;
-    var full = '+91 ' + m;
-    var el = MG.$('#mobileDisplay');
-    if (el) { el.textContent = full; el.title = full; }
-    var el2 = document.getElementById('mobileDisplayMobile');
-    if (el2) { el2.textContent = masked; el2.title = full; }
-  })();
-    try { MG.refreshProfileButton(); } catch (e) {}
+  try { MG.refreshProfileButton(); } catch (e) {}
+  try { if (typeof MG.updateSignedInLabel === 'function') MG.updateSignedInLabel(); } catch (e2) {}
+
+  
+  try {
+    var ban = document.getElementById('addNameBanner');
+    var _pf = (typeof MG.getProfile === 'function') ? MG.getProfile(MG.state.mobile) : (MG.state.data && MG.state.data.profile) || {};
+    var _nm = String((_pf && (_pf.name || _pf.fullName)) || '').trim();
+    var dismissed = false;
+    try { dismissed = sessionStorage.getItem('mg_name_banner_dismiss') === '1'; } catch (eD) {}
+    if (ban) {
+      if (!_nm && !dismissed) ban.classList.remove('hidden');
+      else ban.classList.add('hidden');
+      var btn = document.getElementById('addNameBtn');
+      var later = document.getElementById('addNameLater');
+      if (btn && !btn._mgBound) {
+        btn._mgBound = true;
+        btn.addEventListener('click', function () {
+          try { if (typeof MG.openProfileModal === 'function') MG.openProfileModal(); } catch (e1) {}
+        });
+      }
+      if (later && !later._mgBound) {
+        later._mgBound = true;
+        later.addEventListener('click', function () {
+          try { sessionStorage.setItem('mg_name_banner_dismiss', '1'); } catch (e2) {}
+          ban.classList.add('hidden');
+        });
+      }
+    }
+  } catch (eBan) {}
+
+
   MG.$('#mentorBadge')?.classList.add('hidden');
   MG.$('#mentorStudentBar')?.classList.add('hidden');
   // Mentor unlock control: only admin number
@@ -145,6 +167,8 @@ MG.startApp = async function(mob) {
     MG.state.data = await MG.loadUserDataAsync(MG.state.mobile);
     try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e1) {}
     MG.startRealtimeFor(MG.state.mobile);
+    try { MG.refreshProfileButton(); } catch (ePf) {}
+    try { if (typeof MG.updateSignedInLabel === 'function') MG.updateSignedInLabel(); } catch (eLb2) {} /* updateSignedInLabel after async */
     MG.renderCatalog();
     try { MG.renderFreePackSection(); } catch (eF2) {}
   } catch (e) {}
@@ -439,7 +463,8 @@ MG.bindEvents = function() {
   });
 
   // Header
-  var _bb = MG.$('#backBtn'); if (_bb) _bb.addEventListener('click', () => {
+  var _bb = MG.$('#backBtn'); if (_bb) _bb.style.display = 'none'; /* removed website-style back arrow */
+if (false && _bb) _bb.addEventListener('click', () => {
     // Prefer in-app navigation; never silently kill the window
     try {
       // If catalog is hidden and a track/workspace is open, go to catalog first
@@ -622,3 +647,12 @@ try {
     setTimeout(function(){ try{ if(MG.applyLang) MG.applyLang(); }catch(e){} }, 1200);
   });
 } catch (e) {}
+
+/* mg_offline_hook */
+window.addEventListener('offline', function () {
+  try {
+    if (window.MG && MG.showToast) {
+      MG.showToast(MG.t ? MG.t('offlineRetry') : 'You appear offline. Tap to retry.');
+    }
+  } catch (e) {}
+});

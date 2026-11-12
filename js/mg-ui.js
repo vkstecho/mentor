@@ -74,7 +74,7 @@ MG.renderFreePackSection = function() {
   function cardHtml(m, isCalc) {
     var done = !isCalc && MG.isModuleComplete(m.id);
     var target = isCalc ? ' target="_blank" rel="noopener"' : '';
-    var openLabel = isCalc ? 'Open calculator' : 'Open module';
+    var openLabel = isCalc ? (MG.t ? MG.t('openCalculator') : 'Open calculator') : (MG.t ? MG.t('openModule') : 'Open module');
     var iconBg = isCalc ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300' : 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300';
     var border = done
       ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-900/10'
@@ -82,8 +82,8 @@ MG.renderFreePackSection = function() {
     var statusBadge = isCalc
       ? '<span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase">Calculator</span>'
       : (done
-        ? '<span class="text-[10px] font-bold text-emerald-600 uppercase"><i class="fas fa-check-circle"></i> Completed</span>'
-        : '<span class="text-[10px] font-bold text-emerald-600 uppercase">Free</span>');
+        ? '<span class="text-[10px] font-bold text-emerald-600 uppercase"><i class="fas fa-check-circle"></i> ' + (MG.t ? MG.t('completed') : 'Completed') + '</span>'
+        : '<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded uppercase">' + (MG.t ? MG.t('freeBadge') : 'Free') + '</span>');
     var actions = '';
     if (!isCalc) {
       actions = done
@@ -396,7 +396,7 @@ MG._buildTopicCard = function(topic, activeData) {
                <i class="fas fa-door-open mr-1"></i> Enter Workspace
              </button>`
           : `<button class="flex-1 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold book-btn">
-               <i class="fas fa-calendar-check mr-1"></i> Book One-to-One Session
+               <i class="fas fa-calendar-check mr-1"></i> ${MG.t ? MG.t("bookPaid") : "Book paid 1:1"}
              </button>`
         }
         <button class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-medium book-btn hover:bg-slate-50 dark:hover:bg-slate-700" title="Book more hours">

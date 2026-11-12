@@ -381,3 +381,14 @@ MG.initMentorPwaUi = function() {
   else bindLoginInstall();
   window.addEventListener('appinstalled', refreshLoginInstallUI);
 })();
+
+/* Play Store label: keep link; title notes public listing may lag open testing */
+(function(){
+  function tip(){
+    var b = document.getElementById('mentorPlayStoreBtn') || document.getElementById('loginInstallAndroid');
+    if (!b) return;
+    b.setAttribute('title', 'Google Play — open testing / store listing');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tip);
+  else tip();
+})();

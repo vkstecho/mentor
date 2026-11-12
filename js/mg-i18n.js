@@ -10,6 +10,11 @@
   var MP_LANG = 'mp_lang';
   var MP_COUNTRY = 'mp_country';
 
+  /** Full app UI is maintained in English + Hindi. Other codes may translate
+   * home/catalog chips only and fall back to English elsewhere.
+   */
+  MG.PRIMARY_LANGS = ['en', 'hi'];
+
   /** Same regions as Man Power for a consistent experience */
   MG.MENTOR_LOCALES = {
     IN: {
@@ -88,21 +93,59 @@
     "playStore": "Play Store · Android",
     "ios": "iPhone / iPad",
     "windows": "Windows / Desktop",
+
+    "loginTitle": "Login with Mobile OTP",
+    "loginSub": "Enter mobile number to continue",
+    "mobileLabel": "10-digit Mobile Number",
+    "sendOtp": "Send OTP",
+    "continueBtn": "Continue",
+    "otpTitle": "Enter OTP",
+    "otpSub": "OTP sent to your mobile",
+    "verifyOtp": "Verify OTP",
+    "installApp": "Install Mentor app",
+    "shareApp": "Share Mentor app",
+    "installHint": "Install for home-screen access · OTP login after install",
+    "addNameTitle": "Add your name",
+    "addNameBody": "Show your name in the header instead of mobile number.",
+    "addNameBtn": "Add name",
+    "addNameLater": "Later",
+    "freeBadge": "Free",
+    "paidBadge": "Paid 1:1",
+    "openModule": "Open module",
+    "openCalculator": "Open calculator",
+    "completed": "Completed",
+    "markComplete": "Mark complete",
+    "certificate": "Certificate",
+    "payPending": "Pending review",
+    "payApproved": "Approved",
+    "payRejected": "Rejected",
+    "payNextPending": "Mentor will confirm shortly",
+    "payNextApproved": "Topic unlocked",
+    "loadingPayments": "Loading payments…",
+    "noPayments": "No payments yet",
+    "privacy": "Privacy",
+    "playSoon": "Play Store (coming soon)",
+    "signedIn": "Signed in",
+    "bookPaid": "Book paid 1:1",
+    "starterModule": "Free starter module",
+    "offlineRetry": "You appear offline. Tap to retry.",
+    "myOwnView": "— My own view (Mentor) —",
+    "loadingStudents": "Loading students…",
     "share": "Share",
     "choosePath": "Choose your path",
-    "choosePathSub": "Free modules · paid 1:1 · recordings & doubt chat",
+    "choosePathSub": "Free modules inside · book paid 1:1 · recordings & doubt chat",
     "packaging": "Flexible Packaging",
-    "packagingTag": "PLANT KNOWLEDGE · FREE + PAID · ₹799 / HOUR",
-    "packagingDesc": "Free modules & calculators + paid one-to-one for real plant problems (capacity, yield, metalliser, 5S, cost/sqm…).",
-    "packagingOpen": "Open Packaging → ₹799 / hour",
+    "packagingTag": "FREE MODULES + PAID 1:1 · ₹799/HR",
+    "packagingDesc": "Open free plant modules and calculators. Book paid 1:1 only when you need help on real plant problems (capacity, yield, metalliser, 5S, cost/sqm).",
+    "packagingOpen": "Open Packaging — free modules inside",
     "career": "Career & AI Guidance",
-    "careerTag": "15 SESSIONS · ₹699/HR",
+    "careerTag": "PAID 1:1 · ₹699/HR",
     "careerDesc": "Gemini, Claude, Grok, ChatGPT, Excel+AI, freelancing, ITR, resume, personal finance and more — one-to-one.",
-    "careerOpen": "Open Career & AI →",
+    "careerOpen": "Open Career & AI — book 1:1",
     "logout": "Logout",
     "language": "Language",
     "langTitle": "Country & Language",
-    "langHint": "Same preference style as Man Power. Choose your country, then language.",
+    "langHint": "App UI is complete in English & Hindi. Pick Hindi or English for the best experience.",
     "country": "1. Country",
     "languageSection": "2. Language",
     "english": "English",
@@ -114,47 +157,85 @@
     "choosePlatform": "Choose platform",
     "cancel": "Cancel",
     "systemShare": "System share…",
-    "missingNote": "If a string is missing in your language, English is shown.",
+    "missingNote": "Full app language: English & Hindi. Other languages use English where a line is not translated.",
     "viewAsStudent": "View as Student:",
     "selectStudent": "— Select student mobile —",
     "refreshList": "Refresh List"
   },
   "hi": {
-    "appSubtitle": "वन-टू-वन मार्गदर्शन",
-    "payments": "पेमेंट्स",
+    "appSubtitle": "एक-से-एक मार्गदर्शन",
+    "payments": "भुगतान",
     "playStore": "Play Store · Android",
     "ios": "iPhone / iPad",
     "windows": "Windows / Desktop",
-    "share": "शेयर",
-    "choosePath": "अपना मार्गदर्शन पथ चुनें",
-    "choosePathSub": "फ्री प्लांट मॉड्यूल + पेड वन-टू-वन सेशन • रिकॉर्डिंग और डाउट चैट",
+
+    "loginTitle": "मोबाइल OTP से लॉगिन",
+    "loginSub": "जारी रखने के लिए मोबाइल नंबर डालें",
+    "mobileLabel": "10 अंकों का मोबाइल नंबर",
+    "sendOtp": "OTP भेजें",
+    "continueBtn": "आगे बढ़ें",
+    "otpTitle": "OTP डालें",
+    "otpSub": "OTP आपके मोबाइल पर भेजा गया",
+    "verifyOtp": "OTP सत्यापित करें",
+    "installApp": "Mentor ऐप इंस्टॉल करें",
+    "shareApp": "Mentor ऐप साझा करें",
+    "installHint": "होम स्क्रीन के लिए इंस्टॉल करें · बाद में OTP लॉगिन",
+    "addNameTitle": "अपना नाम जोड़ें",
+    "addNameBody": "हेडर पर मोबाइल की जगह आपका नाम दिखेगा।",
+    "addNameBtn": "नाम जोड़ें",
+    "addNameLater": "बाद में",
+    "freeBadge": "मुफ़्त",
+    "paidBadge": "पेड 1:1",
+    "openModule": "मॉड्यूल खोलें",
+    "openCalculator": "कैलकुलेटर खोलें",
+    "completed": "पूर्ण",
+    "markComplete": "पूर्ण चिह्नित करें",
+    "certificate": "प्रमाणपत्र",
+    "payPending": "समीक्षा में",
+    "payApproved": "स्वीकृत",
+    "payRejected": "अस्वीकृत",
+    "payNextPending": "मेंटर जल्द पुष्टि करेंगे",
+    "payNextApproved": "टॉपिक अनलॉक",
+    "loadingPayments": "भुगतान लोड हो रहे हैं…",
+    "noPayments": "अभी कोई भुगतान नहीं",
+    "privacy": "गोपनीयता",
+    "playSoon": "Play Store (जल्द)",
+    "signedIn": "साइन इन",
+    "bookPaid": "पेड 1:1 बुक करें",
+    "starterModule": "मुफ़्त स्टार्टर मॉड्यूल",
+    "offlineRetry": "आप ऑफ़लाइन लगते हैं। पुनः प्रयास करें।",
+    "myOwnView": "— मेरा अपना व्यू (Mentor) —",
+    "loadingStudents": "विद्यार्थी लोड हो रहे हैं…",
+    "share": "साझा करें",
+    "choosePath": "अपना पथ चुनें",
+    "choosePathSub": "अंदर मुफ़्त मॉड्यूल · पेड 1:1 बुक करें · रिकॉर्डिंग और डाउट चैट",
     "packaging": "फ्लेक्सिबल पैकेजिंग",
-    "packagingTag": "प्लांट नॉलेज · फ्री + पेड · ₹799 / घंटा",
-    "packagingDesc": "फ्री मॉड्यूल और कैलकुलेटर + असली प्लांट समस्याओं के लिए पेड वन-टू-वन (कैपेसिटी, यील्ड, मेटलाइज़र, 5S, कॉस्ट/sqm…)।",
-    "packagingOpen": "पैकेजिंग खोलें → ₹799 / घंटा",
-    "career": "करियर और AI मार्गदर्शन",
-    "careerTag": "15 सेशन · ₹699/घंटा",
-    "careerDesc": "Gemini, Claude, Grok, ChatGPT, Excel+AI, फ्रीलांसिंग, ITR, रिज्यूमे, पर्सनल फाइनेंस और अधिक — वन-टू-वन।",
-    "careerOpen": "करियर और AI खोलें →",
-    "logout": "लॉग आउट",
+    "packagingTag": "मुफ़्त मॉड्यूल + पेड 1:1 · ₹799/घंटा",
+    "packagingDesc": "मुफ़्त प्लांट मॉड्यूल और कैलकुलेटर खोलें। असली प्लांट समस्या (कैपेसिटी, यील्ड, मेटलाइज़र, 5S, कॉस्ट/sqm) पर मदद चाहिए तब पेड 1:1 बुक करें।",
+    "packagingOpen": "पैकेजिंग खोलें — अंदर मुफ़्त मॉड्यूल",
+    "career": "करियर और AI गाइडेंस",
+    "careerTag": "पेड 1:1 · ₹699/घंटा",
+    "careerDesc": "Gemini, Claude, Grok, ChatGPT, Excel+AI, फ्रीलांसिंग, ITR, रिज़्यूमे, पर्सनल फाइनेंस आदि — एक-से-एक सत्र।",
+    "careerOpen": "करियर और AI खोलें — 1:1 बुक करें",
+    "logout": "लॉगआउट",
     "language": "भाषा",
     "langTitle": "देश और भाषा",
-    "langHint": "Man Power जैसा चयन। अपना देश चुनें, फिर भाषा।",
+    "langHint": "ऐप UI पूरी तरह English और हिंदी में है। बेहतर अनुभव के लिए Hindi या English चुनें।",
     "country": "1. देश",
     "languageSection": "2. भाषा",
     "english": "English",
     "hindi": "हिंदी",
     "done": "हो गया",
     "closeApp": "Mentor ऐप बंद करें?",
-    "runningInstalled": "इंस्टॉल किए गए Mentor ऐप के रूप में चल रहा है।",
-    "shareTitle": "ऐप शेयर करें",
+    "runningInstalled": "Mentor ऐप इंस्टॉल मोड में चल रहा है।",
+    "shareTitle": "ऐप साझा करें",
     "choosePlatform": "प्लेटफ़ॉर्म चुनें",
     "cancel": "रद्द",
     "systemShare": "सिस्टम शेयर…",
-    "missingNote": "अनुवाद न हो तो English दिखेगा।",
-    "viewAsStudent": "छात्र के रूप में देखें:",
-    "selectStudent": "— छात्र मोबाइल चुनें —",
-    "refreshList": "सूची रीफ्रेश"
+    "missingNote": "पूरा ऐप: English और हिंदी। अन्य भाषा में न हो तो English दिखेगा।",
+    "viewAsStudent": "विद्यार्थी के रूप में देखें:",
+    "selectStudent": "— विद्यार्थी मोबाइल चुनें —",
+    "refreshList": "सूची ताज़ा करें"
   },
   "gu": {
     "appSubtitle": "વન-ટુ-વન માર્ગદર્શન",
@@ -342,8 +423,8 @@
     "refreshList": "তালিকা রিফ্রেশ"
   },
   "mr": {
-    "appSubtitle": "वन-टू-वन मार्गदर्शन",
-    "payments": "पेमेंट्स",
+    "appSubtitle": "एक-से-एक मार्गदर्शन",
+    "payments": "भुगतान",
     "playStore": "Play Store · Android",
     "ios": "iPhone / iPad",
     "windows": "Windows / Desktop",
@@ -358,7 +439,7 @@
     "careerTag": "15 सेशन्स · ₹699/तास",
     "careerDesc": "Gemini, Claude, Grok, ChatGPT, Excel+AI, फ्रीलान्सिंग, ITR, रेझ्युमे आणि अधिक — वन-टू-वन.",
     "careerOpen": "करिअर आणि AI उघडा →",
-    "logout": "लॉग आउट",
+    "logout": "लॉगआउट",
     "language": "भाषा",
     "langTitle": "देश आणि भाषा",
     "langHint": "Man Power सारची निवड. देश निवडा, नंतर भाषा.",
@@ -970,6 +1051,47 @@
     document.documentElement.setAttribute('lang', uiLang() === 'hi' ? 'hi' : 'en');
     var t = MG.t;
 
+    // Login screen (EN/HI)
+    try {
+      var map = [
+        ['loginTitle', 'loginTitle'],
+        ['loginSub', 'loginSub'],
+        ['loginInstallTitle', 'installApp'],
+        ['loginShareOnly', 'shareApp'],
+        ['loginInstallHint', 'installHint']
+      ];
+      map.forEach(function (pair) {
+        var el = document.getElementById(pair[0]);
+        if (el) el.textContent = t(pair[1]);
+      });
+      var ms = document.getElementById('mobileSubmit');
+      if (ms) {
+        var icon = ms.querySelector('i');
+        ms.textContent = '';
+        if (icon) ms.appendChild(icon);
+        ms.appendChild(document.createTextNode(' ' + t('continueBtn')));
+        if (!ms.querySelector('i') && icon) { ms.insertBefore(icon, ms.firstChild); }
+      }
+      // fix continue button innerHTML more safely
+      if (ms) ms.innerHTML = '<i class="fas fa-arrow-right mr-1.5"></i> ' + t('continueBtn');
+      var lab = document.querySelector('label[for="mobileInput"], #mobileLabel');
+      if (lab) lab.textContent = t('mobileLabel');
+      var signed = document.querySelector('#mobileBadge .uppercase, #mobileBadge span.text-\[9px\]');
+      // signed-in micro label
+      document.querySelectorAll('#mobileBadge span').forEach(function (s) {
+        if (/signed in|साइन इन/i.test(s.textContent || '')) s.textContent = t('signedIn');
+      });
+      var ant = document.getElementById('addNameTitle');
+      if (ant) ant.textContent = t('addNameTitle');
+      var anb = document.getElementById('addNameBody');
+      if (anb) anb.textContent = t('addNameBody');
+      var anbtn = document.getElementById('addNameBtn');
+      if (anbtn) anbtn.textContent = t('addNameBtn');
+      var anl = document.getElementById('addNameLater');
+      if (anl) anl.textContent = t('addNameLater');
+    } catch (eLoginI18n) {}
+
+
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
       if (!key) return;
@@ -1076,15 +1198,27 @@
     }).join('');
 
     function langButtons(country) {
-      var langs = (MG.MENTOR_LOCALES[country] || MG.MENTOR_LOCALES.IN).langs || [];
+      var langs = ((MG.MENTOR_LOCALES[country] || MG.MENTOR_LOCALES.IN).langs || []).slice();
+      // Full UI languages (en/hi) first
+      langs.sort(function (a, b) {
+        var pa = (MG.PRIMARY_LANGS || ['en', 'hi']).indexOf(normalizeLang(a.code));
+        var pb = (MG.PRIMARY_LANGS || ['en', 'hi']).indexOf(normalizeLang(b.code));
+        if (pa === -1) pa = 99;
+        if (pb === -1) pb = 99;
+        return pa - pb;
+      });
       return langs.map(function (L) {
-        var on = L.code === curL || (curL === 'hi' && L.code === 'hi');
-        // also highlight en
-        on = normalizeLang(L.code) === normalizeLang(curL);
+        var code = normalizeLang(L.code);
+        var on = code === normalizeLang(curL);
+        var full = (MG.PRIMARY_LANGS || ['en', 'hi']).indexOf(code) >= 0;
         return (
-          '<button type="button" data-lang="' + L.code + '" class="px-3 py-2 rounded-xl border text-sm font-bold min-w-[3rem] ' +
+          '<button type="button" data-lang="' + L.code + '" class="px-3 py-2 rounded-xl border text-sm font-bold min-w-[3.25rem] ' +
           (on ? 'border-emerald-500 bg-emerald-50 text-emerald-800 ring-2 ring-emerald-400' : 'border-slate-200 dark:border-slate-600') +
-          '" title="' + (L.title || L.code) + '"><div>' + L.label + '</div><div class="text-[10px] font-medium opacity-70">' + (L.title || '') + '</div></button>'
+          '" title="' + (L.title || L.code) + (full ? ' — full app UI' : ' — partial / English fallback') + '">' +
+          '<div>' + L.label + '</div>' +
+          '<div class="text-[10px] font-medium opacity-70">' + (L.title || '') + '</div>' +
+          (full ? '<div class="text-[9px] font-extrabold text-emerald-700 mt-0.5">Full UI</div>' : '<div class="text-[9px] opacity-50 mt-0.5">Partial</div>') +
+          '</button>'
         );
       }).join('');
     }
