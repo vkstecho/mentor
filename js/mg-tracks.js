@@ -225,6 +225,7 @@ MG.openBooking = function(topicId) {
   MG.updateBookingTotal();
   MG.$('#bookingModal').classList.remove('hidden');
   MG.$('#bookingModal').classList.add('flex');
+  try { if (typeof MG.applyLang === 'function') MG.applyLang(); } catch (eL) {}
 }
 
 MG.updateBookingTotal = function() {

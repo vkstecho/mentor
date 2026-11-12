@@ -1,4 +1,4 @@
-const CACHE = 'mentor-pwa-v10-i18n-ux';
+const CACHE = 'mentor-pwa-v13-recheck';
 const PRECACHE = [
   '/',
   '/mentor.html',

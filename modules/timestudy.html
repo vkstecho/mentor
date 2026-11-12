@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Time Study — Industrial Engineering | Mentor</title>
+  <title>Time Study — Mentor Free Module</title>
   <link rel="icon" href="../icons/mentor-icon.jpg" />
   <style>
     :root { --navy:#0f172a; --blue:#1e3a8a; --orange:#e85d26; --bg:#f8fafc; --card:#fff; --text:#0f172a; --muted:#64748b; }
@@ -16,9 +16,10 @@
     h1 { font-size:1.35rem; margin:12px 0 8px; }
     p { color:var(--muted); line-height:1.55; }
     .card { background:var(--card); border-radius:16px; padding:16px; margin:14px 0; box-shadow:0 1px 3px rgba(0,0,0,.06); border:1px solid #e2e8f0; }
-    ul { margin:8px 0 0; padding-left:18px; color:var(--text); }
+    ul { margin:8px 0 0; padding-left:18px; }
     li { margin:6px 0; }
-    .cta { display:inline-flex; margin-top:16px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
+    pre { background:#0f172a; color:#e2e8f0; padding:12px; border-radius:10px; font-size:13px; overflow:auto; }
+    .cta { display:inline-flex; margin-top:12px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
     .cta2 { display:inline-flex; margin-top:12px; margin-left:8px; padding:12px 18px; background:var(--blue); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
   </style>
 </head>
@@ -29,54 +30,44 @@
     <span style="width:48px"></span>
   </header>
   <main>
-    <span class="badge" title="Included free with Mentor">Free starter module</span>
+    <span class="badge">Free starter module</span>
     <h1>Time Study — Industrial Engineering</h1>
-    <p>Free primer on time study for packaging lines: cycle time, rating, allowances, and standard time for converting operations.</p>
+    <p>Simple time study for packaging lines: cycle time, rating, allowances, and standard time — stopwatch + sheet, no complex software.</p>
+
     <div class="card">
       <strong>What you will cover</strong>
       <ul>
         <li>Cycle time vs takt time</li>
-<li>Stopwatch method overview</li>
-<li>Performance rating</li>
-<li>Allowances</li>
-<li>Standard time formula</li>
-<li>Line balancing intro</li>
+        <li>Stopwatch method overview</li>
+        <li>Performance rating &amp; allowances</li>
+        <li>Standard time formula</li>
+        <li>Line balancing intro</li>
       </ul>
     </div>
+
     <div class="card">
-      <strong>Want deeper plant-specific help?</strong>
-      <p style="margin:8px 0 0">Book a paid <b>Flexible Packaging Expert</b> one-to-one session (capacity, yield, metalliser, 5S, cost/sqm) from the Mentor home.</p>
-      <a class="cta" href="../mentor.html">Back to Mentor home</a>
-      <a class="cta2" href="../mentor.html#book-packaging">Book 1:1 Packaging</a>
-    </div>
-  
-    <div class="card">
-      <strong>What you will cover</strong>
-      <p style="margin-top:8px;color:var(--muted);font-size:14px">Simple time study for plant jobs — no complex software, just stopwatch + sheet.</p>
+      <strong>Lesson 1 — Define the element</strong>
+      <p style="margin:8px 0">Split the job: setup → run → unload. Time each element 5–10 cycles. Drop the obvious outlier.</p>
     </div>
 
     <div class="card">
-      <strong>Quick lesson 1 — Define the element</strong>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">Split the job: setup → run → unload. Time each element 5–10 cycles. Drop the obvious outlier.</p>
+      <strong>Lesson 2 — Average &amp; target</strong>
+<pre>Average cycle (sec) = SUM(times) / N
+Pieces per hour ≈ 3600 / average_sec</pre>
+      <p style="margin:8px 0">Compare to current plan. Gap = coaching or process change.</p>
     </div>
 
     <div class="card">
-      <strong>Quick lesson 2 — Average & target</strong>
-      <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;font-size:13px">Average cycle (sec) = SUM(times) / N
-Pieces per hour ≈ 3600 / average_sec</pre><p style="margin:8px 0;color:var(--muted);font-size:14px">Compare to current plan. Gap = coaching or process change.</p>
-    </div>
-
-    <div class="card">
-      <strong>Quick lesson 3 — Sheet columns</strong>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">Machine | Operation | Cycle1…Cycle10 | Avg | Observed issues | Action</p>
+      <strong>Lesson 3 — Sheet columns</strong>
+      <p style="margin:8px 0">Machine | Operation | Cycle1…Cycle10 | Avg | Issues | Action owner</p>
     </div>
 
     <div class="card">
       <strong>Next step</strong>
-      <p style="color:var(--muted);font-size:14px;margin:8px 0">Apply this on your plant with a paid <b>Flexible Packaging Expert</b> 1:1.</p>
-      <a class="cta" href="../mentor.html">Open Mentor → Book session</a>
+      <p style="margin:8px 0">Apply this on your plant with a paid <b>Flexible Packaging Expert</b> 1:1.</p>
+      <a class="cta" href="../mentor.html">Back to Mentor home</a>
+      <a class="cta2" href="../mentor.html">Book 1:1 Packaging</a>
     </div>
-
   </main>
 </body>
 </html>

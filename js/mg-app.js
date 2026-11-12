@@ -201,12 +201,12 @@ MG.bindEvents = function() {
     const code = MG.$('#otpStepCode');
     if (showCode) {
       if (code) code.classList.remove('hidden');
-      MG.$('#loginTitle').textContent = 'Enter OTP';
+      MG.$('#loginTitle').textContent = (MG.t ? MG.t('otpTitle') : 'Enter OTP');
       MG.$('#loginSub').textContent = 'OTP sent to +91 ' + _pendingMobile;
       setTimeout(function () { MG.$('#otpInput') && MG.$('#otpInput').focus(); }, 100);
     } else {
       if (phone) phone.classList.remove('hidden');
-      MG.$('#loginTitle').textContent = 'Login with Mobile OTP';
+      MG.$('#loginTitle').textContent = (MG.t ? MG.t('loginTitle') : 'Login with Mobile OTP');
       MG.$('#loginSub').textContent = 'Enter mobile number to continue';
     }
   };
@@ -216,7 +216,7 @@ MG.bindEvents = function() {
     MG.hideAllLoginSteps();
     var q = MG.$('#otpStepQuick');
     if (q) q.classList.remove('hidden');
-    MG.$('#loginTitle').textContent = 'Welcome back';
+    MG.$('#loginTitle').textContent = (MG.t ? MG.t('welcomeBack') : 'Welcome back');
     MG.$('#loginSub').textContent = 'Unlock +91 ' + mobile + ' on this device';
     var fpBtn = MG.$('#quickFingerprintBtn');
     var pwWrap = MG.$('#quickPasswordWrap');
@@ -241,7 +241,7 @@ MG.bindEvents = function() {
     MG.hideAllLoginSteps();
     var s = MG.$('#otpStepSetup');
     if (s) s.classList.remove('hidden');
-    MG.$('#loginTitle').textContent = 'Remember this device';
+    MG.$('#loginTitle').textContent = (MG.t ? MG.t('rememberDevice') : 'Remember this device');
     MG.$('#loginSub').textContent = 'Optional — skip OTP next time on this phone';
     var fpBtn = MG.$('#setupFingerprintBtn');
     if (fpBtn) {
@@ -655,4 +655,18 @@ window.addEventListener('offline', function () {
       MG.showToast(MG.t ? MG.t('offlineRetry') : 'You appear offline. Tap to retry.');
     }
   } catch (e) {}
+});
+
+/* mg_escape_modals */
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  try {
+    ['bookingModal', 'historyModal', 'mentorLangModal', 'pinModal'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && !el.classList.contains('hidden')) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    });
+  } catch (err) {}
 });

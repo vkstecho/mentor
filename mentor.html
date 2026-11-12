@@ -381,7 +381,7 @@
           <!-- Right actions -->
           <div class="flex items-center gap-1 sm:gap-2 shrink-0">
             <button id="pricingAdminBtn" class="hidden p-2 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 hover:bg-amber-200 transition flex items-center gap-1.5" title="Edit track rates"><i class="fas fa-rupee-sign"></i><span class="hidden sm:inline">Rates</span></button>
-          <button id="paymentHistoryBtn" class="p-2 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1.5" title="Payment History">
+          <button id="paymentHistoryBtn" aria-label="Payments" class="p-2 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1.5" title="Payment History">
               <i class="fas fa-receipt"></i>
               <span class="hidden sm:inline">Payments</span>
             </button>
@@ -389,7 +389,7 @@
               <span aria-hidden="true">🌐</span>
               <span data-lang-label>EN</span>
             </button>
-<button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Toggle theme">
+<button id="themeToggle" aria-label="Toggle theme" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Toggle theme">
               <i class="fas fa-moon text-slate-600 dark:hidden"></i>
               <i class="fas fa-sun text-amber-400 hidden dark:inline"></i>
             </button>
@@ -529,6 +529,7 @@
         </div>
 
         <!-- In-app testimonials (shared GitHub source) -->
+        <div class="mb-4 text-center text-xs text-slate-400"><a href="privacy.html" class="underline hover:text-brand-600">Privacy</a> · Mentor by VKS Tech</div>
         <div id="mentorTestimonials" class="mb-8">
           <div class="flex items-end justify-between gap-3 mb-3">
             <div>
@@ -603,9 +604,7 @@
       <section id="workspaceView" class="hidden">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div class="flex items-center gap-3">
-            <button id="backToCatalog" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-              <i class="fas fa-arrow-left"></i>
-            </button>
+            <button id="backToCatalog" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"><i class="fas fa-arrow-left mr-1"></i><span data-i18n="backToPaths">Back to paths</span></button>
             <div>
               <h2 id="wsTopicTitle" class="text-lg sm:text-xl font-bold"></h2>
               <p class="text-xs text-slate-500 dark:text-slate-400">Personal workspace • Mobile isolated</p>
@@ -661,7 +660,7 @@
             <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-slate-900/30"></div>
             <div class="p-3 border-t border-slate-100 dark:border-slate-700">
               <div class="flex gap-2">
-                <input type="text" id="chatInput" class="form-input text-sm flex-1" placeholder="Log progress, ask doubt, share homework..." />
+                <input type="text" id="chatInput" class="form-input text-sm flex-1" placeholder="Log progress, ask doubt, share homework..." data-i18n="chatPlaceholder" />
                 <button id="sendChatBtn" class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white shrink-0">
                   <i class="fas fa-paper-plane"></i>
                 </button>
@@ -677,18 +676,18 @@
   <div id="bookingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[92vh] overflow-y-auto p-5 space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="font-bold text-lg">Book One-to-One Session</h3>
+        <h3 class="font-bold text-lg" data-i18n="bookingTitle">Book 1:1 session</h3>
         <button id="closeBooking" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"><i class="fas fa-times"></i></button>
       </div>
 
       <div>
-        <p class="text-xs font-semibold text-slate-500 mb-1">Program / Topic</p>
+        <p class="text-xs font-semibold text-slate-500 mb-1" data-i18n="programTopic">Program / Topic</p>
         <p id="bookingTopicName" class="font-semibold text-brand-700 dark:text-brand-300 text-sm leading-snug"></p>
       </div>
       <div class="text-xs text-slate-500">Mobile: <span id="bookingMobile" class="font-mono font-semibold text-slate-800 dark:text-slate-200"></span></div>
 
       <div>
-        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Choose track</p>
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2" data-i18n="chooseTrack">Choose track</p>
         <div class="grid grid-cols-1 gap-2" id="trackSelectCards">
           <button type="button" data-track="career_ai" class="track-card text-left p-3 rounded-xl border-2 border-brand-500 bg-brand-50 dark:bg-brand-900/20">
             <div class="font-bold text-sm">Career &amp; AI Track</div>
@@ -704,7 +703,7 @@
       </div>
 
       <div>
-        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Package</p>
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2" data-i18n="packageLabel">Package</p>
         <div class="flex gap-2" id="packageBtns">
           <button type="button" data-hrs="1" data-disc="0" class="hrs-btn active-hrs flex-1 py-2.5 rounded-lg border text-sm font-semibold">1 Hour</button>
           <button type="button" data-hrs="3" data-disc="5" class="hrs-btn flex-1 py-2.5 rounded-lg border text-sm font-semibold">3 Hours<br><span class="text-[10px] font-normal text-emerald-600">~5% off</span></button>
@@ -762,7 +761,7 @@
   <div id="historyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between shrink-0">
-        <h3 class="font-bold text-lg">Payment & Session History</h3>
+        <h3 class="font-bold text-lg" data-i18n="paymentHistory">Payment & Session History</h3>
         <div class="flex items-center gap-2">
           <button id="exportCsvBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">
             <i class="fas fa-download mr-1"></i> CSV

@@ -3,6 +3,16 @@
 var MODE='free', CUR='home';
 var LANG=(function(){
   try{
+    var params=new URLSearchParams(location.search||'');
+    var q=params.get('lang');
+    if(q){
+      q=String(q).toLowerCase();
+      if(q==='hindi'||q==='hin') q='hi';
+      try{ localStorage.setItem('mt_lang', q); localStorage.setItem('mp_lang', q); localStorage.setItem('mentor_lang', q); }catch(e){}
+      return q;
+    }
+  }catch(e){}
+  try{
     // Mentor preference wins over sticky mt_lang
     var L = localStorage.getItem('mentor_lang') || localStorage.getItem('mp_lang') || localStorage.getItem('mt_lang') || 'en';
     L = String(L).toLowerCase();
@@ -546,14 +556,17 @@ function enterFreeAI(){
 }
 
 function backToLanding(){
-  // From Mentor app → return to Mentor (not only Met Train landing)
+  // Hierarchy when opened from Mentor:
+  // module → Met Train home → Mentor app
   try{
     if(typeof mtIsFromMentor==='function' && mtIsFromMentor()){
-      var dest = '../mentor.html';
-      try{
-        if(location.pathname.indexOf('/Met_Train_Pro/')>=0) dest = '../mentor.html';
-      }catch(e){}
-      window.location.href = dest;
+      if(typeof CUR!=='undefined' && CUR && CUR!=='landing' && CUR!=='home'){
+        clearR();
+        nav('home');
+        updateTopbar();
+        return;
+      }
+      window.location.href = '../mentor.html';
       return;
     }
   }catch(e){}
@@ -611,13 +624,15 @@ function updateTopbar(){
     if(backBtn){
       backBtn.style.display = 'block';
       if(fromMentor){
-        // Inside a module: first level back stays Met Train nav; long-press not needed —
-        // Use label that clarifies Mentor exit when on home
         if(CUR==='home'){
           var mentorBack2 = {hi:'← Mentor',en:'← Mentor'};
           backBtn.textContent = mentorBack2[LANG] || '← Mentor';
+          backBtn.setAttribute('aria-label','Back to Mentor');
           backBtn.onclick = function(){ try{ backToMentorApp(); }catch(e){ location.href='../mentor.html'; } };
         } else {
+          var backMap2={hi:'← वापस',en:'← Back'};
+          backBtn.textContent = backMap2[LANG]||backMap2.en;
+          backBtn.setAttribute('aria-label','Back');
           backBtn.onclick = function(){ backToLanding(); };
         }
       }

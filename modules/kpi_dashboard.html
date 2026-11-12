@@ -14,11 +14,18 @@
     main { max-width:720px; margin:0 auto; padding:20px 16px 48px; }
     .badge { display:inline-block; background:#dcfce7; color:#166534; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
     h1 { font-size:1.35rem; margin:12px 0 8px; }
+    h2 { font-size:1.05rem; margin:0 0 8px; color:var(--navy); }
     p { color:var(--muted); line-height:1.55; }
     .card { background:var(--card); border-radius:16px; padding:16px; margin:14px 0; box-shadow:0 1px 3px rgba(0,0,0,.06); border:1px solid #e2e8f0; }
     ul { margin:8px 0 0; padding-left:18px; color:var(--text); }
     li { margin:6px 0; }
-    .cta { display:inline-flex; margin-top:16px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
+    pre { background:#0f172a; color:#e2e8f0; padding:12px; border-radius:10px; font-size:12px; overflow:auto; line-height:1.45; }
+    .grid { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+    @media(max-width:560px){ .grid { grid-template-columns:1fr; } }
+    .kpi { background:linear-gradient(135deg,#eff6ff,#f8fafc); border:1px solid #dbeafe; border-radius:12px; padding:12px; }
+    .kpi b { display:block; font-size:13px; color:var(--navy); }
+    .kpi span { font-size:12px; color:var(--muted); }
+    .cta { display:inline-flex; margin-top:12px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
     .cta2 { display:inline-flex; margin-top:12px; margin-left:8px; padding:12px 18px; background:var(--blue); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
   </style>
 </head>
@@ -31,46 +38,57 @@
   <main>
     <span class="badge" title="Included free with Mentor">Free starter module</span>
     <h1>KPI Dashboard — Plant Metrics</h1>
-    <p>Free overview of packaging KPIs: OEE-style thinking, yield, downtime, cost per sqm, and how to read a daily board.</p>
+    <p>Practical KPIs for metalliser / converting plants. Use these on shift boards and daily meetings — not theory slides.</p>
+
     <div class="card">
-      <strong>What you will cover</strong>
+      <h2>Core production KPIs</h2>
+      <div class="grid">
+        <div class="kpi"><b>OEE (simple)</b><span>Availability × Performance × Quality</span></div>
+        <div class="kpi"><b>Yield %</b><span>Good output ÷ Raw input × 100</span></div>
+        <div class="kpi"><b>OD hit rate</b><span>Rolls within OD target ÷ Total rolls</span></div>
+        <div class="kpi"><b>Downtime min</b><span>Breakdown + changeover + wait</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Formulas you can put on a whiteboard</h2>
+<pre>Availability % = Run time / Planned time × 100
+Performance %  = (Ideal cycle × Count) / Run time × 100
+Quality %      = Good count / Total count × 100
+OEE %          = A × P × Q
+
+Yield %        = Good kg / Input kg × 100
+Scrap cost/day ≈ Scrap kg × Material ₹/kg
+Cost / sqm     = (Total cost for period) / (Good sqm)</pre>
+    </div>
+
+    <div class="card">
+      <h2>Shift board checklist</h2>
       <ul>
-        <li>OEE overview</li>
-<li>Yield %</li>
-<li>Downtime categories</li>
-<li>Cost per sqm</li>
-<li>Manpower productivity</li>
-<li>Daily board design</li>
+        <li>Plan vs actual meters / kg</li>
+        <li>Top 3 downtime reasons (with minutes)</li>
+        <li>OD / adhesion / visual reject count</li>
+        <li>Wire / boat / power note for metalliser shifts</li>
+        <li>Action owner + due time (not “will improve”)</li>
       </ul>
     </div>
+
     <div class="card">
-      <strong>Want deeper plant-specific help?</strong>
-      <p style="margin:8px 0 0">Book a paid <b>Flexible Packaging Expert</b> one-to-one session (capacity, yield, metalliser, 5S, cost/sqm) from the Mentor home.</p>
+      <h2>Common mistakes</h2>
+      <ul>
+        <li>Tracking only output meters — ignore quality and stops</li>
+        <li>No standard definition of “planned time” across shifts</li>
+        <li>Mixing good kg and total kg in yield</li>
+        <li>KPIs without a named owner</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <strong>Want plant-specific targets?</strong>
+      <p style="margin:8px 0 0">Book a paid <b>Flexible Packaging Expert</b> 1:1 for your line’s capacity, yield, and cost/sqm model.</p>
       <a class="cta" href="../mentor.html">Back to Mentor home</a>
-      <a class="cta2" href="../mentor.html#book-packaging">Book 1:1 Packaging</a>
+      <a class="cta2" href="../mentor.html">Book 1:1 Packaging</a>
     </div>
-  
-    <div class="card">
-      <strong>What you will cover</strong>
-      <p style="margin-top:8px;color:var(--muted);font-size:14px">Plant KPIs that supervisors can track weekly without a BI tool.</p>
-    </div>
-
-    <div class="card">
-      <strong>Quick lesson 1 — Core three</strong>
-      <ul style="padding-left:18px;font-size:14px"><li>Yield %</li><li>Output vs plan</li><li>Downtime hours</li></ul>
-    </div>
-
-    <div class="card">
-      <strong>Quick lesson 2 — One chart rule</strong>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">One KPI per chart. Trend 7–14 days. Annotate the day a change was made.</p>
-    </div>
-
-    <div class="card">
-      <strong>Next step</strong>
-      <p style="color:var(--muted);font-size:14px;margin:8px 0">Apply this on your plant with a paid <b>Flexible Packaging Expert</b> 1:1.</p>
-      <a class="cta" href="../mentor.html">Open Mentor → Book session</a>
-    </div>
-
   </main>
 </body>
 </html>

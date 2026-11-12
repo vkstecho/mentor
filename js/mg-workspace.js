@@ -35,12 +35,12 @@ MG.backToCatalog = function() {
 
 MG.renderRecordings = function() {
   const list = MG.state.data.recordings[MG.state.currentTopicId] || [];
-  MG.$('#recordingCount').textContent = list.length + ' recording' + (list.length !== 1 ? 's' : '');
+  MG.$('#recordingCount').textContent = list.length + ' ' + (MG.t ? MG.t('recordings') : 'recording' + (list.length !== 1 ? 's' : '')).toLowerCase();
   const container = MG.$('#recordingsList');
   container.innerHTML = '';
 
   if (!list.length) {
-    container.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">No recordings yet. Flow: Book hours → Pay Razorpay → Submit UTR → Mentor approves → Session → Recording appears here.</p>`;
+    container.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">' + (MG.t ? MG.t('noRecordings') : 'No recordings yet.') + '</p>';
     return;
   }
 
@@ -95,7 +95,7 @@ MG.addRecording = function() {
   MG.$('#recUrl').value = '';
   MG.$('#recNotes').value = '';
   MG.renderRecordings(); try{MG.renderSessionChecklist();}catch(eCL){};
-  MG.showToast('Recording added');
+  MG.showToast(MG.t ? MG.t('recordingAdded') : 'Recording added');
 }
 
 // ========== Chat ==========
@@ -104,7 +104,7 @@ MG.renderChat = function() {
   const box = MG.$('#chatMessages');
   box.innerHTML = '';
   if (!msgs.length) {
-    box.innerHTML = `<p class="text-sm text-slate-400 text-center py-8">No messages yet. Log your practice or ask a doubt!</p>`;
+    box.innerHTML = '<p class="text-sm text-slate-400 text-center py-8">' + (MG.t ? MG.t('noMessages') : 'No messages yet.') + '</p>';
     return;
   }
   msgs.forEach(m => {
@@ -214,7 +214,7 @@ MG.renderSessionChecklist = function() {
   var done = {};
   try { done = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e2) { done = {}; }
   el.innerHTML = '<div class="p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800/80">' +
-    '<div class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Session checklist</div>' +
+    '<div class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">' + (MG.t ? MG.t('sessionChecklist') : 'Session checklist') + '</div>' +
     items.map(function (text, i) {
       var id = 'c' + i;
       var checked = done[id] ? 'checked' : '';

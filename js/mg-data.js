@@ -253,6 +253,9 @@ MG.startRealtimeFor = function(mob) {
       }
 
       // CRITICAL: use MG.emptyUserData (bare emptyUserData throws ReferenceError and kills the listener)
+      var prevUnlocked = JSON.stringify((MG.state.data && MG.state.data.unlocked) || {});
+      var prevPayN = ((MG.state.data && MG.state.data.payments) || []).length;
+
       MG.state.data = Object.assign({}, MG.emptyUserData(mob), remote, { mobile: mob, chats: mergedChats });
       try {
         localStorage.setItem(MG.storageKey(mob), JSON.stringify(MG.state.data));
@@ -269,6 +272,27 @@ MG.startRealtimeFor = function(mob) {
       }
       // Refresh recordings if mentor added one
       try { if (MG.state.currentTopicId && typeof MG.renderRecordings === 'function') MG.renderRecordings(); } catch (e) {}
+
+      // Unlock / payment status changed (admin approved) → refresh catalog badges without app restart
+      try {
+        var nextUnlocked = JSON.stringify((MG.state.data && MG.state.data.unlocked) || {});
+        var nextPayN = ((MG.state.data && MG.state.data.payments) || []).length;
+        if (prevUnlocked !== nextUnlocked || prevPayN !== nextPayN) {
+          if (typeof MG.renderCatalog === 'function') MG.renderCatalog();
+          try { if (typeof MG.renderFreePackSection === 'function') MG.renderFreePackSection(); } catch (eF) {}
+          // If student is sitting on a locked topic that just unlocked, allow workspace entry
+          if (MG.state.currentTopicId && MG.state.data.unlocked && MG.state.data.unlocked[MG.state.currentTopicId]) {
+            try {
+              if (typeof MG.openWorkspace === 'function') MG.openWorkspace(MG.state.currentTopicId);
+            } catch (eW) {}
+          }
+          try {
+            if (typeof MG.showToast === 'function' && prevUnlocked !== nextUnlocked) {
+              MG.showToast(MG.t ? MG.t('sessionUnlocked') : 'Session unlocked — you can open your topic now');
+            }
+          } catch (eT) {}
+        }
+      } catch (eUnlockUi) {}
     } catch (eCb) {
       console.warn('[Mentor] realtime cb error', eCb && eCb.message);
     }

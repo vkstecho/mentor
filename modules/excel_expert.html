@@ -14,64 +14,91 @@
     main { max-width:720px; margin:0 auto; padding:20px 16px 48px; }
     .badge { display:inline-block; background:#dcfce7; color:#166534; font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; }
     h1 { font-size:1.35rem; margin:12px 0 8px; }
+    h2 { font-size:1.05rem; margin:0 0 8px; color:var(--navy); }
     p { color:var(--muted); line-height:1.55; }
     .card { background:var(--card); border-radius:16px; padding:16px; margin:14px 0; box-shadow:0 1px 3px rgba(0,0,0,.06); border:1px solid #e2e8f0; }
     ul { margin:8px 0 0; padding-left:18px; color:var(--text); }
     li { margin:6px 0; }
-    .cta { display:inline-flex; margin-top:16px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
+    pre { background:#0f172a; color:#e2e8f0; padding:12px; border-radius:10px; font-size:12px; overflow:auto; line-height:1.45; }
+    .cta { display:inline-flex; margin-top:12px; padding:12px 18px; background:var(--orange); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
     .cta2 { display:inline-flex; margin-top:12px; margin-left:8px; padding:12px 18px; background:var(--blue); color:#fff; border-radius:12px; font-weight:700; text-decoration:none; }
+    code { background:#f1f5f9; padding:1px 5px; border-radius:4px; font-size:12px; color:#0f172a; }
   </style>
 </head>
 <body>
   <header>
     <a href="../mentor.html">← Mentor</a>
-    <strong style="flex:1;text-align:center;font-size:14px">Flexible Packaging · Free module</strong>
+    <strong style="flex:1;text-align:center;font-size:14px">Career &amp; Packaging · Free module</strong>
     <span style="width:48px"></span>
   </header>
   <main>
-    <span class="badge" title="Included free with Mentor">Free starter module</span>
-    <h1>Excel Expert — Plant & Office</h1>
-    <p>Free Excel skills for packaging plants: production logs, yield sheets, manpower rosters, and dashboards with practical formulas.</p>
+    <span class="badge">Free starter module</span>
+    <h1>Excel Expert — Plant &amp; Office</h1>
+    <p>Practical Excel for packaging plants and office work: production logs, yield, manpower, and simple dashboards. Learn patterns you will reuse every week.</p>
+
     <div class="card">
-      <strong>What you will cover</strong>
+      <h2>What you will cover</h2>
       <ul>
-        <li>VLOOKUP / XLOOKUP for codes</li>
-<li>Pivot tables for production</li>
-<li>Yield & waste formulas</li>
-<li>Shift roster sheets</li>
-<li>Conditional formatting</li>
-<li>Charts for KPIs</li>
+        <li>XLOOKUP / VLOOKUP for item &amp; machine codes</li>
+        <li>Pivot tables for production by shift / SKU</li>
+        <li>Yield &amp; waste formulas</li>
+        <li>Shift roster layout</li>
+        <li>Conditional formatting for alerts</li>
+        <li>Charts for daily KPIs</li>
       </ul>
     </div>
+
     <div class="card">
-      <strong>Want deeper plant-specific help?</strong>
-      <p style="margin:8px 0 0">Book a paid <b>Flexible Packaging Expert</b> one-to-one session (capacity, yield, metalliser, 5S, cost/sqm) from the Mentor home.</p>
-      <a class="cta" href="../mentor.html">Back to Mentor home</a>
-      <a class="cta2" href="../mentor.html#book-packaging">Book 1:1 Packaging</a>
-    </div>
-  
-    <div class="card">
-      <strong>Quick lesson 1 — Yield %</strong>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">In a production log, if <b>B2</b> = good output (kg) and <b>C2</b> = input (kg):</p>
-      <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;font-size:13px;overflow:auto">=IF(C2=0,"",B2/C2)</pre>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">Format as <b>Percentage</b>. Copy down the column for each shift/day.</p>
-    </div>
-    <div class="card">
-      <strong>Quick lesson 2 — Waste kg</strong>
-      <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;font-size:13px;overflow:auto">=C2-B2</pre>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">Then pivot by machine or shift to find the biggest loss area.</p>
-    </div>
-    <div class="card">
-      <strong>Quick lesson 3 — Shift roster count</strong>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">If codes D/N/O are in row of a person, count day shift heads for Monday (column C):</p>
-      <pre style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;font-size:13px;overflow:auto">=COUNTIF(C:C,"D")</pre>
-      <p style="margin:8px 0;color:var(--muted);font-size:14px">Use the same for <code>N</code>. Compare to required manpower for coverage.</p>
-    </div>
-    <div class="card">
-      <strong>Next step</strong>
-      <p style="color:var(--muted);font-size:14px;margin:8px 0">Want this applied on <em>your</em> plant sheet (metalliser, lami, slit)? Book a <b>Flexible Packaging Expert</b> 1:1 from Mentor.</p>
+      <h2>Lesson 1 — Clean data first</h2>
+      <ul>
+        <li>One header row only</li>
+        <li>Dates as real dates (not text)</li>
+        <li>Machine / SKU codes in a consistent format</li>
+        <li>No merged cells in the data block</li>
+      </ul>
     </div>
 
+    <div class="card">
+      <h2>Lesson 2 — Core formulas</h2>
+<pre>Yield %     = Good_kg / Input_kg
+Scrap cost  = Scrap_kg * Material_Rs_per_kg
+OD OK?      = IF(AND(OD&gt;=Min, OD&lt;=Max), "OK", "NG")
+
+XLOOKUP example:
+=XLOOKUP(A2, Codes!A:A, Codes!B:B, "Not found")</pre>
+    </div>
+
+    <div class="card">
+      <h2>Lesson 3 — Pivot for shift review</h2>
+      <ul>
+        <li>Rows: Machine or SKU</li>
+        <li>Columns: Shift (A/B/C)</li>
+        <li>Values: Sum of Good kg, Sum of Downtime min</li>
+        <li>Filter: Date range for the week</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Lesson 4 — Conditional formatting</h2>
+      <p style="margin:8px 0">Highlight yield &lt; target in red; OD out of band in orange; downtime &gt; 30 min in bold. Managers should see problems without reading every row.</p>
+    </div>
+
+    <div class="card">
+      <h2>Mini practice</h2>
+      <ol>
+        <li>Build a 7-day production log (Date, Machine, Input kg, Good kg, Downtime min)</li>
+        <li>Add Yield % column</li>
+        <li>Create a pivot: Machine × Shift</li>
+        <li>Add a simple line chart of daily good kg</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <strong>Go deeper with 1:1</strong>
+      <p style="margin:8px 0">Career &amp; AI track covers Excel + AI workflows (ChatGPT / Gemini with spreadsheets). Packaging track applies the same tools to plant cost and yield models.</p>
+      <a class="cta" href="../mentor.html">Back to Mentor home</a>
+      <a class="cta2" href="../mentor.html">Book 1:1 session</a>
+    </div>
   </main>
 </body>
 </html>

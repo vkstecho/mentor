@@ -95,6 +95,9 @@
     "windows": "Windows / Desktop",
 
     "loginTitle": "Login with Mobile OTP",
+    "welcomeBack": "Welcome back",
+    "rememberDevice": "Remember this device",
+    "sessionUnlocked": "Session unlocked — you can open your topic now",
     "loginSub": "Enter mobile number to continue",
     "mobileLabel": "10-digit Mobile Number",
     "sendOtp": "Send OTP",
@@ -131,6 +134,37 @@
     "offlineRetry": "You appear offline. Tap to retry.",
     "myOwnView": "— My own view (Mentor) —",
     "loadingStudents": "Loading students…",
+    "backToPaths": "Back to paths",
+    "recordings": "Recordings",
+    "noRecordings": "No recordings yet. Flow: Book hours → Pay → Mentor approves → Session → Recording appears here.",
+    "noMessages": "No messages yet. Log your practice or ask a doubt.",
+    "sessionChecklist": "Session checklist",
+    "chatPlaceholder": "Log progress, ask doubt, share homework…",
+    "sendChat": "Send",
+    "recordingAdded": "Recording added",
+    "bookingTitle": "Book 1:1 session",
+    "hoursLabel": "Hours",
+    "slotLabel": "Preferred slot",
+    "topicFocus": "Topic focus",
+    "payNow": "Pay Now via Razorpay",
+    "payHint": "Pay Now notifies the Mentor automatically. No UTR required.",
+    "attachPayId": "Attach Payment ID (optional)",
+    "paymentHistory": "Payment & Session History",
+    "personalWorkspace": "Personal workspace",
+    "selectRecording": "Select a recording below to watch",
+    "bookMore": "Book more hours",
+    "chooseTrack": "Choose track",
+    "programTopic": "Program / Topic",
+    "packageLabel": "Package",
+    "hour1": "1 Hour",
+    "hours3": "3 Hours",
+    "hours5": "5 Hours",
+    "off5": "~5% off",
+    "off10": "~10% off",
+    "totalLabel": "Total",
+    "payAfterHint": "After paying, Mentor is notified automatically. Payment ID is optional.",
+
+
     "share": "Share",
     "choosePath": "Choose your path",
     "choosePathSub": "Free modules inside · book paid 1:1 · recordings & doubt chat",
@@ -170,6 +204,9 @@
     "windows": "Windows / Desktop",
 
     "loginTitle": "मोबाइल OTP से लॉगिन",
+    "welcomeBack": "वापस स्वागत है",
+    "rememberDevice": "इस डिवाइस को याद रखें",
+    "sessionUnlocked": "सत्र अनलॉक — अब अपना टॉपिक खोल सकते हैं",
     "loginSub": "जारी रखने के लिए मोबाइल नंबर डालें",
     "mobileLabel": "10 अंकों का मोबाइल नंबर",
     "sendOtp": "OTP भेजें",
@@ -206,6 +243,37 @@
     "offlineRetry": "आप ऑफ़लाइन लगते हैं। पुनः प्रयास करें।",
     "myOwnView": "— मेरा अपना व्यू (Mentor) —",
     "loadingStudents": "विद्यार्थी लोड हो रहे हैं…",
+    "backToPaths": "पथ पर वापस",
+    "recordings": "रिकॉर्डिंग",
+    "noRecordings": "अभी कोई रिकॉर्डिंग नहीं। क्रम: घंटे बुक करें → भुगतान → मेंटर स्वीकृति → सत्र → फिर रिकॉर्डिंग यहाँ।",
+    "noMessages": "अभी कोई संदेश नहीं। अभ्यास लिखें या डाउट पूछें।",
+    "sessionChecklist": "सत्र चेकलिस्ट",
+    "chatPlaceholder": "प्रगति लिखें, डाउट पूछें…",
+    "sendChat": "भेजें",
+    "recordingAdded": "रिकॉर्डिंग जोड़ी गई",
+    "bookingTitle": "1:1 सत्र बुक करें",
+    "hoursLabel": "घंटे",
+    "slotLabel": "पसंदीदा स्लॉट",
+    "topicFocus": "टॉपिक फोकस",
+    "payNow": "Razorpay से अभी भुगतान करें",
+    "payHint": "भुगतान से मेंटर को सूचना मिलती है। UTR ज़रूरी नहीं।",
+    "attachPayId": "Payment ID जोड़ें (वैकल्पिक)",
+    "paymentHistory": "भुगतान और सत्र इतिहास",
+    "personalWorkspace": "व्यक्तिगत वर्कस्पेस",
+    "selectRecording": "देखने के लिए रिकॉर्डिंग चुनें",
+    "bookMore": "और घंटे बुक करें",
+    "chooseTrack": "ट्रैक चुनें",
+    "programTopic": "प्रोग्राम / टॉपिक",
+    "packageLabel": "पैकेज",
+    "hour1": "1 घंटा",
+    "hours3": "3 घंटे",
+    "hours5": "5 घंटे",
+    "off5": "~5% छूट",
+    "off10": "~10% छूट",
+    "totalLabel": "कुल",
+    "payAfterHint": "भुगतान के बाद मेंटर को सूचना मिलती है। Payment ID वैकल्पिक है।",
+
+
     "share": "साझा करें",
     "choosePath": "अपना पथ चुनें",
     "choosePathSub": "अंदर मुफ़्त मॉड्यूल · पेड 1:1 बुक करें · रिकॉर्डिंग और डाउट चैट",
@@ -1090,6 +1158,55 @@
       var anl = document.getElementById('addNameLater');
       if (anl) anl.textContent = t('addNameLater');
     } catch (eLoginI18n) {}
+
+    // Workspace + booking chrome
+    try {
+      var bt = document.getElementById('backToCatalog');
+      if (bt) {
+        var btxt = bt.querySelector('span') || bt;
+        if (btxt && btxt !== bt) btxt.textContent = t('backToPaths');
+        else if (!bt.querySelector('i')) bt.textContent = t('backToPaths');
+      }
+      var chatIn = document.getElementById('chatInput');
+      if (chatIn) chatIn.placeholder = t('chatPlaceholder');
+      var histH = document.querySelector('#historyModal h3');
+      if (histH) histH.textContent = t('paymentHistory');
+      var bookH = document.querySelector('#bookingModal h3, #bookingModal .font-bold.text-lg');
+      if (bookH && /book|सत्र|1:1/i.test(bookH.textContent || '')) bookH.textContent = t('bookingTitle');
+      var payBtn = document.querySelector('#bookingModal button[id*="pay"], #payRazorpayBtn, #bookingPayBtn');
+      // pay button by icon lock
+      document.querySelectorAll('#bookingModal button').forEach(function (b) {
+        if (/Pay Now|भुगतान/i.test(b.textContent || '')) {
+          b.innerHTML = '<i class="fas fa-lock"></i> ' + t('payNow');
+        }
+        if (/Attach Payment|Payment ID/i.test(b.textContent || '') && /optional|वैकल्पिक/i.test(b.textContent || '')) {
+          b.innerHTML = '<i class="fas fa-paper-plane mr-1.5"></i> ' + t('attachPayId');
+        }
+      });
+      var selRec = document.querySelector('#workspaceView .text-sm');
+      // soft: recording empty handled in JS
+      var wsSub = document.querySelector('#workspaceView p.text-xs, #workspaceView .text-slate-500');
+    } catch (eWs) {}
+
+    try {
+      var bm = document.getElementById('bookingModal');
+      if (bm) {
+        bm.querySelectorAll('p.text-xs.font-semibold, p.text-xs.font-bold').forEach(function (p) {
+          var tx = (p.textContent || '').trim();
+          if (/Program|प्रोग्राम/i.test(tx)) p.textContent = t('programTopic');
+          if (/Choose track|ट्रैक/i.test(tx)) p.textContent = t('chooseTrack');
+          if (/^Package$|पैकेज/i.test(tx)) p.textContent = t('packageLabel');
+        });
+        bm.querySelectorAll('.hrs-btn').forEach(function (b) {
+          var h = b.getAttribute('data-hrs');
+          if (h === '1') b.innerHTML = t('hour1');
+          if (h === '3') b.innerHTML = t('hours3') + '<br><span class="text-[10px] font-normal text-emerald-600">' + t('off5') + '</span>';
+          if (h === '5') b.innerHTML = t('hours5') + '<br><span class="text-[10px] font-normal text-emerald-600">' + t('off10') + '</span>';
+        });
+      }
+    } catch (eBookI18n) {}
+
+
 
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
