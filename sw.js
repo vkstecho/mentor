@@ -1,8 +1,11 @@
-const CACHE = 'mentor-pwa-v13-recheck';
+const CACHE = 'mentor-pwa-v14-favicon';
 const PRECACHE = [
   '/',
   '/mentor.html',
   '/manifest.json',
+  '/apple-touch-icon.png',
+  '/favicon-192.png',
+  '/favicon.ico',
   '/css/guidance.css',
   '/assets/mentor-icon.jpg',
   '/icons/icon-512-maskable.png',
