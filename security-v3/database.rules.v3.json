@@ -1,0 +1,32 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "mentor_settings": {
+      ".read": true,
+      ".write": "auth != null && auth.token.admin == true"
+    },
+    "mentor_guidance": {
+      "$mobile": {
+        ".read": "auth != null && auth.token.phone_number_verified == true && auth.token.phone_number != null && (auth.token.phone_number == ('+91' + $mobile) || auth.token.phone_number == $mobile || auth.token.admin == true)",
+        ".write": false
+      }
+    },
+    "mentor_guidance_index": { ".read": "auth != null && auth.token.admin == true", ".write": false },
+    "mentor_notifications": { ".read": "auth != null && auth.token.admin == true", ".write": false },
+    "mentor_payments": {
+      "$mobile": {
+        ".read": "auth != null && auth.token.phone_number_verified == true && auth.token.phone_number != null && (auth.token.phone_number == ('+91' + $mobile) || auth.token.phone_number == $mobile || auth.token.admin == true)",
+        ".write": false
+      }
+    },
+    "mentor_v3": {
+      "users": { "$uid": { ".read": "auth != null && (auth.uid == $uid || auth.token.admin == true)", ".write": false } },
+      "bookings": { "$uid": { ".read": "auth != null && (auth.uid == $uid || auth.token.admin == true)", ".write": false } },
+      "chats": { "$uid": { ".read": "auth != null && (auth.uid == $uid || auth.token.admin == true)", ".write": false } },
+      "progress": { "$uid": { ".read": "auth != null && (auth.uid == $uid || auth.token.admin == true)", ".write": false } },
+      "adminBookingQueue": { ".read": "auth != null && auth.token.admin == true", ".write": false },
+      "razorpayEvents": { ".read": "auth != null && auth.token.admin == true", ".write": false }
+    }
+  }
+}

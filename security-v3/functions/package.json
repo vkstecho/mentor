@@ -1,0 +1,21 @@
+{
+  "name": "mentor-security-functions",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test/security.static.test.js",
+    "test:emulator": "firebase emulators:exec --only database,auth --project mentor-security-staging-test \"node --test test/security.emulator.test.js\"",
+    "emulate": "firebase emulators:start --only auth,database,functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.1.1"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.2"
+  }
+}

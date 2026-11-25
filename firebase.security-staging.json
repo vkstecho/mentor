@@ -1,0 +1,11 @@
+{
+  "database": { "rules": "security-v3/database.rules.v3.json" },
+  "storage": { "rules": "security-v3/storage.rules.v3.txt" },
+  "functions": { "source": "security-v3/functions", "runtime": "nodejs20" },
+  "emulators": {
+    "auth": { "port": 9099 },
+    "database": { "port": 9000 },
+    "functions": { "port": 5001 },
+    "ui": { "enabled": true, "port": 4000 }
+  }
+}

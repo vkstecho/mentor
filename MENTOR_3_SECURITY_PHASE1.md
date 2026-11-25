@@ -1,0 +1,1 @@
+Mentor 3.0 Security Phase 1 artifacts are in `security-v3/`. Read `security-v3/SECURITY_AUDIT.md` before deployment. The package is staging-only; do not publish v3 rules until client migration and emulator regression tests are complete.

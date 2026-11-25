@@ -110,9 +110,43 @@ MG.openHistory = async function() {
   payments = Object.keys(byKey).map(function(k){ return byKey[k]; })
     .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
 
+  async function appendSecureBookingQueue() {
+    if (!MG.state.isMentor || viewing || !container || !window.MentorFB || !window.MentorFB.callSecure) return;
+    const section = document.createElement('section');
+    section.className = 'mt-5 pt-4 border-t border-slate-200 dark:border-slate-700';
+    section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3><p class="text-xs text-slate-500">Loading secure queue…</p>';
+    container.appendChild(section);
+    try {
+      const queue = await window.MentorFB.callSecure('listPendingBookings', {});
+      const rows = Object.keys(queue || {}).map(function(id) { return queue[id]; }).filter(Boolean);
+      if (!rows.length) { section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3><p class="text-xs text-slate-500">No secure bookings awaiting review.</p>'; return; }
+      section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3>' + rows.map(function(b) {
+        const uid = MG.esc(String(b.uid || ''));
+        const bid = MG.esc(String(b.id || ''));
+        return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
+          '<p class="text-xs text-slate-500">' + MG.esc(b.track || '') + ' · +91 ' + MG.esc(b.mobile || '') + '</p>' +
+          '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + '</p>' +
+          '<div class="flex gap-2 mt-2"><button class="secure-booking-approve px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Approve booking</button>' +
+          '<button class="secure-booking-reject px-3 py-1.5 rounded-lg bg-slate-200 text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Reject</button></div></article>';
+      }).join('');
+      section.querySelectorAll('.secure-booking-approve').forEach(function(btn) { btn.addEventListener('click', async function() {
+        btn.disabled = true; try { await window.MentorFB.callSecure('approveBooking', { uid: btn.dataset.uid, bookingId: btn.dataset.bid }); MG.showToast('Secure booking approved'); await MG.openHistory(); }
+        catch (e) { btn.disabled = false; MG.showToast(e.message || 'Approval failed'); }
+      }); });
+      section.querySelectorAll('.secure-booking-reject').forEach(function(btn) { btn.addEventListener('click', async function() {
+        const reason = prompt('Optional rejection reason:') || ''; btn.disabled = true;
+        try { await window.MentorFB.callSecure('rejectBooking', { uid: btn.dataset.uid, bookingId: btn.dataset.bid, reason: reason }); MG.showToast('Secure booking rejected'); await MG.openHistory(); }
+        catch (e) { btn.disabled = false; MG.showToast(e.message || 'Rejection failed'); }
+      }); });
+    } catch (e) {
+      section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3><p class="text-xs text-amber-700">Secure queue unavailable: ' + MG.esc(e.message || 'Sign in with a verified administrator account and try again.') + '</p>';
+    }
+  }
+
   if (!payments.length) {
     container.innerHTML = '<p class="text-center text-slate-400 py-10">' + (MG.t ? MG.t('noPayments') : 'No payments yet') +
       (MG.state.isMentor && !viewing ? ' (all students)' : '') + '.</p>';
+    await appendSecureBookingQueue();
     return;
   }
 
@@ -152,6 +186,7 @@ MG.openHistory = async function() {
   container.querySelectorAll('.wa-remind-btn').forEach(function(btn) {
     btn.addEventListener('click', function() { MG.copyWhatsAppReminder(btn.dataset.payid, btn.dataset.mobile); });
   });
+  await appendSecureBookingQueue();
 }
 
 MG.exportCsv = function() {

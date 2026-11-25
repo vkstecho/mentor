@@ -9,6 +9,8 @@ MG.WHATSAPP_NUMBER = '918929394920';  // User-facing WhatsApp (NOT admin OTP)
 MG.STORAGE_PREFIX = 'vks_guidance_';
 MG.THEME_KEY = 'vks_guidance_theme';
 MG.RATE_PER_HOUR = 699; // legacy fallback
+/** Enable only after staging Firebase Functions + rules are deployed and smoke-tested. */
+MG.SECURE_BOOKINGS_ENABLED = false;
 /** Preferred session windows shown in booking (student picks one). */
 MG.PREFERRED_SLOT_OPTIONS = [
   'Weekday morning (9–12 IST)',

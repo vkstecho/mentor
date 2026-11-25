@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    function ownsMobile(mobile) {
+      return signedIn() && request.auth.token.phone_number != null && (request.auth.token.firebase.sign_in_provider == 'phone' || request.auth.token.phone_verified == true)
+        && (request.auth.token.phone_number == ('+91' + mobile)
+          || request.auth.token.phone_number == mobile);
+    }
+    match /profiles/{mobile}/{fileName} {
+      allow read: if ownsMobile(mobile) || isAdmin();
+      allow write: if (ownsMobile(mobile) || isAdmin())
+        && request.resource != null
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

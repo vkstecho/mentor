@@ -121,9 +121,43 @@ MG.notifyMentorPayIntent = async function() {
     var slotSel = document.getElementById('bookingSlotPref');
     var slotPref = slotSel ? (slotSel.value || '') : '';
     var hours = MG.state.selectedHours || 1;
+
+    // Mentor 3.0 secure path: never fall back to legacy browser writes when enabled.
+    // The backend derives identity from the verified Firebase phone token and price from settings.
+    if (MG.SECURE_BOOKINGS_ENABLED === true) {
+      if (MG.state.viewingAs) {
+        MG.showToast("Secure booking requires the student's own verified sign-in.");
+        return;
+      }
+      if (!window.MentorFB || typeof window.MentorFB.callSecure !== 'function') {
+        MG.showToast('Secure booking is unavailable. Please try again later.');
+        return;
+      }
+      var secureTrack = String((tr && tr.id) || MG.selectedTrackId || '');
+      if (secureTrack === 'career') secureTrack = 'career_ai';
+      if (!['career_ai', 'packaging'].includes(secureTrack)) {
+        MG.showToast('Please select a valid learning track.');
+        return;
+      }
+      var secureTopic = String(focus || topic.title || 'Session').trim().slice(0, 160);
+      var secureResult = await window.MentorFB.callSecure('createBooking', {
+        track: secureTrack,
+        topic: secureTopic,
+        slotPreference: String(slotPref || '').slice(0, 100),
+        hours: Number(hours)
+      });
+      if (!secureResult || secureResult.ok !== true || !secureResult.bookingId) {
+        throw new Error('The secure booking service did not confirm this request.');
+      }
+      MG.closeBooking();
+      if (typeof MG.renderCatalog === 'function') MG.renderCatalog();
+      MG.showToast('Secure booking submitted. Reference: ' + secureResult.bookingId);
+      return;
+    }
+
     var id = 'pay_' + Date.now();
 
-    // 1) Write pending payment on student node (so Admin Approve can unlock)
+    // Legacy compatibility path. Keep disabled for rollout until staging validation is complete.
     var userData = null;
     try { userData = await MG.loadUserDataAsync(targetMobile); } catch (eL) { userData = MG.loadUserData(targetMobile); }
     if (!userData) userData = MG.emptyUserData(targetMobile);
