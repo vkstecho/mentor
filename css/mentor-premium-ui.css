@@ -136,49 +136,49 @@ body.light:has(#topbar) #topbar { background: rgba(255,255,255,.96); }
 }
 
 /* Focused, self-contained learning modules */
-body:has(> header) main {
+body:has(> header):not(:has(.hero-layout)) main {
   width: min(100%, 960px);
   padding: clamp(18px, 3vw, 34px) clamp(14px, 3vw, 24px) max(56px, env(safe-area-inset-bottom));
 }
-body:has(> header) > header {
+body:has(> header):not(:has(.hero-layout)) > header {
   min-height: 58px; padding-inline: max(16px, calc((100vw - 1160px) / 2));
   box-shadow: 0 8px 24px rgba(15, 35, 70, .14);
 }
-body:has(> header) main > h1 {
+body:has(> header):not(:has(.hero-layout)) main > h1 {
   font-size: clamp(1.55rem, 3.4vw, 2.15rem); line-height: 1.18; letter-spacing: -.035em;
   margin: 14px 0 9px;
 }
-body:has(> header) main > .lead,
-body:has(> header) main > p:first-of-type {
+body:has(> header):not(:has(.hero-layout)) main > .lead,
+body:has(> header):not(:has(.hero-layout)) main > p:first-of-type {
   max-width: 70ch; line-height: 1.75; margin-bottom: 20px;
 }
-body:has(> header) main .card {
+body:has(> header):not(:has(.hero-layout)) main .card {
   border-radius: var(--mentor-ui-radius); padding: clamp(17px, 2.6vw, 24px);
   box-shadow: 0 8px 26px rgba(18, 35, 70, .055); transition: box-shadow .18s ease, transform .18s ease;
 }
-body:has(> header) main .card h2 { letter-spacing: -.02em; line-height: 1.3; }
-body:has(> header) main .card p,
-body:has(> header) main .card li { line-height: 1.7; }
-body:has(> header) main .badge { padding: 6px 11px; letter-spacing: .035em; }
-body:has(> header) main input,
-body:has(> header) main select,
-body:has(> header) main textarea { min-height: 44px; border-radius: 11px; }
-body:has(> header) main button,
-body:has(> header) main .cta,
-body:has(> header) main .cta2,
-body:has(> header) main .btn { min-height: 44px; border-radius: 11px; }
-body:has(> header) main pre,
-body:has(> header) main .formula { max-width: 100%; overflow: auto; border-radius: 13px; }
-body:has(> header) main .nav-pills { gap: 9px; }
-body:has(> header) main .nav-pills button { min-height: 42px; }
-body:has(> header) main table { max-width: 100%; }
+body:has(> header):not(:has(.hero-layout)) main .card h2 { letter-spacing: -.02em; line-height: 1.3; }
+body:has(> header):not(:has(.hero-layout)) main .card p,
+body:has(> header):not(:has(.hero-layout)) main .card li { line-height: 1.7; }
+body:has(> header):not(:has(.hero-layout)) main .badge { padding: 6px 11px; letter-spacing: .035em; }
+body:has(> header):not(:has(.hero-layout)) main input,
+body:has(> header):not(:has(.hero-layout)) main select,
+body:has(> header):not(:has(.hero-layout)) main textarea { min-height: 44px; border-radius: 11px; }
+body:has(> header):not(:has(.hero-layout)) main button,
+body:has(> header):not(:has(.hero-layout)) main .cta,
+body:has(> header):not(:has(.hero-layout)) main .cta2,
+body:has(> header):not(:has(.hero-layout)) main .btn { min-height: 44px; border-radius: 11px; }
+body:has(> header):not(:has(.hero-layout)) main pre,
+body:has(> header):not(:has(.hero-layout)) main .formula { max-width: 100%; overflow: auto; border-radius: 13px; }
+body:has(> header):not(:has(.hero-layout)) main .nav-pills { gap: 9px; }
+body:has(> header):not(:has(.hero-layout)) main .nav-pills button { min-height: 42px; }
+body:has(> header):not(:has(.hero-layout)) main table { max-width: 100%; }
 @media (max-width: 640px) {
-  body:has(> header) > header { padding-inline: 12px; gap: 8px; }
-  body:has(> header) main .cta-row > *,
-  body:has(> header) main .actions > * { flex: 1 1 140px; justify-content: center; }
-  body:has(> header) main .deck { gap: 16px; }
-  body:has(> header) main .slide { border-radius: 12px; }
-  body:has(> header) main .param { gap: 9px; padding: 10px; }
+  body:has(> header):not(:has(.hero-layout)) > header { padding-inline: 12px; gap: 8px; }
+  body:has(> header):not(:has(.hero-layout)) main .cta-row > *,
+  body:has(> header):not(:has(.hero-layout)) main .actions > * { flex: 1 1 140px; justify-content: center; }
+  body:has(> header):not(:has(.hero-layout)) main .deck { gap: 16px; }
+  body:has(> header):not(:has(.hero-layout)) main .slide { border-radius: 12px; }
+  body:has(> header):not(:has(.hero-layout)) main .param { gap: 9px; padding: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
