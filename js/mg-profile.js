@@ -171,6 +171,21 @@ MG.openProfileModal = function () {
     } else if (p.photoURL) {
       profile.photoURL = p.photoURL;
     }
+    if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
+      if (!window.MentorFB || typeof window.MentorFB.callSecure !== 'function') {
+        MG.showToast('Secure profile service is unavailable; profile was not changed.');
+        return;
+      }
+      try {
+        await window.MentorFB.callSecure('updateMyProfile', {
+          name: profile.name, email: profile.email, dob: profile.dob,
+          education: profile.education, profession: profile.profession, company: profile.company
+        });
+      } catch (eProfile) {
+        MG.showToast((eProfile && eProfile.message) || 'Secure profile update failed.');
+        return;
+      }
+    }
     MG.saveProfileLocal(mobile, profile);
     MG.refreshProfileButton();
     try {
@@ -178,7 +193,7 @@ MG.openProfileModal = function () {
       var ban = document.getElementById('addNameBanner');
       if (ban && _n) ban.classList.add('hidden');
     } catch (eB) {}
-    MG.showToast('Profile saved');
+    MG.showToast(MG.SECURE_DATA_ENABLED && pendingDataUrl ? 'Profile saved. Photo is stored on this device only.' : 'Profile saved');
     close();
   };
 };

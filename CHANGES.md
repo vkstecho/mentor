@@ -10,7 +10,7 @@ Merged fixes:
 5. Desktop PWA install (orientation any, absolute paths)
 6. WhatsApp user-facing 8929394920 (admin OTP 8929397949)
 
-Deploy: upload entire mentor-app/ folder to hosting / push to GitHub.
+Historical note from the original package: the above described static-site hosting. It is superseded for this development copy; do not publish this copy or deploy it to Firebase. See `DEPLOY_FIREBASE_RULES.md`.
 
 ## 2026-11-07 — Device remember + landing polish
 - Landing (`index.html`): better mobile/desktop spacing, nav, hero, grids, touch targets

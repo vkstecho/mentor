@@ -269,6 +269,7 @@ MG.bindEvents = function() {
       return;
     }
     MG.$('#mobileError')?.classList.add('hidden');
+    MG.$('#phoneAccountConflict')?.classList.add('hidden');
     const btn = MG.$('#mobileSubmit');
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Please wait…'; }
     try {
@@ -320,11 +321,33 @@ MG.bindEvents = function() {
       MG.finishLogin(_pendingMobile, { forceSetup: !MG.canQuickLogin(_pendingMobile) });
     } catch (e) {
       console.error(e);
-      MG.$('#otpError').textContent = 'Invalid OTP. Please try again.';
+      if (e && e.code === 'auth/credential-already-in-use') {
+        MG.$('#otpError').textContent = 'This phone belongs to an existing account. Your guest account remains unchanged.';
+        MG.$('#phoneAccountConflict')?.classList.remove('hidden');
+      } else {
+        MG.$('#otpError').textContent = 'Invalid OTP. Please try again.';
+      }
       MG.$('#otpError')?.classList.remove('hidden');
       MG.showToast('OTP verification failed');
     } finally {
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check mr-1.5"></i> Verify & Continue'; }
+    }
+  };
+
+  MG.continueWithExistingPhoneAccount = async function() {
+    const btn = MG.$('#continueExistingPhoneAccountBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+    try {
+      const user = await window.MentorFB.continueWithExistingPhoneAccount();
+      if (!user || !user.phoneNumber) throw new Error('Verified phone account was not returned.');
+      MG.showToast('Signed in to the existing phone account. Guest account data remains separate.');
+      MG.finishLogin(_pendingMobile, { forceSetup: !MG.canQuickLogin(_pendingMobile) });
+    } catch (e) {
+      console.error(e);
+      MG.$('#otpError').textContent = 'Could not open the existing account. Your guest account is still signed in; request a new OTP and try again.';
+      MG.$('#otpError')?.classList.remove('hidden');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Continue with existing phone account'; }
     }
   };
 
@@ -350,6 +373,7 @@ MG.bindEvents = function() {
     if (e.key === 'Enter') MG.onMobileContinue();
   });
   MG.$('#otpVerifyBtn')?.addEventListener('click', function () { MG.verifyMentorOtp(); });
+  MG.$('#continueExistingPhoneAccountBtn')?.addEventListener('click', function () { MG.continueWithExistingPhoneAccount(); });
   MG.$('#otpInput')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') MG.verifyMentorOtp();
   });
@@ -579,7 +603,8 @@ if (false && _bb) _bb.addEventListener('click', () => {
       if (c) c.classList.toggle('hidden', focusSel.value !== '__custom__');
     });
   }
-  var _pay = MG.$('#payNowBtn'); if (_pay) _pay.addEventListener('click', function(){
+  var _pay = MG.$('#payNowBtn'); if (_pay) _pay.addEventListener('click', function(e){
+    if (MG.SECURE_BOOKINGS_ENABLED === true) e.preventDefault();
     try { if (typeof MG.notifyMentorPayIntent === 'function') MG.notifyMentorPayIntent(); } catch (e) {}
   });
   var _cp = MG.$('#confirmPaidBtn'); if (_cp) _cp.addEventListener('click', function(){ MG.confirmPayment(); });

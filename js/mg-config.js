@@ -9,6 +9,12 @@ MG.WHATSAPP_NUMBER = '918929394920';  // User-facing WhatsApp (NOT admin OTP)
 MG.STORAGE_PREFIX = 'vks_guidance_';
 MG.THEME_KEY = 'vks_guidance_theme';
 MG.RATE_PER_HOUR = 699; // legacy fallback
+/** Production 3.0: secure booking path via Cloud Functions. Deploy Functions+rules before publishing this Frontend. */
+MG.SECURE_BOOKINGS_ENABLED = true;
+/** Production 3.0: secure data path via Cloud Functions. Deploy Functions+rules before publishing this Frontend. */
+MG.SECURE_DATA_ENABLED = true;
+/** Production build: no forbidden project. Guard only checks config consistency. */
+MG.FORBIDDEN_FIREBASE_PROJECT_ID = '';
 /** Preferred session windows shown in booking (student picks one). */
 MG.PREFERRED_SLOT_OPTIONS = [
   'Weekday morning (9–12 IST)',
