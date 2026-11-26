@@ -24,11 +24,9 @@ MG.openWorkspace = function(topicId) {
 
   MG.renderRecordings(); try{MG.renderSessionChecklist();}catch(eCL){};
   MG.renderChat();
-  if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) MG.startSecureChatPolling(topicId);
 }
 
 MG.backToCatalog = function() {
-  if (typeof MG.stopSecureChatPolling === 'function') MG.stopSecureChatPolling();
   MG.state.currentTopicId = null;
   MG.$('#workspaceView').classList.add('hidden');
   MG.$('#catalogView').classList.remove('hidden');
@@ -85,30 +83,6 @@ MG.addRecording = function() {
     return;
   }
   const targetMobile = MG.state.viewingAs || MG.state.mobile;
-  if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
-    if (!MG.state.isMentor || !targetMobile || !MG.state.currentTopicId) {
-      MG.showToast('Only the verified mentor can add recordings to a selected student.');
-      return;
-    }
-    window.MentorFB.callSecure('adminAddRecording', {
-      mobile: targetMobile, topicId: MG.state.currentTopicId, title: title, url: url, notes: notes
-    }).then(function(result) {
-      const data = MG.state.data || MG.emptyUserData(targetMobile);
-      data.recordings = data.recordings || {};
-      data.recordings[MG.state.currentTopicId] = data.recordings[MG.state.currentTopicId] || [];
-      if (result && result.recording) data.recordings[MG.state.currentTopicId].unshift(result.recording);
-      MG.state.data = data;
-      MG.saveUserData(targetMobile, data);
-      MG.$('#recTitle').value = '';
-      MG.$('#recUrl').value = '';
-      MG.$('#recNotes').value = '';
-      MG.renderRecordings();
-      MG.showToast('Recording added securely');
-    }).catch(function(error) {
-      MG.showToast((error && error.message) || 'Could not add recording securely.');
-    });
-    return;
-  }
   const userData = MG.loadUserData(targetMobile);
   if (!userData.recordings[MG.state.currentTopicId]) userData.recordings[MG.state.currentTopicId] = [];
   userData.recordings[MG.state.currentTopicId].unshift({
@@ -135,7 +109,7 @@ MG.renderChat = function() {
   }
   msgs.forEach(m => {
     const div = document.createElement('div');
-    const isMe = MG.state.isMentor ? m.from === 'mentor' : (m.from === 'student' || m.from === MG.state.mobile);
+    const isMe = m.from === 'student' || m.from === MG.state.mobile;
     div.className = `chat-bubble ${isMe ? 'me' : 'them'}`;
     div.innerHTML = `${MG.esc(m.text)}<div class="chat-meta">${MG.formatDate(m.ts)}${m.from === 'mentor' ? ' • Mentor' : ''}</div>`;
     box.appendChild(div);
@@ -143,75 +117,11 @@ MG.renderChat = function() {
   box.scrollTop = box.scrollHeight;
 }
 
-MG.stopSecureChatPolling = function() {
-  if (MG.state._secureChatTimer) clearInterval(MG.state._secureChatTimer);
-  MG.state._secureChatTimer = null;
-};
-
-MG.refreshSecureChat = async function(topicId) {
-  if (!MG.isSecureDataEnabled || !MG.isSecureDataEnabled() || !window.MentorFB || !topicId) return;
-  var mobile = String(MG.state.viewingAs || MG.state.mobile || '').replace(/\D/g, '').slice(-10);
-  var rows;
-  if (MG.state.isMentor && MG.state.viewingAs) {
-    rows = await window.MentorFB.callSecure('listSecureStudentTopicMessages', { mobile: mobile, topicId: topicId });
-  } else {
-    rows = await window.MentorFB.callSecure('listTopicMessages', { topicId: topicId });
-  }
-  var messages = Object.keys(rows || {}).map(function(id) {
-    var item = rows[id] || {};
-    return { id: item.id || id, text: item.body || item.text || '', from: item.sender === 'mentor' ? 'mentor' : (item.from || 'student'), ts: Number(item.ts || 0) };
-  });
-  MG.state.data = MG.state.data || MG.emptyUserData(mobile);
-  MG.state.data.chats = MG.state.data.chats || {};
-  MG.state.data.chats[topicId] = MG.mergeChatMaps({}, (function(){ var o={}; o[topicId]=messages; return o; })())[topicId];
-  MG.renderChat();
-};
-
-MG.startSecureChatPolling = function(topicId) {
-  MG.stopSecureChatPolling();
-  MG.refreshSecureChat(topicId).catch(function(error){ console.warn('[Mentor] secure chat refresh failed', error); });
-  MG.state._secureChatTimer = setInterval(function() {
-    if (MG.state.currentTopicId !== topicId) return MG.stopSecureChatPolling();
-    MG.refreshSecureChat(topicId).catch(function(error){ console.warn('[Mentor] secure chat refresh failed', error); });
-  }, 15000);
-};
-
 MG.sendChat = async function() {
   const text = (MG.$('#chatInput').value || '').trim();
   if (!text) return;
   const targetMobile = String(MG.state.viewingAs || MG.state.mobile || '').replace(/\D/g, '').slice(-10);
   if (!targetMobile || !MG.state.currentTopicId) return;
-
-  if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
-    try {
-      var sent;
-      if (MG.state.isMentor && MG.state.viewingAs) {
-        var secureStudent = await window.MentorFB.callSecure('getSecureStudentByMobile', { mobile: targetMobile });
-        if (secureStudent && secureStudent.uid) {
-          sent = await window.MentorFB.callSecure('adminSendTopicMessage', { uid: secureStudent.uid, topicId: MG.state.currentTopicId, body: text });
-        } else {
-          sent = await window.MentorFB.callSecure('adminSendLegacyTopicMessage', { mobile: targetMobile, topicId: MG.state.currentTopicId, body: text });
-        }
-      } else {
-        sent = await window.MentorFB.callSecure('sendTopicMessage', { topicId: MG.state.currentTopicId, body: text });
-      }
-      if (!sent || sent.ok !== true) throw new Error('Message was not saved by the secure service.');
-      MG.$('#chatInput').value = '';
-      await MG.refreshSecureChat(MG.state.currentTopicId);
-      try {
-        var sync = MG.$('#syncWhatsApp');
-        if (sync && sync.checked && !MG.state.isMentor) {
-          var topicInfo = MG.TOPICS.find(function(t){ return t.id === MG.state.currentTopicId; });
-          var waText = encodeURIComponent('💬 Doubt/Progress from +91' + targetMobile + '\nTopic: ' + ((topicInfo && topicInfo.title) || MG.state.currentTopicId) + '\n\n' + text);
-          window.open('https://wa.me/' + MG.WHATSAPP_NUMBER + '?text=' + waText, '_blank');
-        }
-      } catch (eWaSecure) {}
-    } catch (secureChatError) {
-      console.error('[secure chat]', secureChatError);
-      MG.showToast((secureChatError && secureChatError.message) || 'Message could not be sent securely.');
-    }
-    return;
-  }
 
   // Prefer in-memory state (already merged by realtime), else pull Firebase
   let userData = null;
@@ -422,13 +332,11 @@ MG.savePricingAdmin = async function() {
     var playUrl = playEl ? String(playEl.value || '').trim() : '';
     MG._playStoreUrl = playUrl;
     if (window.MentorFB && window.MentorFB.set) {
-      if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) await window.MentorFB.callSecure('setMentorSettings', { key: 'app', value: { playStoreUrl: playUrl } });
-      else await window.MentorFB.set('mentor_settings/app', { playStoreUrl: playUrl });
+      await window.MentorFB.set('mentor_settings/app', { playStoreUrl: playUrl });
       MG.refreshPlayStoreButton();
     }
     if (window.MentorFB && window.MentorFB.set) {
-      if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) await window.MentorFB.callSecure('setMentorSettings', { key: 'tracks', value: payload });
-      else await window.MentorFB.set('mentor_settings/tracks', payload);
+      await window.MentorFB.set('mentor_settings/tracks', payload);
       MG.showToast('Pricing saved to Firebase');
     } else {
       MG.showToast('Saved locally only (Firebase not ready)');

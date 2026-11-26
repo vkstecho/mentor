@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
-  <link rel="icon" href="./favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" href="./favicon-192.png">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Mentor | One-to-One Guidance</title>
-  <link rel="manifest" href="./manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#1e3a8a" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -38,42 +38,39 @@
     window.__mentorDeferredPrompt = e;
   });
   </script>
-  <script src="firebase.staging.js"></script>
-  <script src="js/firebase-staging-guard.js"></script>
-  <!-- Staging only: provide firebase.staging.js from firebase.staging.example.js. -->
+  <!-- Firebase (standalone project: mentor-vkstech) -->
   <script type="module">
-    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp2DZm-h7QbxzS8rO4a0omhBzMlAKy2rs",
+      authDomain: "mentor-vkstech.firebaseapp.com",
+      databaseURL: "https://mentor-vkstech-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mentor-vkstech",
+      storageBucket: "mentor-vkstech.firebasestorage.app",
+      messagingSenderId: "616868925574",
+      appId: "1:616868925574:web:1fed20cf4d2bb844a8c107",
+      measurementId: "G-KLP6X7SVTS"
+    };
 
     try {
-      const firebaseConfig = window.MENTOR_FIREBASE_CONFIG;
-      if (!firebaseConfig || !firebaseConfig.projectId) throw new Error('Staging Firebase config is missing. Copy firebase.staging.example.js to firebase.staging.js and fill it with a separate staging project.');
-      if (!window.mentorFirebaseStagingConfigIsSafe(firebaseConfig)) throw new Error('Firebase config does not match the isolated staging project.');
-      const existingApps = getApps();
-      if (existingApps.length && existingApps.some(existing => existing.options.projectId !== firebaseConfig.projectId)) throw new Error('An existing Firebase app targets a different project; refusing to connect.');
-      const app = existingApps.length ? getApp() : initializeApp(firebaseConfig);
+      // Use DEFAULT app name (named apps often break Phone Auth + reCAPTCHA)
+      let app;
+      try {
+        const { getApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+      } catch (e) {
+        app = initializeApp(firebaseConfig);
+      }
       const db = getDatabase(app);
       const auth = getAuth(app);
-      const functions = getFunctions(app, "asia-south1");
-      let resolveInitialAuth;
-      const initialAuthReady = new Promise(resolve => { resolveInitialAuth = resolve; });
 
       // Expose simple API for guidance.js
       window.MentorFB = {
         ready: false,
-        db, ref, set, get, update, onValue, auth, functions,
-        // Callable backend bridge. Existing legacy workflows remain unchanged
-        // until the staging integration and regression gates are completed.
-        async callSecure(name, payload) {
-          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "health"];
-          if (!allowed.includes(name)) throw new Error("Unsupported secure operation");
-          if (!auth.currentUser || auth.currentUser.isAnonymous) throw new Error("Phone verification required");
-          const callable = httpsCallable(functions, name);
-          const result = await callable(payload || {});
-          return result.data;
-        },
+        db, ref, set, get, update, onValue, auth,
         async sendOtp(phoneE164Or10) {
           // Alias for mentor unlock + login
           const p = String(phoneE164Or10||'').replace(/\D/g,'');
@@ -84,7 +81,6 @@
           return this.verifyPhoneOtp(code);
         },
         async sendPhoneOtp(phone10) {
-          await this.ensureAuth();
           const phone = '+91' + phone10;
           try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
           window._mentorRecaptcha = null;
@@ -131,52 +127,16 @@
             'expired-callback': () => { window._mentorRecaptcha = null; }
           });
           await window._mentorRecaptcha.render();
-          window._mentorPendingPhoneCredential = null;
-          if (auth.currentUser && auth.currentUser.isAnonymous) {
-            const guestUid = auth.currentUser.uid;
-            const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber(phone, window._mentorRecaptcha);
-            window._mentorPhoneLinkAttempt = { verificationId, guestUid, phone };
-            window._mentorConfirmOtp = null;
-          } else {
-            window._mentorPhoneLinkAttempt = null;
-            const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
-            window._mentorConfirmOtp = (code) => conf.confirm(code);
-          }
+          const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
+          window._mentorConfirmOtp = (code) => conf.confirm(code);
           return true;
         },
         async verifyPhoneOtp(code) {
-          const attempt = window._mentorPhoneLinkAttempt;
-          if (attempt) {
-            const guest = auth.currentUser;
-            if (!guest || !guest.isAnonymous || guest.uid !== attempt.guestUid) throw new Error('Guest account changed during phone verification. Restart the sign-in step.');
-            const credential = PhoneAuthProvider.credential(attempt.verificationId, code);
-            try {
-              const result = await linkWithCredential(guest, credential);
-              if (result.user.uid !== attempt.guestUid || !result.user.phoneNumber) throw new Error('Phone linking did not preserve the guest account.');
-              window._mentorPhoneLinkAttempt = null;
-              window._mentorPendingPhoneCredential = null;
-              return result.user;
-            } catch (error) {
-              if (error && error.code === 'auth/credential-already-in-use') {
-                window._mentorPendingPhoneCredential = { credential, guestUid: attempt.guestUid, phone: attempt.phone };
-              }
-              throw error;
-            }
-          }
           if (!window._mentorConfirmOtp) throw new Error('Request OTP first');
           const cred = await window._mentorConfirmOtp(code);
           return cred?.user || null;
         },
-        async continueWithExistingPhoneAccount() {
-          const pending = window._mentorPendingPhoneCredential;
-          if (!pending || !auth.currentUser || !auth.currentUser.isAnonymous || auth.currentUser.uid !== pending.guestUid) throw new Error('The verified sign-in is no longer available. Request a new OTP.');
-          const result = await signInWithCredential(auth, pending.credential);
-          window._mentorPhoneLinkAttempt = null;
-          window._mentorPendingPhoneCredential = null;
-          return result.user;
-        },
         async ensureAuth() {
-          await initialAuthReady;
           if (auth.currentUser) return auth.currentUser;
           try {
             // Prefer parent Man Power auth if iframed
@@ -240,11 +200,11 @@
         }
       };
 
-      onAuthStateChanged(auth, user => { window.MentorFB.ready = true; resolveInitialAuth(user || null); }, () => { window.MentorFB.ready = true; resolveInitialAuth(null); });
+      onAuthStateChanged(auth, () => { window.MentorFB.ready = true; });
       // Mark ready even before auth for faster UI
       window.MentorFB.ready = true;
       window.dispatchEvent(new Event("mentor-fb-ready"));
-      console.info("[MentorFB] Connected to configured staging Firebase project");
+      console.info("[MentorFB] Connected to Mentor Firebase (mentor-vkstech)");
     } catch (e) {
       console.warn("[MentorFB] init failed – localStorage only", e);
       window.MentorFB = null;
@@ -273,75 +233,6 @@
     body.dark .mentor-t-card { background: rgb(30 41 59 / 0.85); }
   </style>
 
-
-<style id="mentor-3-ui-system">
-:root{--m3-brand:#3157d5;--m3-ink:#172033;--m3-line:#e5eaf2;--m3-surface:#fff;--m3-shadow:0 12px 32px rgba(15,23,42,.055)}
-body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.008em}
-#app>header{box-shadow:0 5px 24px rgba(15,23,42,.055);border-color:rgba(226,232,240,.8)}
-#app>header .max-w-7xl{max-width:1440px}
-#app>main{max-width:1440px!important;padding-top:22px!important}
-#catalogIntro{padding:23px 25px;border:1px solid var(--m3-line);border-radius:22px;background:radial-gradient(circle at 90% 0%,rgba(49,87,213,.10),transparent 34%),linear-gradient(120deg,#fff,#f8faff);box-shadow:var(--m3-shadow)}
-#catalogIntro h2{font-size:clamp(21px,3vw,28px);letter-spacing:-.045em}
-#catalogIntro p{font-size:13px;line-height:1.65}
-#mentorLearningOverview{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:14px;margin:0 0 17px}
-#m3WelcomeCard{position:relative;overflow:hidden;border-radius:22px;padding:23px 25px;color:#fff;background:radial-gradient(circle at 90% 12%,rgba(255,255,255,.18),transparent 30%),linear-gradient(120deg,#14213d,#244a9c 68%,#167b83);box-shadow:0 18px 42px rgba(30,64,175,.17)}
-#m3WelcomeCard:after{content:"";position:absolute;width:230px;height:230px;border:1px solid rgba(255,255,255,.13);border-radius:50%;right:-100px;bottom:-145px;box-shadow:0 0 0 28px rgba(255,255,255,.035),0 0 0 58px rgba(255,255,255,.025);pointer-events:none}
-#m3WelcomeCard .m3-eyebrow{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-#m3WelcomeCard h2{font-size:clamp(20px,3vw,27px);font-weight:850;letter-spacing:-.04em;margin:8px 0 6px;line-height:1.15}
-#m3WelcomeCard p{max-width:580px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.8)}
-#m3WelcomeActions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px;position:relative;z-index:1}
-#m3WelcomeActions button{border-radius:11px;padding:10px 13px;font-size:11px;font-weight:800;background:#fff;color:#1e3a8a;box-shadow:0 5px 16px rgba(0,0,0,.12)}
-#m3WelcomeActions button:last-child{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);color:#fff;box-shadow:none}
-#m3OverviewAside{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m3-overview-tile{display:flex;flex-direction:column;justify-content:space-between;min-height:112px;padding:15px;border:1px solid var(--m3-line);border-radius:17px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.035)}
-.m3-overview-tile .m3-tile-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#eef2ff;color:#3157d5;font-size:13px}
-.m3-overview-tile:nth-child(2) .m3-tile-icon{background:#fff4e8;color:#d97706}
-.m3-overview-tile:nth-child(3) .m3-tile-icon{background:#e9fbf4;color:#059669}
-.m3-overview-tile:nth-child(4) .m3-tile-icon{background:#f4edff;color:#7c3aed}
-.m3-overview-tile strong{display:block;font-size:12px;color:#1e293b;margin-top:9px}
-.m3-overview-tile span{font-size:10px;color:#7b8798;line-height:1.45;margin-top:2px}
-#mentorStudentBar{border-radius:16px!important;box-shadow:0 8px 24px rgba(217,119,6,.07)}
-#categoryPicker{gap:15px!important}
-#categoryPicker .cat-btn{position:relative;min-height:178px;padding:22px!important;border-radius:21px!important;box-shadow:0 8px 26px rgba(15,23,42,.045);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
-#categoryPicker .cat-btn:hover{transform:translateY(-3px);box-shadow:0 18px 34px rgba(15,23,42,.09)}
-#categoryPicker .cat-btn>div:first-child>span{width:49px;height:49px;border-radius:15px}
-#sectionCareer,#sectionPackaging{padding:5px 2px}
-#sectionCareer>div:first-child,#sectionPackaging>div:first-child{padding:15px 17px;border:1px solid var(--m3-line);border-radius:17px;background:var(--m3-surface);box-shadow:0 5px 18px rgba(15,23,42,.035)}
-#workspaceView>div:first-child{padding:15px 17px;border:1px solid var(--m3-line);border-radius:17px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.04)}
-#workspaceView .lg\:col-span-3,#workspaceView .bg-white{box-shadow:0 8px 26px rgba(15,23,42,.045)}
-#mentorTestimonials{padding:18px;border:1px solid var(--m3-line);border-radius:19px;background:linear-gradient(180deg,#fff,#fafbfe)}
-#mentorInstallBar{padding:2px 0 8px}
-#paymentHistoryBtn,#mentorLangBtn,#themeToggle,#pricingAdminBtn{border-radius:11px!important}
-#historyModal>div,#bookingModal>div,#pricingAdminModal>div,#pinModal>div{border:1px solid rgba(255,255,255,.22);box-shadow:0 28px 90px rgba(2,6,23,.28)}
-#historyContent>*,#topicsGrid>*,#topicsGridPackaging>*{border-radius:16px}
-#app button,#app a{ -webkit-tap-highlight-color:transparent }
-#app button:focus-visible,#app a:focus-visible,#app input:focus-visible,#app select:focus-visible,#app textarea:focus-visible{outline:3px solid rgba(49,87,213,.35);outline-offset:2px}
-.dark #catalogIntro,.dark #mentorTestimonials,.dark #workspaceView>div:first-child{background:linear-gradient(120deg,#172033,#1e293b);border-color:#334155}
-.dark .m3-overview-tile{background:#1e293b;border-color:#334155}
-.dark .m3-overview-tile strong{color:#f1f5f9}
-.dark #sectionCareer>div:first-child,.dark #sectionPackaging>div:first-child{background:#1e293b;border-color:#334155}
-@media(max-width:760px){
- #app>main{padding:12px!important}
- #mentorLearningOverview{grid-template-columns:1fr}
- #m3WelcomeCard{padding:20px;border-radius:19px}
- #m3OverviewAside{grid-template-columns:repeat(2,minmax(0,1fr))}
- #catalogIntro{padding:18px;border-radius:18px}
- #categoryPicker .cat-btn{min-height:160px;padding:17px!important}
- #mentorStudentBar{padding:13px!important}
-}
-@media(max-width:420px){
- #app>header .max-w-7xl{padding-left:8px;padding-right:8px}
- #app>main{padding:9px!important}
- #m3WelcomeCard{padding:17px}
- #m3OverviewAside{gap:8px}
- .m3-overview-tile{min-height:104px;padding:12px}
- #categoryPicker .cat-btn{padding:15px!important}
- #workspaceView>div:first-child{padding:10px}
-}
-@media(prefers-reduced-motion:reduce){#app *,#app *:before,#app *:after{transition:none!important;animation:none!important}}
-</style>
-
-  <link rel="stylesheet" href="css/mentor-premium-ui.css">
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 font-sans">
 
@@ -398,10 +289,6 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <input type="text" id="otpInput" maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
           class="form-input w-full text-center text-2xl tracking-[0.4em] font-bold" placeholder="••••••" autocomplete="one-time-code" />
         <p id="otpError" class="text-xs text-red-500 mt-1.5 hidden">Invalid OTP. Please try again.</p>
-        <div id="phoneAccountConflict" class="hidden mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-left">
-          <p class="text-xs leading-relaxed text-amber-900">This phone already has an account. Your guest account and its UID remain saved separately; they will not be merged or deleted.</p>
-          <button type="button" id="continueExistingPhoneAccountBtn" class="w-full mt-2 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold">Continue with existing phone account</button>
-        </div>
         <button id="otpVerifyBtn" class="w-full mt-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
           <i class="fas fa-check mr-1.5"></i> Verify &amp; Continue
         </button>
@@ -553,26 +440,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             <button type="button" id="addNameLater" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300">Later</button>
           </div>
         </div>
-
-        <section id="mentorLearningOverview" aria-label="Learning dashboard overview">
-          <div id="m3WelcomeCard">
-            <div class="m3-eyebrow">Your Mentor learning hub</div>
-            <h2>Make your next step count.</h2>
-            <p>Choose a focused learning track, explore practical modules, and keep your mentoring sessions and learning resources in one place.</p>
-            <div id="m3WelcomeActions">
-              <button type="button" onclick="document.getElementById('catBtnCareer')?.click()">Explore Career &amp; AI <i class="fas fa-arrow-right ml-1"></i></button>
-              <button type="button" onclick="document.getElementById('catBtnPackaging')?.click()">Explore Packaging <i class="fas fa-arrow-right ml-1"></i></button>
-            </div>
-          </div>
-          <div id="m3OverviewAside">
-            <div class="m3-overview-tile"><span class="m3-tile-icon"><i class="fas fa-route"></i></span><div><strong>Learning paths</strong><span>Structured programs for your goals</span></div></div>
-            <div class="m3-overview-tile"><span class="m3-tile-icon"><i class="fas fa-play-circle"></i></span><div><strong>Free modules</strong><span>Learn at your own pace</span></div></div>
-            <div class="m3-overview-tile"><span class="m3-tile-icon"><i class="fas fa-calendar-check"></i></span><div><strong>1:1 bookings</strong><span>Focused time with your mentor</span></div></div>
-            <div class="m3-overview-tile"><span class="m3-tile-icon"><i class="fas fa-history"></i></span><div><strong>Session history</strong><span>Review payments and sessions</span></div></div>
-          </div>
-        </section>
-
-        <div id="catalogIntro" class="mb-4 sm:mb-5">
+<div id="catalogIntro" class="mb-4 sm:mb-5">
           <h2 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white" data-i18n="choosePath">Choose your path</h2>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="choosePathSub">Free modules · paid 1:1 · recordings &amp; doubt chat</p>
         </div>
@@ -862,7 +730,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           <span id="bookingTotal" class="text-xl font-bold text-brand-600">₹699</span></div>
       </div>
 
-      <p id="bookingPaymentNote" class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
+      <p class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
       <a id="payNowBtn" href="https://rzp.io/rzp/RWnisIr" target="_blank" rel="noopener"
          class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
         <i class="fas fa-lock"></i> Pay Now via Razorpay
@@ -873,7 +741,6 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <span class="text-slate-500">No UTR or Payment ID needed from you.</span><br/>
         Session unlocks only after <strong>Mentor approves</strong>.
       </p>
-      <div id="legacyUtrFlow">
       <div class="relative">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-600"></div></div>
         <div class="relative flex justify-center text-xs"><span class="px-2 bg-white dark:bg-slate-800 text-slate-400">Optional</span></div>
@@ -886,7 +753,6 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       <button id="confirmPaidBtn" class="w-full py-3 rounded-xl bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-800 dark:text-slate-100 font-semibold transition">
         <i class="fas fa-paper-plane mr-1.5"></i> Attach Payment ID (optional)
       </button>
-      </div>
     </div>
   </div>
 
@@ -953,12 +819,13 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
           .then(function (reg) { console.info('[Mentor SW] registered', reg.scope); })
           .catch(function (err) { console.warn('[Mentor SW] register failed', err); });
+      });
+    });
       });
     }
   </script>
 </body>
 </html>
-
