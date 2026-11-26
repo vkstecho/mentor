@@ -67,9 +67,9 @@
         // Callable backend bridge. Existing legacy workflows remain unchanged
         // when MG.SECURE_DATA_ENABLED / MG.SECURE_BOOKINGS_ENABLED are true.
         async callSecure(name, payload) {
-          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "health"];
+          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "getYoutubeShowcase", "health"];
           if (!allowed.includes(name)) throw new Error("Unsupported secure operation");
-          if (!auth.currentUser || auth.currentUser.isAnonymous) throw new Error("Phone verification required");
+          if (name !== "getYoutubeShowcase" && (!auth.currentUser || auth.currentUser.isAnonymous)) throw new Error("Phone verification required");
           const callable = httpsCallable(functions, name);
           const result = await callable(payload || {});
           return result.data;
@@ -629,6 +629,41 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">ChatGPT, Gemini, Claude, Grok, Excel+AI, LinkedIn, freelancing, resume — focused hours.</p>
             <div class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-300 group-hover:gap-2 transition-all">Open Career &amp; AI <i class="fas fa-arrow-right text-[10px]"></i></div>
           </button>
+        </div>
+
+
+        <!-- YouTube Channel Showcase (@WorkoHolicVKSTech) -->
+        <div id="vksYoutubeShowcase" class="mb-6 p-4 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-red-600 dark:text-red-400">
+                <i class="fab fa-youtube mr-1"></i> @WorkoHolicVKSTech
+              </p>
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100">Videos &amp; Playlists</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="ytTabVideos" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">Videos</button>
+              <button type="button" id="ytTabPlaylists" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Playlists</button>
+              <a href="https://www.youtube.com/@WorkoHolicVKSTech" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-red-400">
+                Channel <i class="fas fa-external-link-alt text-[9px] ml-0.5"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Inline Video/Playlist Player -->
+          <div id="ytShowcasePlayerWrap" class="hidden mb-3 rounded-xl overflow-hidden bg-slate-950 border border-slate-700">
+            <div class="flex items-center justify-between px-3 py-1.5 bg-slate-900 text-white text-xs">
+              <span id="ytShowcasePlayerTitle" class="font-semibold truncate pr-2">Playing…</span>
+              <button type="button" id="ytShowcasePlayerClose" class="text-slate-400 hover:text-white px-1.5 py-0.5"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="aspect-video w-full">
+              <iframe id="ytShowcaseIframe" class="w-full h-full" src="" title="YouTube player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <div id="ytShowcaseScroll" class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory" style="scrollbar-width:thin">
+            <div class="shrink-0 w-64 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500">Loading @WorkoHolicVKSTech videos…</div>
+          </div>
         </div>
 
         <!-- VKS ecosystem apps -->
