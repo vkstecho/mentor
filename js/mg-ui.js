@@ -336,6 +336,8 @@ MG.showCategory = function(cat) {
   // Home-only blocks must hide when a path is open (was leaving empty-looking home)
   if (eco) eco.classList.toggle('hidden', !!cat);
   if (testi) testi.classList.toggle('hidden', !!cat);
+  var ytBox = document.getElementById('vksYoutubeShowcase');
+  if (ytBox) ytBox.classList.toggle('hidden', !!cat);
   if (secP) secP.classList.toggle('hidden', cat !== 'packaging');
   if (secC) secC.classList.toggle('hidden', cat !== 'career');
   var heroBtnC = document.getElementById('m3HeroBtnCareer');
@@ -470,6 +472,7 @@ MG.renderCatalog = function() {
   try { MG.renderFreePackSection(); } catch (e) {}
   try { MG.initCategoryNav(); } catch (e2) {}
   try { MG.loadMentorTestimonials(); } catch (e3) {}
+  try { MG.loadYoutubeShowcase(); } catch (e4) {}
 }
 
 // ========== In-app testimonials (GitHub shared library) ==========
@@ -572,5 +575,103 @@ MG.loadMentorTestimonials = async function () {
   }).join('');
 };
 
+
+
+// ========== YouTube Channel Showcase (@WorkoHolicVKSTech) ==========
+MG.loadYoutubeShowcase = async function () {
+  var host = document.getElementById('ytShowcaseScroll');
+  if (!host || MG._ytLoaded) return;
+  MG._ytLoaded = true;
+
+  var tabV = document.getElementById('ytTabVideos');
+  var tabP = document.getElementById('ytTabPlaylists');
+  var playerWrap = document.getElementById('ytShowcasePlayerWrap');
+  var playerTitle = document.getElementById('ytShowcasePlayerTitle');
+  var iframe = document.getElementById('ytShowcaseIframe');
+  var closeBtn = document.getElementById('ytShowcasePlayerClose');
+
+  if (closeBtn && !closeBtn._bound) {
+    closeBtn._bound = true;
+    closeBtn.addEventListener('click', function () {
+      if (iframe) iframe.src = '';
+      if (playerWrap) playerWrap.classList.add('hidden');
+    });
+  }
+
+  var data = { videos: [], playlists: [] };
+  try {
+    if (window.MentorFB && typeof window.MentorFB.callSecure === 'function') {
+      data = await window.MentorFB.callSecure('getYoutubeShowcase', {});
+    }
+  } catch (e) {
+    console.warn('[YouTube Showcase]', e);
+  }
+
+  var mode = 'videos';
+  function playEmbed(src, title) {
+    if (!playerWrap || !iframe) return;
+    if (playerTitle) playerTitle.textContent = title || '@WorkoHolicVKSTech';
+    iframe.src = src;
+    playerWrap.classList.remove('hidden');
+    playerWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function renderList() {
+    var items = mode === 'playlists' ? (data.playlists || []) : (data.videos || []);
+    if (!items.length) {
+      host.innerHTML = '<a href="https://www.youtube.com/@WorkoHolicVKSTech" target="_blank" rel="noopener" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-red-600">Open @WorkoHolicVKSTech on YouTube →</a>';
+      return;
+    }
+    host.innerHTML = items.map(function (it) {
+      var safeTitle = String(it.title || '').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+      var badge = mode === 'playlists'
+        ? '<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/80 text-white text-[10px] font-bold"><i class="fas fa-list mr-1"></i>' + (it.count || 0) + ' videos</span>'
+        : '<span class="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-red-600/95 text-white flex items-center justify-center text-[10px] shadow"><i class="fas fa-play"></i></span>';
+      return (
+        '<button type="button" data-yt-id="' + it.id + '" data-yt-title="' + safeTitle + '" class="shrink-0 w-56 sm:w-64 snap-start text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 overflow-hidden hover:border-red-400 transition group">' +
+          '<div class="relative aspect-video bg-slate-900 overflow-hidden">' +
+            '<img src="' + it.thumb + '" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />' +
+            badge +
+          '</div>' +
+          '<div class="p-2.5">' +
+            '<div class="text-xs font-bold text-slate-800 dark:text-slate-100 line-clamp-2 leading-snug">' + safeTitle + '</div>' +
+          '</div>' +
+        '</button>'
+      );
+    }).join('');
+
+    host.querySelectorAll('[data-yt-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-yt-id');
+        var title = btn.getAttribute('data-yt-title');
+        var embedUrl = mode === 'playlists'
+          ? 'https://www.youtube.com/embed/videoseries?list=' + encodeURIComponent(id) + '&autoplay=1'
+          : 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1';
+        playEmbed(embedUrl, title);
+      });
+    });
+  }
+
+  if (tabV && !tabV._bound) {
+    tabV._bound = true;
+    tabV.addEventListener('click', function () {
+      mode = 'videos';
+      tabV.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white';
+      if (tabP) tabP.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+      renderList();
+    });
+  }
+  if (tabP && !tabP._bound) {
+    tabP._bound = true;
+    tabP.addEventListener('click', function () {
+      mode = 'playlists';
+      tabP.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white';
+      if (tabV) tabV.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+      renderList();
+    });
+  }
+
+  renderList();
+};
 
 })(window.MG = window.MG || {});
