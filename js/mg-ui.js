@@ -338,6 +338,10 @@ MG.showCategory = function(cat) {
   if (testi) testi.classList.toggle('hidden', !!cat);
   if (secP) secP.classList.toggle('hidden', cat !== 'packaging');
   if (secC) secC.classList.toggle('hidden', cat !== 'career');
+  var heroBtnC = document.getElementById('m3HeroBtnCareer');
+  var heroBtnP = document.getElementById('m3HeroBtnPackaging');
+  if (heroBtnC) heroBtnC.classList.toggle('m3-path-active', cat === 'career');
+  if (heroBtnP) heroBtnP.classList.toggle('m3-path-active', cat === 'packaging');
   if (cat === 'packaging') {
     try { MG.renderFreePackSection(); } catch (e) {}
   }
