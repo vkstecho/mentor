@@ -34,6 +34,90 @@ MG.ensureProgressFields = function(data) {
   return data;
 }
 
+MG.isSecureDataEnabled = function() { return MG.SECURE_DATA_ENABLED === true; };
+
+MG.loadSecureUserData = async function(mob) {
+  var mentorViewing = !!(MG.state.isMentor && MG.state.viewingAs);
+  var legacy, secureProfile = {}, secureProgress = {}, securePathProgress = {}, secureCerts = {}, secureChats = {}, secureRecordings = {}, dataSecureBookings = {}, secureSubscription = null, secureEntitlements = {};
+  if (mentorViewing) {
+    var adminRecord = await window.MentorFB.callSecure('getSecureStudentByMobile', { mobile: mob });
+    legacy = adminRecord && adminRecord.legacy;
+    if (adminRecord && adminRecord.uid) {
+      secureProfile = adminRecord.profile || {};
+      secureProgress = adminRecord.progress || {};
+      securePathProgress = adminRecord.pathProgress || {};
+      secureCerts = adminRecord.certificates || {};
+      secureChats = adminRecord.chats || {};
+      secureRecordings = adminRecord.recordings || {};
+      dataSecureBookings = adminRecord.bookings || {};
+      secureSubscription = adminRecord.subscription || null;
+      secureEntitlements = adminRecord.entitlements && adminRecord.entitlements.topics || {};
+    }
+  } else {
+    var current = window.MentorFB && window.MentorFB.auth && window.MentorFB.auth.currentUser;
+    var authMobile = current && current.phoneNumber ? String(current.phoneNumber).replace(/\D/g, '').slice(-10) : '';
+    if (authMobile !== String(mob).replace(/\D/g, '').slice(-10)) throw new Error('Signed-in phone does not match the requested student record.');
+    var results = await Promise.all([
+      window.MentorFB.callSecure('getMyStudentRecord', {}),
+      window.MentorFB.callSecure('getMyV3Profile', {}),
+      window.MentorFB.callSecure('getMyCertificates', {}),
+      window.MentorFB.callSecure('getMyLearningProgress', {}),
+      window.MentorFB.callSecure('getMyRecordings', {}),
+      window.MentorFB.callSecure('getMyBookings', {}),
+      window.MentorFB.callSecure('getMySubscription', {}),
+      window.MentorFB.callSecure('getMyEntitlements', {})
+    ]);
+    legacy = results[0];
+    secureProfile = results[1] || {};
+    secureCerts = (results[2] && results[2].secure) || {};
+    secureProgress = (results[3] && results[3].modules) || {};
+    securePathProgress = (results[3] && results[3].paths) || {};
+    secureRecordings = results[4] || {};
+    dataSecureBookings = results[5] || {};
+    secureSubscription = (results[6] && results[6].subscription) || null;
+    secureEntitlements = results[7] || {};
+  }
+  var data = Object.assign({}, MG.emptyUserData(mob), legacy || {}, { mobile: mob });
+  data.secureBookings = dataSecureBookings;
+  data.subscription = secureSubscription;
+  Object.keys(secureEntitlements || {}).forEach(function(topicId) {
+    if (secureEntitlements[topicId] && secureEntitlements[topicId].active === true) data.unlocked[topicId] = true;
+  });
+  var v3Profile = secureProfile && secureProfile.profile || {};
+  data.profile = Object.assign({}, data.profile || {}, v3Profile);
+  data.moduleProgress = Object.assign({}, data.moduleProgress || {});
+  Object.keys(secureProgress || {}).forEach(function(id) {
+    var item = secureProgress[id] || {};
+    if (item.completed === true) data.moduleProgress[id] = Object.assign({}, data.moduleProgress[id] || {}, item, { completedAt: item.completedAt || item.updatedAt || Date.now() });
+  });
+  data.pathProgress = Object.assign({}, data.pathProgress || {}, securePathProgress || {});
+  Object.keys(secureRecordings || {}).forEach(function(topicId) {
+    var rows = secureRecordings[topicId] || {};
+    data.recordings[topicId] = Object.keys(rows).map(function(id){ return rows[id]; }).sort(function(a,b){ return Number(b.ts || 0) - Number(a.ts || 0); });
+  });
+  var secureCertList = Array.isArray(secureCerts) ? secureCerts : Object.keys(secureCerts || {}).map(function(k){ return secureCerts[k]; });
+  var certs = Array.isArray(data.certificates) ? data.certificates.slice() : [];
+  secureCertList.forEach(function(cert) {
+    if (!cert) return;
+    var mapped = Object.assign({}, cert, { id: cert.refId ? ((cert.type === 'path' ? 'path_' : 'mod_') + cert.refId) : cert.id });
+    mapped.verificationId = cert.id;
+    if (!certs.some(function(old){ return old && (old.id === mapped.id || old.id === cert.id); })) certs.push(mapped);
+  });
+  data.certificates = certs;
+  if (Object.keys(secureChats || {}).length) {
+    data.chats = MG.mergeChatMaps(data.chats || {}, Object.keys(secureChats).reduce(function(out, topicId) {
+      var messages = secureChats[topicId] || {};
+      out[topicId] = Object.keys(messages).map(function(id) {
+        var message = messages[id] || {};
+        return { id: message.id || id, text: message.body || message.text || '', from: message.sender === 'mentor' ? 'mentor' : 'student', ts: message.ts || 0 };
+      });
+      return out;
+    }, {}));
+  }
+  try { localStorage.setItem(MG.storageKey(mob), JSON.stringify(data)); } catch (e) {}
+  return data;
+};
+
 MG.isModuleComplete = function(moduleId) {
   var d = MG.ensureProgressFields(MG.state.data || {});
   return !!(d.moduleProgress[moduleId] && d.moduleProgress[moduleId].completedAt);
@@ -54,6 +138,7 @@ MG.getPathProgress = function(path) {
 MG.markModuleComplete = function(moduleId, opts) {
   opts = opts || {};
   var mob = String((MG.state.mobile || (MG.state.data && MG.state.data.mobile) || '')).replace(/\D/g, '').slice(-10);
+  if (MG.isSecureDataEnabled()) return MG.markModuleCompleteSecure(moduleId, mob);
   if (!mob) {
     if (typeof MG.showToast === 'function') MG.showToast('Login first to track progress & certificates');
     return { ok: false };
@@ -119,6 +204,35 @@ MG.markModuleComplete = function(moduleId, opts) {
   return { ok: true, already: already, pathJustCompleted: pathJustCompleted, cert: cert };
 }
 
+MG.markModuleCompleteSecure = async function(moduleId, mobile) {
+  var mod = (MG.FREE_PACK_MODULES || []).find(function(item){ return item.id === moduleId; });
+  if (!mobile || !mod) return { ok: false };
+  var already = MG.isModuleComplete(moduleId);
+  if (already) return { ok: true, already: true };
+  if (!window.MentorFB || typeof window.MentorFB.callSecure !== 'function') throw new Error('Secure learning service is unavailable.');
+  var result = await window.MentorFB.callSecure('updateLearningProgress', { moduleId: moduleId, completed: true });
+  if (!result || result.ok !== true) throw new Error('Learning completion was not saved securely.');
+  MG.state.data = MG.ensureProgressFields(MG.state.data || MG.emptyUserData(mobile));
+  MG.state.data.moduleProgress[moduleId] = { completedAt: Date.now(), source: 'self', title: mod.title };
+  var pathJustCompleted = null;
+  (result.certificates || []).forEach(function(cert) {
+    var path = cert.type === 'path';
+    var item = path ? (MG.LEARNING_PATHS || []).find(function(p){ return p.id === cert.refId; }) : mod;
+    var mapped = Object.assign({}, cert, {
+      id: (path ? 'path_' : 'mod_') + cert.refId,
+      verificationId: cert.id,
+      title: item ? item.title : cert.title
+    });
+    if (!MG.state.data.certificates.some(function(old){ return old && old.id === mapped.id; })) MG.state.data.certificates.push(mapped);
+    if (path) {
+      pathJustCompleted = cert.refId;
+      MG.state.data.pathProgress[cert.refId] = { completedAt: cert.issuedAt, modules: (item && item.moduleIds || []).slice() };
+    }
+  });
+  await MG.saveUserData(mobile, MG.state.data);
+  return { ok: true, already: false, pathJustCompleted: pathJustCompleted, cert: (result.certificates || []).find(function(c){ return c.type === 'module'; }) || null };
+};
+
 MG.loadUserData = function(mob) {
   // Sync cache from localStorage first (instant UI)
   try {
@@ -129,6 +243,15 @@ MG.loadUserData = function(mob) {
 }
 
 MG.loadUserDataAsync = async function(mob) {
+  if (MG.isSecureDataEnabled() && window.MentorFB && typeof window.MentorFB.callSecure === 'function') {
+    try {
+      MG.state.data = await MG.loadSecureUserData(mob);
+      return MG.state.data;
+    } catch (secureError) {
+      console.warn('[Mentor] secure record load failed', secureError.message || secureError);
+      throw secureError;
+    }
+  }
   // Local cache for instant UI — do NOT invent updatedAt until we know Firebase state
   var local = null;
   try {
@@ -176,6 +299,11 @@ MG.saveUserData = function(mob, userData) {
   try {
     localStorage.setItem(MG.storageKey(mob), JSON.stringify(userData));
   } catch (eL) {}
+  if (MG.isSecureDataEnabled()) {
+    // Whole-record browser writes contain payment, unlock, chat and certificate data.
+    // In secure mode only specific callable operations may update cloud state.
+    return Promise.resolve(false);
+  }
   // Returns a Promise so Approve/Reject can await Firebase write
   return (async function() {
     try {
@@ -226,6 +354,7 @@ MG.stopRealtime = function() {
  */
 MG.startRealtimeFor = function(mob) {
   MG.stopRealtime();
+  if (MG.isSecureDataEnabled()) return;
   mob = String(mob || '').replace(/\D/g, '').slice(-10);
   if (!mob || !window.MentorFB || typeof window.MentorFB.listen !== 'function') {
     console.warn('[Mentor] Realtime unavailable — messages need refresh');
@@ -316,6 +445,10 @@ MG.getAllStudentMobiles = function() {
 }
 
 MG.getAllStudentMobilesAsync = async function() {
+  if (MG.isSecureDataEnabled() && window.MentorFB && typeof window.MentorFB.callSecure === 'function') {
+    var secureIndex = await window.MentorFB.callSecure('listStudents', {});
+    return Object.keys(secureIndex || {}).filter(function(m){ return /^[6-9]\d{9}$/.test(m) && m !== MG.MENTOR_MOBILE; }).sort();
+  }
   const list = new Set(MG.getAllStudentMobiles());
   let fbOk = false;
   let fbError = null;

@@ -122,20 +122,27 @@ MG.renderFreePackSection = function() {
   host.innerHTML = html;
 
   host.querySelectorAll('[data-mark-mod]').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', async function(e) {
       e.preventDefault();
       var id = btn.getAttribute('data-mark-mod');
-      var res = MG.markModuleComplete(id, { source: 'self' });
-      if (res && res.ok) {
-        MG.showToast(res.already ? 'Already marked complete' : 'Module marked complete ✓');
-        if (res.pathJustCompleted) {
-          var path = (MG.LEARNING_PATHS || []).find(function(p){ return p.id === res.pathJustCompleted; });
-          setTimeout(function(){
-            MG.showToast('Learning path completed: ' + (path ? path.title : res.pathJustCompleted) + ' — certificate ready!');
-          }, 600);
+      btn.disabled = true;
+      try {
+        var res = await MG.markModuleComplete(id, { source: 'self' });
+        if (res && res.ok) {
+          MG.showToast(res.already ? 'Already marked complete' : 'Module marked complete ✓');
+          if (res.pathJustCompleted) {
+            var path = (MG.LEARNING_PATHS || []).find(function(p){ return p.id === res.pathJustCompleted; });
+            setTimeout(function(){
+              MG.showToast('Learning path completed: ' + (path ? path.title : res.pathJustCompleted) + ' — certificate ready!');
+            }, 600);
+          }
+          MG.renderFreePackSection();
+          MG.renderLearningPaths();
         }
-        MG.renderFreePackSection();
-        MG.renderLearningPaths();
+      } catch (error) {
+        MG.showToast((error && error.message) || 'Could not save learning completion.');
+      } finally {
+        btn.disabled = false;
       }
     });
   });
@@ -158,6 +165,10 @@ MG.showCertificate = function(opts) {
   });
   // Allow viewing even if cert object missing but progress exists
   if (!cert) {
+    if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
+      MG.showToast('No server-issued certificate was found for this completion.');
+      return;
+    }
     var title = opts.refId;
     var name = (data.profile && (data.profile.name || data.profile.fullName)) || 'Learner';
     if (opts.type === 'module') {
@@ -212,6 +223,7 @@ MG.showCertificate = function(opts) {
     '<p class="text-xs text-slate-500 mb-1">has successfully completed</p>' +
     '<div class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">“' + (cert.title || '') + '”</div>' +
     '<p class="text-[11px] text-slate-500">Issued on ' + issued + '</p>' +
+    (cert.verificationId ? '<a class="inline-block mt-2 text-[10px] text-brand-600 underline" target="_blank" rel="noopener" href="https://asia-south1-' + encodeURIComponent(window.MENTOR_FIREBASE_CONFIG && window.MENTOR_FIREBASE_CONFIG.projectId || '') + '.cloudfunctions.net/verifyCertificate?certificateId=' + encodeURIComponent(cert.verificationId) + '">Verify certificate</a>' : '') +
     '<p class="text-[10px] text-slate-400 mt-3">Flexible Packaging · Competence evidence for plant skill matrix</p>' +
     '<div class="mt-4 text-[10px] text-slate-400">vkstech.com · Mentor by VKS Tech</div>' +
     '</div></div></div>';

@@ -1,0 +1,185 @@
+/* Mentor 3.0 presentation layer. This file changes appearance only. */
+:root {
+  --mentor-ui-blue: #3157d5;
+  --mentor-ui-blue-deep: #183b91;
+  --mentor-ui-ink: #172033;
+  --mentor-ui-muted: #627087;
+  --mentor-ui-line: #e4e9f1;
+  --mentor-ui-paper: #f5f7fb;
+  --mentor-ui-radius: 18px;
+  --mentor-ui-shadow: 0 12px 34px rgba(18, 35, 70, .075);
+  color-scheme: light;
+}
+
+html { text-rendering: optimizeLegibility; }
+button, input, select, textarea { font: inherit; }
+button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 3px solid rgba(49, 87, 213, .38);
+  outline-offset: 3px;
+}
+
+/* Public landing page */
+body:has(.hero-layout) { color: var(--mentor-ui-ink); }
+body:has(.hero-layout) .nav { box-shadow: 0 5px 24px rgba(20, 35, 65, .055); }
+body:has(.hero-layout) .nav-in { max-width: 1240px; }
+body:has(.hero-layout) .hero { scroll-margin-top: 76px; }
+body:has(.hero-layout) .trust-grid { max-width: 1160px; margin-inline: auto; }
+body:has(.hero-layout) #tracks .track-card { min-height: 100%; }
+body:has(.hero-layout) .faq-grid details { transition: border-color .18s ease, box-shadow .18s ease; }
+body:has(.hero-layout) .faq-grid details[open] { border-color: #cbd8fa; box-shadow: 0 8px 24px rgba(37, 78, 177, .07); }
+body:has(.hero-layout) .hero-actions .btn { box-shadow: 0 8px 22px rgba(0, 0, 0, .12); }
+body:has(.hero-layout) .hero-actions .btn:focus-visible { outline-color: rgba(255,255,255,.75); }
+@media (min-width: 1440px) {
+  body:has(.hero-layout) .hero { padding-block: 92px 98px; }
+  body:has(.hero-layout) section { padding-block: 82px; }
+}
+@media (max-width: 640px) {
+  body:has(.hero-layout) .wrap { padding-inline: 18px; }
+  body:has(.hero-layout) .hero { padding-block: 42px 46px; }
+  body:has(.hero-layout) .hero h1 { max-width: 16ch; line-height: 1.12; }
+  body:has(.hero-layout) .product-preview { width: 100%; }
+  body:has(.hero-layout) .nav-actions .btn { min-height: 42px; }
+  body:has(.hero-layout) .faq-grid summary { min-height: 34px; align-items: center; }
+}
+
+/* Main Mentor application */
+body:has(#app) { background: #f4f6fb; }
+body:has(#app).dark { background: #0c1220; }
+#app > header { backdrop-filter: blur(16px); }
+#app > header button, #app > header a { min-height: 40px; }
+#app > main { width: min(100%, 1480px); }
+#authScreen { backdrop-filter: blur(12px); }
+#authScreen > div, #mobilePrompt > div { border: 1px solid rgba(255,255,255,.5); box-shadow: 0 28px 90px rgba(5, 15, 35, .28); }
+#authScreen input, #mobilePrompt input { min-height: 48px; border-radius: 12px; }
+#authScreen button, #mobilePrompt button { min-height: 44px; }
+#catalogIntro, #mentorTestimonials, #workspaceView > div:first-child,
+#sectionCareer > div:first-child, #sectionPackaging > div:first-child {
+  box-shadow: var(--mentor-ui-shadow);
+}
+#categoryPicker .cat-btn { min-height: 176px; }
+#categoryPicker .cat-btn:focus-visible { outline-offset: 4px; }
+#topicsGrid > *, #topicsGridPackaging > *, #historyContent > * { transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease; }
+#topicsGrid > *:hover, #topicsGridPackaging > *:hover { box-shadow: 0 14px 32px rgba(15, 35, 75, .1); }
+#workspaceView input, #workspaceView select, #workspaceView textarea,
+#bookingModal input, #bookingModal select, #bookingModal textarea,
+#pricingAdminModal input, #pricingAdminModal select, #pricingAdminModal textarea {
+  min-height: 42px; border-radius: 11px;
+}
+#workspaceView textarea, #bookingModal textarea, #pricingAdminModal textarea { min-height: 88px; }
+#bookingModal > div, #historyModal > div, #pricingAdminModal > div, #pinModal > div {
+  border-radius: 24px; max-height: min(92dvh, 900px); overscroll-behavior: contain;
+}
+#chatMessages { scroll-behavior: smooth; }
+#toast { box-shadow: 0 16px 44px rgba(2, 6, 23, .22); }
+.dark #workspaceView input, .dark #workspaceView select, .dark #workspaceView textarea,
+.dark #bookingModal input, .dark #bookingModal select, .dark #bookingModal textarea,
+.dark #pricingAdminModal input, .dark #pricingAdminModal select, .dark #pricingAdminModal textarea {
+  color: #f1f5f9;
+}
+@media (max-width: 760px) {
+  #app > main { padding-bottom: max(18px, env(safe-area-inset-bottom)) !important; }
+  #app > header { padding-top: env(safe-area-inset-top); }
+  #mobileBadge { max-width: 53vw; }
+  #mobileDisplayMobile { max-width: 3.7rem; }
+  #bookingModal, #historyModal, #pricingAdminModal, #pinModal { padding: 10px !important; }
+  #bookingModal > div, #historyModal > div, #pricingAdminModal > div, #pinModal > div {
+    max-height: calc(100dvh - 20px); border-radius: 20px;
+  }
+  #workspaceView { min-width: 0; }
+  #workspaceView .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 380px) {
+  #app > header .max-w-7xl { gap: 5px; }
+  #app > header button { min-width: 36px; }
+  #mobileBadge { gap: 4px; padding-inline: 4px; }
+}
+
+/* Met Train PRO */
+body:has(#topbar) #topbar { min-height: 64px; background: color-mix(in srgb, var(--surf) 94%, #294b74); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+body:has(#topbar) #sidebar { scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
+body:has(#topbar) #content { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
+body:has(#topbar) .ph { padding-bottom: 16px; border-bottom: 1px solid var(--bdr); }
+body:has(#topbar) .ph-title { line-height: 1.12; }
+body:has(#topbar) .cards { gap: 15px; }
+body:has(#topbar) .card, body:has(#topbar) .gc, body:has(#topbar) .stat {
+  border-radius: 17px; box-shadow: 0 8px 24px rgba(0,0,0,.16);
+}
+body:has(#topbar) .card { padding: 20px; }
+body:has(#topbar) .card:hover { transform: translateY(-2px); }
+body:has(#topbar) .tab, body:has(#topbar) .lb, body:has(#topbar) .tb-mode { min-height: 40px; }
+body:has(#topbar) input, body:has(#topbar) select, body:has(#topbar) textarea { border-radius: 10px; }
+body:has(#topbar) :is(button,input,select,textarea):focus-visible { outline-color: color-mix(in srgb, var(--gold) 58%, transparent); }
+html[data-theme="light"] body:has(#topbar) #topbar,
+body.light:has(#topbar) #topbar { background: rgba(255,255,255,.96); }
+@media (min-width: 1500px) {
+  body:has(#topbar) #sidebar { width: 252px; }
+  body:has(#topbar) #content { padding: 36px clamp(36px, 4vw, 72px); }
+}
+@media (max-width: 800px) {
+  body:has(#topbar) #topbar { min-height: 56px; height: auto; }
+  body:has(#topbar) .tb-logo { padding-inline: 10px; }
+  body:has(#topbar) .tb-name { font-size: 17px; }
+  body:has(#topbar) #content { padding: 20px 16px 94px; }
+  body:has(#topbar) .ph-title { font-size: clamp(26px, 7vw, 34px); }
+  body:has(#topbar) .cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+  body:has(#topbar) table.t { min-width: 620px; }
+}
+@media (max-width: 480px) {
+  body:has(#topbar) .tb-sub { display: none; }
+  body:has(#topbar) #tb-back-btn { padding-inline: 10px !important; }
+  body:has(#topbar) .tb-locale { gap: 4px; }
+  body:has(#topbar) #content { padding: 16px 12px 92px; }
+  body:has(#topbar) .ph { margin-bottom: 16px; }
+  body:has(#topbar) .card { padding: 16px; }
+}
+
+/* Focused, self-contained learning modules */
+body:has(> header) main {
+  width: min(100%, 960px);
+  padding: clamp(18px, 3vw, 34px) clamp(14px, 3vw, 24px) max(56px, env(safe-area-inset-bottom));
+}
+body:has(> header) > header {
+  min-height: 58px; padding-inline: max(16px, calc((100vw - 1160px) / 2));
+  box-shadow: 0 8px 24px rgba(15, 35, 70, .14);
+}
+body:has(> header) main > h1 {
+  font-size: clamp(1.55rem, 3.4vw, 2.15rem); line-height: 1.18; letter-spacing: -.035em;
+  margin: 14px 0 9px;
+}
+body:has(> header) main > .lead,
+body:has(> header) main > p:first-of-type {
+  max-width: 70ch; line-height: 1.75; margin-bottom: 20px;
+}
+body:has(> header) main .card {
+  border-radius: var(--mentor-ui-radius); padding: clamp(17px, 2.6vw, 24px);
+  box-shadow: 0 8px 26px rgba(18, 35, 70, .055); transition: box-shadow .18s ease, transform .18s ease;
+}
+body:has(> header) main .card h2 { letter-spacing: -.02em; line-height: 1.3; }
+body:has(> header) main .card p,
+body:has(> header) main .card li { line-height: 1.7; }
+body:has(> header) main .badge { padding: 6px 11px; letter-spacing: .035em; }
+body:has(> header) main input,
+body:has(> header) main select,
+body:has(> header) main textarea { min-height: 44px; border-radius: 11px; }
+body:has(> header) main button,
+body:has(> header) main .cta,
+body:has(> header) main .cta2,
+body:has(> header) main .btn { min-height: 44px; border-radius: 11px; }
+body:has(> header) main pre,
+body:has(> header) main .formula { max-width: 100%; overflow: auto; border-radius: 13px; }
+body:has(> header) main .nav-pills { gap: 9px; }
+body:has(> header) main .nav-pills button { min-height: 42px; }
+body:has(> header) main table { max-width: 100%; }
+@media (max-width: 640px) {
+  body:has(> header) > header { padding-inline: 12px; gap: 8px; }
+  body:has(> header) main .cta-row > *,
+  body:has(> header) main .actions > * { flex: 1 1 140px; justify-content: center; }
+  body:has(> header) main .deck { gap: 16px; }
+  body:has(> header) main .slide { border-radius: 12px; }
+  body:has(> header) main .param { gap: 9px; padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

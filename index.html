@@ -359,6 +359,7 @@ footer{border-top:1px solid rgba(255,255,255,.08)}
 })();
 </script>
 
+  <link rel="stylesheet" href="css/mentor-premium-ui.css">
 </head>
 <body>
   <header class="nav">
@@ -604,9 +605,13 @@ footer{border-top:1px solid rgba(255,255,255,.08)}
       </div>
     </div>
   </footer>
+  <script src="firebase.staging.js"></script>
+  <script src="js/firebase-staging-guard.js"></script>
   <script>
   (function(){
-    var url = 'https://mentor-vkstech-default-rtdb.asia-southeast1.firebasedatabase.app/mentor_settings/tracks.json';
+    var cfg = window.MENTOR_FIREBASE_CONFIG;
+    if (!cfg || !window.mentorFirebaseStagingConfigIsSafe || !window.mentorFirebaseStagingConfigIsSafe(cfg)) return;
+    var url = String(cfg.databaseURL).replace(/\/$/, '') + '/mentor_settings/tracks.json';
     fetch(url).then(function(r){return r.json()}).then(function(o){
       if(!o) return;
       function setAll(sel, rate){

@@ -11,6 +11,10 @@ MG.THEME_KEY = 'vks_guidance_theme';
 MG.RATE_PER_HOUR = 699; // legacy fallback
 /** Enable only after staging Firebase Functions + rules are deployed and smoke-tested. */
 MG.SECURE_BOOKINGS_ENABLED = false;
+/** Enable only after all v3 client flows pass staging end-to-end checks. */
+MG.SECURE_DATA_ENABLED = false;
+/** The extracted development build refuses to initialize the protected production project. */
+MG.FORBIDDEN_FIREBASE_PROJECT_ID = 'mentor-vkstech';
 /** Preferred session windows shown in booking (student picks one). */
 MG.PREFERRED_SLOT_OPTIONS = [
   'Weekday morning (9–12 IST)',

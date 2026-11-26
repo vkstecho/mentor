@@ -123,10 +123,11 @@ MG.openHistory = async function() {
       section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3>' + rows.map(function(b) {
         const uid = MG.esc(String(b.uid || ''));
         const bid = MG.esc(String(b.id || ''));
+        const paid = b.paymentStatus === 'paid';
         return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
           '<p class="text-xs text-slate-500">' + MG.esc(b.track || '') + ' · +91 ' + MG.esc(b.mobile || '') + '</p>' +
-          '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + '</p>' +
-          '<div class="flex gap-2 mt-2"><button class="secure-booking-approve px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Approve booking</button>' +
+          '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + ' · payment: ' + MG.esc(b.paymentStatus || 'unpaid') + '</p>' +
+          '<div class="flex gap-2 mt-2"><button class="secure-booking-approve px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs" ' + (paid ? '' : 'disabled title="Awaiting verified payment"') + ' data-uid="' + uid + '" data-bid="' + bid + '">' + (paid ? 'Approve booking' : 'Awaiting payment') + '</button>' +
           '<button class="secure-booking-reject px-3 py-1.5 rounded-lg bg-slate-200 text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Reject</button></div></article>';
       }).join('');
       section.querySelectorAll('.secure-booking-approve').forEach(function(btn) { btn.addEventListener('click', async function() {
@@ -143,10 +144,89 @@ MG.openHistory = async function() {
     }
   }
 
+  async function appendRefundReviewQueue() {
+    if (!MG.SECURE_DATA_ENABLED || !MG.state.isMentor || viewing || !container || !window.MentorFB || !window.MentorFB.callSecure) return;
+    const section = document.createElement('section');
+    section.className = 'mt-5 pt-4 border-t border-slate-200 dark:border-slate-700';
+    section.innerHTML = '<h3 class="font-bold text-sm mb-2">Refunds needing review</h3><p class="text-xs text-slate-500">Loading refund reviews…</p>';
+    container.appendChild(section);
+    try {
+      const queue = await window.MentorFB.callSecure('listRefundReviews', {});
+      const rows = Object.keys(queue || {}).map(function(id){ return Object.assign({ id: id }, queue[id] || {}); });
+      if (!rows.length) { section.innerHTML = '<h3 class="font-bold text-sm mb-2">Refunds needing review</h3><p class="text-xs text-slate-500">No refund reviews are pending.</p>'; return; }
+      section.innerHTML = '<h3 class="font-bold text-sm mb-1">Refunds needing review</h3><p class="text-[11px] text-slate-500 mb-2">Review access/payment state before closing an item.</p>' + rows.map(function(item) {
+        return '<article class="hist-card mb-2"><p class="text-xs font-semibold">' + MG.esc(item.refundId || item.id) + '</p>' +
+          '<p class="text-[11px] text-slate-500">Payment ' + MG.esc(item.paymentId || '') + ' · refund ₹' + (Number(item.amount || 0) / 100).toLocaleString('en-IN') + '</p>' +
+          '<div class="flex flex-wrap gap-2 mt-2"><button class="refund-review-resolve px-2.5 py-1.5 rounded-lg bg-slate-200 text-xs" data-rid="' + MG.esc(item.id) + '" data-resolution="no_access_change">Close · no access change</button>' +
+          '<button class="refund-review-resolve px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-900 text-xs" data-rid="' + MG.esc(item.id) + '" data-resolution="entitlement_reconciled">Mark access reconciled</button></div></article>';
+      }).join('');
+      section.querySelectorAll('.refund-review-resolve').forEach(function(btn) { btn.addEventListener('click', async function() {
+        if (!confirm('Confirm the refund case and any required access change have been reviewed?')) return;
+        btn.disabled = true;
+        try {
+          await window.MentorFB.callSecure('resolveRefundReview', { refundId: btn.dataset.rid, resolution: btn.dataset.resolution, note: 'Reviewed in Mentor workspace' });
+          MG.showToast('Refund review closed'); await MG.openHistory();
+        } catch (error) { btn.disabled = false; MG.showToast((error && error.message) || 'Could not close refund review.'); }
+      }); });
+    } catch (error) {
+      section.innerHTML = '<h3 class="font-bold text-sm mb-2">Refunds needing review</h3><p class="text-xs text-amber-700">' + MG.esc(error.message || 'Could not load refund reviews.') + '</p>';
+    }
+  }
+
+  async function appendSecureStudentBookings() {
+    if (!MG.SECURE_DATA_ENABLED || MG.state.isMentor && !viewing || !container) return;
+    const rows = Object.keys((MG.state.data && MG.state.data.secureBookings) || {}).map(function(id){
+      return MG.state.data.secureBookings[id];
+    }).filter(Boolean).sort(function(a,b){ return Number(b.createdAt || 0) - Number(a.createdAt || 0); });
+    const sub = MG.state.data && MG.state.data.subscription;
+    let plans = {};
+    try { plans = await window.MentorFB.callSecure('listAvailableSubscriptionPlans', {}); }
+    catch (error) { console.warn('[Mentor] subscription plans unavailable', error && error.message); }
+    if (!rows.length && !sub && !Object.keys(plans || {}).length) return;
+    const section = document.createElement('section');
+    section.className = 'mt-5 pt-4 border-t border-slate-200 dark:border-slate-700';
+    const bookingRows = rows.map(function(b) {
+      return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
+        '<p class="text-xs text-slate-500">' + MG.esc(b.track || '') + ' · ' + MG.esc(MG.formatDate(b.createdAt)) + '</p>' +
+        '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + '</p>' +
+        '<p class="text-[11px] mt-1">Booking: ' + MG.esc(b.status || 'pending') + ' · Payment: ' + MG.esc(b.paymentStatus || 'unpaid') + '</p></article>';
+    }).join('');
+    const active = sub && sub.status === 'active' && Number(sub.expiresAt) > Date.now();
+    const subHtml = sub ? '<p class="text-xs mb-2">Subscription: <b>' + (active ? 'Active' : MG.esc(sub.status || 'inactive')) + '</b>' +
+      (sub.expiresAt ? ' until ' + MG.esc(MG.formatDate(sub.expiresAt)) : '') + (sub.cancelAtPeriodEnd ? ' · renewal cancelled' : '') +
+      (active && !sub.cancelAtPeriodEnd ? ' <button id="cancelSubscriptionRenewal" class="underline text-brand-600 ml-1">Cancel renewal</button>' : '') + '</p>' : '';
+    const planHtml = Object.keys(plans || {}).map(function(planId) {
+      const plan = plans[planId];
+      return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(plan.name || planId) + '</div>' +
+        '<p class="text-xs text-slate-500">' + Number(plan.durationDays || 0) + ' days · ₹' + (Number(plan.amountPaise || 0) / 100).toLocaleString('en-IN') + '</p>' +
+        '<p class="text-[10px] text-slate-400">Access to ' + Number((plan.topicIds || []).length) + ' listed topics</p>' +
+        '<button class="buy-subscription-plan mt-2 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold" data-plan="' + MG.esc(planId) + '">Buy or renew</button></article>';
+    }).join('');
+    section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure bookings and access</h3>' + subHtml + (bookingRows || (!plans || !Object.keys(plans).length ? '<p class="text-xs text-slate-500">No secure bookings yet.</p>' : '')) + planHtml;
+    container.appendChild(section);
+    const cancelButton = section.querySelector('#cancelSubscriptionRenewal');
+    if (cancelButton) cancelButton.addEventListener('click', async function() {
+      cancelButton.disabled = true;
+      try {
+        await window.MentorFB.callSecure('cancelMySubscriptionRenewal', {});
+        MG.state.data = await MG.loadUserDataAsync(MG.state.mobile);
+        await MG.openHistory();
+        MG.showToast('Renewal cancelled. Access continues through the paid expiry date.');
+      } catch (error) { cancelButton.disabled = false; MG.showToast((error && error.message) || 'Could not cancel renewal.'); }
+    });
+    section.querySelectorAll('.buy-subscription-plan').forEach(function(button) { button.addEventListener('click', async function() {
+      button.disabled = true;
+      try { await MG.launchSecureSubscriptionCheckout(button.dataset.plan); }
+      catch (error) { button.disabled = false; MG.showToast((error && error.message) || 'Could not start subscription checkout.'); }
+    }); });
+  }
+
   if (!payments.length) {
     container.innerHTML = '<p class="text-center text-slate-400 py-10">' + (MG.t ? MG.t('noPayments') : 'No payments yet') +
       (MG.state.isMentor && !viewing ? ' (all students)' : '') + '.</p>';
+    await appendSecureStudentBookings();
     await appendSecureBookingQueue();
+    await appendRefundReviewQueue();
     return;
   }
 
@@ -186,7 +266,9 @@ MG.openHistory = async function() {
   container.querySelectorAll('.wa-remind-btn').forEach(function(btn) {
     btn.addEventListener('click', function() { MG.copyWhatsAppReminder(btn.dataset.payid, btn.dataset.mobile); });
   });
+  await appendSecureStudentBookings();
   await appendSecureBookingQueue();
+  await appendRefundReviewQueue();
 }
 
 MG.exportCsv = function() {
@@ -497,6 +579,15 @@ MG.rejectPayment = async function(paymentId, studentMobile) {
   if (!confirm('Reject this payment claim for +91' + studentMobile + '?')) return;
   studentMobile = String(studentMobile || '').replace(/\D/g, '').slice(-10);
   paymentId = String(paymentId || '');
+  if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
+    try {
+      await window.MentorFB.callSecure('rejectLegacyPayment', { mobile: studentMobile, paymentId: paymentId, reason: 'Rejected by mentor' });
+      if ((MG.state.viewingAs || MG.state.mobile) === studentMobile) await MG.loadUserDataAsync(studentMobile);
+      await MG.openHistory();
+      MG.showToast('Payment claim rejected');
+    } catch (error) { MG.showToast((error && error.message) || 'Secure rejection failed.'); }
+    return;
+  }
   var userData = await MG.loadUserDataAsync(studentMobile);
   var pay = (userData.payments || []).find(function(p){ return p && p.id === paymentId; });
   // Recover from notification queue if student node missing
@@ -543,6 +634,18 @@ MG.approvePayment = async function(paymentId, studentMobile) {
   paymentId = String(paymentId || '');
   if (!studentMobile || !paymentId) {
     MG.showToast('Missing student mobile or payment id');
+    return;
+  }
+  if (MG.isSecureDataEnabled && MG.isSecureDataEnabled()) {
+    try {
+      await window.MentorFB.callSecure('approveLegacyPayment', { mobile: studentMobile, paymentId: paymentId, evidenceNote: 'Reviewed by mentor' });
+      if ((MG.state.viewingAs || MG.state.mobile) === studentMobile) {
+        MG.state.data = await MG.loadUserDataAsync(studentMobile);
+      }
+      try { MG.renderCatalog(); } catch (eSecureRender) {}
+      await MG.openHistory();
+      MG.showToast('Legacy payment approved through the secure service');
+    } catch (error) { MG.showToast((error && error.message) || 'Secure approval failed.'); }
     return;
   }
   var userData = await MG.loadUserDataAsync(studentMobile);

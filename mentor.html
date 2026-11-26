@@ -38,36 +38,27 @@
     window.__mentorDeferredPrompt = e;
   });
   </script>
-  <!-- Firebase (standalone project: mentor-vkstech) -->
+  <script src="firebase.staging.js"></script>
+  <script src="js/firebase-staging-guard.js"></script>
+  <!-- Staging only: provide firebase.staging.js from firebase.staging.example.js. -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAp2DZm-h7QbxzS8rO4a0omhBzMlAKy2rs",
-      authDomain: "mentor-vkstech.firebaseapp.com",
-      databaseURL: "https://mentor-vkstech-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "mentor-vkstech",
-      storageBucket: "mentor-vkstech.firebasestorage.app",
-      messagingSenderId: "616868925574",
-      appId: "1:616868925574:web:1fed20cf4d2bb844a8c107",
-      measurementId: "G-KLP6X7SVTS"
-    };
-
     try {
-      // Use DEFAULT app name (named apps often break Phone Auth + reCAPTCHA)
-      let app;
-      try {
-        const { getApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-        app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-      } catch (e) {
-        app = initializeApp(firebaseConfig);
-      }
+      const firebaseConfig = window.MENTOR_FIREBASE_CONFIG;
+      if (!firebaseConfig || !firebaseConfig.projectId) throw new Error('Staging Firebase config is missing. Copy firebase.staging.example.js to firebase.staging.js and fill it with a separate staging project.');
+      if (!window.mentorFirebaseStagingConfigIsSafe(firebaseConfig)) throw new Error('Firebase config does not match the isolated staging project.');
+      const existingApps = getApps();
+      if (existingApps.length && existingApps.some(existing => existing.options.projectId !== firebaseConfig.projectId)) throw new Error('An existing Firebase app targets a different project; refusing to connect.');
+      const app = existingApps.length ? getApp() : initializeApp(firebaseConfig);
       const db = getDatabase(app);
       const auth = getAuth(app);
       const functions = getFunctions(app, "asia-south1");
+      let resolveInitialAuth;
+      const initialAuthReady = new Promise(resolve => { resolveInitialAuth = resolve; });
 
       // Expose simple API for guidance.js
       window.MentorFB = {
@@ -76,7 +67,7 @@
         // Callable backend bridge. Existing legacy workflows remain unchanged
         // until the staging integration and regression gates are completed.
         async callSecure(name, payload) {
-          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "sendTopicMessage", "updateLearningProgress", "listPendingBookings", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "health"];
+          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "health"];
           if (!allowed.includes(name)) throw new Error("Unsupported secure operation");
           if (!auth.currentUser || auth.currentUser.isAnonymous) throw new Error("Phone verification required");
           const callable = httpsCallable(functions, name);
@@ -93,6 +84,7 @@
           return this.verifyPhoneOtp(code);
         },
         async sendPhoneOtp(phone10) {
+          await this.ensureAuth();
           const phone = '+91' + phone10;
           try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
           window._mentorRecaptcha = null;
@@ -139,16 +131,52 @@
             'expired-callback': () => { window._mentorRecaptcha = null; }
           });
           await window._mentorRecaptcha.render();
-          const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
-          window._mentorConfirmOtp = (code) => conf.confirm(code);
+          window._mentorPendingPhoneCredential = null;
+          if (auth.currentUser && auth.currentUser.isAnonymous) {
+            const guestUid = auth.currentUser.uid;
+            const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber(phone, window._mentorRecaptcha);
+            window._mentorPhoneLinkAttempt = { verificationId, guestUid, phone };
+            window._mentorConfirmOtp = null;
+          } else {
+            window._mentorPhoneLinkAttempt = null;
+            const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
+            window._mentorConfirmOtp = (code) => conf.confirm(code);
+          }
           return true;
         },
         async verifyPhoneOtp(code) {
+          const attempt = window._mentorPhoneLinkAttempt;
+          if (attempt) {
+            const guest = auth.currentUser;
+            if (!guest || !guest.isAnonymous || guest.uid !== attempt.guestUid) throw new Error('Guest account changed during phone verification. Restart the sign-in step.');
+            const credential = PhoneAuthProvider.credential(attempt.verificationId, code);
+            try {
+              const result = await linkWithCredential(guest, credential);
+              if (result.user.uid !== attempt.guestUid || !result.user.phoneNumber) throw new Error('Phone linking did not preserve the guest account.');
+              window._mentorPhoneLinkAttempt = null;
+              window._mentorPendingPhoneCredential = null;
+              return result.user;
+            } catch (error) {
+              if (error && error.code === 'auth/credential-already-in-use') {
+                window._mentorPendingPhoneCredential = { credential, guestUid: attempt.guestUid, phone: attempt.phone };
+              }
+              throw error;
+            }
+          }
           if (!window._mentorConfirmOtp) throw new Error('Request OTP first');
           const cred = await window._mentorConfirmOtp(code);
           return cred?.user || null;
         },
+        async continueWithExistingPhoneAccount() {
+          const pending = window._mentorPendingPhoneCredential;
+          if (!pending || !auth.currentUser || !auth.currentUser.isAnonymous || auth.currentUser.uid !== pending.guestUid) throw new Error('The verified sign-in is no longer available. Request a new OTP.');
+          const result = await signInWithCredential(auth, pending.credential);
+          window._mentorPhoneLinkAttempt = null;
+          window._mentorPendingPhoneCredential = null;
+          return result.user;
+        },
         async ensureAuth() {
+          await initialAuthReady;
           if (auth.currentUser) return auth.currentUser;
           try {
             // Prefer parent Man Power auth if iframed
@@ -212,11 +240,11 @@
         }
       };
 
-      onAuthStateChanged(auth, () => { window.MentorFB.ready = true; });
+      onAuthStateChanged(auth, user => { window.MentorFB.ready = true; resolveInitialAuth(user || null); }, () => { window.MentorFB.ready = true; resolveInitialAuth(null); });
       // Mark ready even before auth for faster UI
       window.MentorFB.ready = true;
       window.dispatchEvent(new Event("mentor-fb-ready"));
-      console.info("[MentorFB] Connected to Mentor Firebase (mentor-vkstech)");
+      console.info("[MentorFB] Connected to configured staging Firebase project");
     } catch (e) {
       console.warn("[MentorFB] init failed – localStorage only", e);
       window.MentorFB = null;
@@ -313,6 +341,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 @media(prefers-reduced-motion:reduce){#app *,#app *:before,#app *:after{transition:none!important;animation:none!important}}
 </style>
 
+  <link rel="stylesheet" href="css/mentor-premium-ui.css">
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 font-sans">
 
@@ -369,6 +398,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <input type="text" id="otpInput" maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
           class="form-input w-full text-center text-2xl tracking-[0.4em] font-bold" placeholder="••••••" autocomplete="one-time-code" />
         <p id="otpError" class="text-xs text-red-500 mt-1.5 hidden">Invalid OTP. Please try again.</p>
+        <div id="phoneAccountConflict" class="hidden mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-left">
+          <p class="text-xs leading-relaxed text-amber-900">This phone already has an account. Your guest account and its UID remain saved separately; they will not be merged or deleted.</p>
+          <button type="button" id="continueExistingPhoneAccountBtn" class="w-full mt-2 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold">Continue with existing phone account</button>
+        </div>
         <button id="otpVerifyBtn" class="w-full mt-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
           <i class="fas fa-check mr-1.5"></i> Verify &amp; Continue
         </button>
@@ -829,7 +862,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           <span id="bookingTotal" class="text-xl font-bold text-brand-600">₹699</span></div>
       </div>
 
-      <p class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
+      <p id="bookingPaymentNote" class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
       <a id="payNowBtn" href="https://rzp.io/rzp/RWnisIr" target="_blank" rel="noopener"
          class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
         <i class="fas fa-lock"></i> Pay Now via Razorpay
@@ -840,6 +873,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <span class="text-slate-500">No UTR or Payment ID needed from you.</span><br/>
         Session unlocks only after <strong>Mentor approves</strong>.
       </p>
+      <div id="legacyUtrFlow">
       <div class="relative">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-600"></div></div>
         <div class="relative flex justify-center text-xs"><span class="px-2 bg-white dark:bg-slate-800 text-slate-400">Optional</span></div>
@@ -852,6 +886,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       <button id="confirmPaidBtn" class="w-full py-3 rounded-xl bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-800 dark:text-slate-100 font-semibold transition">
         <i class="fas fa-paper-plane mr-1.5"></i> Attach Payment ID (optional)
       </button>
+      </div>
     </div>
   </div>
 
@@ -922,9 +957,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           .then(function (reg) { console.info('[Mentor SW] registered', reg.scope); })
           .catch(function (err) { console.warn('[Mentor SW] register failed', err); });
       });
-    });
-      });
     }
   </script>
 </body>
 </html>
+
