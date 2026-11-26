@@ -86,7 +86,7 @@
         async sendPhoneOtp(phone10) {
           await this.ensureAuth();
           const phone = '+91' + phone10;
-          try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
+          try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } (e) {}
           window._mentorRecaptcha = null;
           // Prefer login prompt container; fall back to mentor-mode container
           let host = document.getElementById('recaptcha-container');
@@ -122,7 +122,7 @@
                 host.style.width = 'auto';
                 host.style.maxWidth = '95vw';
               }
-            } catch (e0) {}
+            }  (e0) {}
           }
           // Visible reCAPTCHA is more reliable on mobile (checkbox must be tappable)
           window._mentorRecaptcha = new RecaptchaVerifier(auth, hostId, {
@@ -157,10 +157,13 @@
               window._mentorPendingPhoneCredential = null;
               return result.user;
             } catch (error) {
-              if (error && error.code === 'auth/credential-already-in-use') {
-                window._mentorPendingPhoneCredential = { credential, guestUid: attempt.guestUid, phone: attempt.phone };
-              }
-              throw error;
+              if (error && (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential')) {
+               const existing = await signInWithCredential(auth, credential);
+    window._mentorPhoneLinkAttempt = null;
+    window._mentorPendingPhoneCredential = null;
+    return existing.user;
+  }
+  throw error;
             }
           }
           if (!window._mentorConfirmOtp) throw new Error('Request OTP first');
