@@ -44,7 +44,7 @@
   <script type="module">
     import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInAnonymously, signOut, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
 
     try {
@@ -132,16 +132,12 @@
           });
           await window._mentorRecaptcha.render();
           window._mentorPendingPhoneCredential = null;
+          window._mentorPhoneLinkAttempt = null;
           if (auth.currentUser && auth.currentUser.isAnonymous) {
-            const guestUid = auth.currentUser.uid;
-            const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber(phone, window._mentorRecaptcha);
-            window._mentorPhoneLinkAttempt = { verificationId, guestUid, phone };
-            window._mentorConfirmOtp = null;
-          } else {
-            window._mentorPhoneLinkAttempt = null;
-            const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
-            window._mentorConfirmOtp = (code) => conf.confirm(code);
+            try { await signOut(auth); } catch(e) {}
           }
+          const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
+          window._mentorConfirmOtp = (code) => conf.confirm(code);
           try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
           window._mentorRecaptcha = null;
           if (host) {
