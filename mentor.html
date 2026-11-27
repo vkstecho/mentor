@@ -64,14 +64,22 @@
       window.MentorFB = {
         ready: false,
         db, ref, set, get, update, onValue, auth, functions,
-        // Callable backend bridge. Existing legacy workflows remain unchanged
-        // when MG.SECURE_DATA_ENABLED / MG.SECURE_BOOKINGS_ENABLED are true.
-        async callSecure(name, payload) {
+        async waitForAuth() {
+          await initialAuthReady;
+          return auth.currentUser;
+        },
+        async callSecure(name, payload, expectedUid) {
           const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "getYoutubeShowcase", "health"];
           if (!allowed.includes(name)) throw new Error("Unsupported secure operation");
-          if (name !== "getYoutubeShowcase" && (!auth.currentUser || auth.currentUser.isAnonymous)) throw new Error("Phone verification required");
+          const user = await this.waitForAuth();
+          if (name !== "getYoutubeShowcase" && (!user || user.isAnonymous || (expectedUid && user.uid !== expectedUid))) {
+            throw Object.assign(new Error("Phone verification required"), { code: "functions/unauthenticated" });
+          }
           const callable = httpsCallable(functions, name);
           const result = await callable(payload || {});
+          if (expectedUid && auth.currentUser?.uid !== expectedUid) {
+            throw Object.assign(new Error("Sign-in changed"), { code: "functions/unauthenticated" });
+          }
           return result.data;
         },
         async sendOtp(phoneE164Or10) {
@@ -85,6 +93,7 @@
         },
         async sendPhoneOtp(phone10) {
           await this.ensureAuth();
+          const guest = auth.currentUser?.isAnonymous ? auth.currentUser : null;
           const phone = '+91' + phone10;
           try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
           window._mentorRecaptcha = null;
@@ -133,11 +142,15 @@
           await window._mentorRecaptcha.render();
           window._mentorPendingPhoneCredential = null;
           window._mentorPhoneLinkAttempt = null;
-          if (auth.currentUser && auth.currentUser.isAnonymous) {
-            try { await signOut(auth); } catch(e) {}
+          window._mentorConfirmOtp = null;
+          if (guest) {
+            const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber(phone, window._mentorRecaptcha);
+            if (auth.currentUser?.uid !== guest.uid) throw new Error('The guest account changed. Request a new OTP.');
+            window._mentorPhoneLinkAttempt = { guestUid: guest.uid, verificationId };
+          } else {
+            const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
+            window._mentorConfirmOtp = (code) => conf.confirm(code);
           }
-          const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
-          window._mentorConfirmOtp = (code) => conf.confirm(code);
           try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
           window._mentorRecaptcha = null;
           if (host) {
@@ -160,10 +173,10 @@
               return result.user;
             } catch (error) {
               if (error && (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential')) {
-                const existing = await signInWithCredential(auth, credential);
-                window._mentorPhoneLinkAttempt = null;
-                window._mentorPendingPhoneCredential = null;
-                return existing.user;
+                window._mentorPendingPhoneCredential = { guestUid: guest.uid, credential };
+                if (error.code !== 'auth/credential-already-in-use') {
+                  throw Object.assign(new Error('An existing phone account requires confirmation.'), { code: 'auth/credential-already-in-use' });
+                }
               }
               throw error;
             }
@@ -246,11 +259,13 @@
         }
       };
 
-      onAuthStateChanged(auth, user => { window.MentorFB.ready = true; resolveInitialAuth(user || null); }, () => { window.MentorFB.ready = true; resolveInitialAuth(null); });
-      // Mark ready even before auth for faster UI
+      onAuthStateChanged(auth, user => {
+        resolveInitialAuth(user || null);
+        window.dispatchEvent(new Event("mentor-auth-changed"));
+      }, () => resolveInitialAuth(null));
       window.MentorFB.ready = true;
       window.dispatchEvent(new Event("mentor-fb-ready"));
-      console.info("[MentorFB] Connected to configured staging Firebase project");
+      console.info("[MentorFB] Initialized Firebase project", app.options.projectId);
     } catch (e) {
       console.warn("[MentorFB] init failed – localStorage only", e);
       window.MentorFB = null;
@@ -952,7 +967,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       </div>
 
       <p id="bookingPaymentNote" class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
-      <a id="payNowBtn" href="https://rzp.io/rzp/RWnisIr" target="_blank" rel="noopener"
+      <a id="payNowBtn" href="#" rel="noopener"
          class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
         <i class="fas fa-lock"></i> Pay Now via Razorpay
       </a>

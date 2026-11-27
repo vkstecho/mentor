@@ -6,6 +6,9 @@
 // ========== Init Flow ==========
 MG.isMobileVerified = function(mob) {
   if (!mob) return false;
+  if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
+    return MG.firebasePhone(window.MentorFB?.auth?.currentUser) === mob;
+  }
   try {
     if (localStorage.getItem('vks_mentor_verified_' + mob) === '1') return true;
   } catch {}
@@ -59,8 +62,29 @@ MG.init = async function() {
     await new Promise(r => setTimeout(r, 100));
   }
 
-  // Detect mobile: Man Power parent first (no OTP), then site shared auth, then URL/storage
+  const user = window.MentorFB?.waitForAuth ? await window.MentorFB.waitForAuth() : null;
+  if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
+    window.addEventListener('mentor-auth-changed', function () {
+      if (!MG.state.mobile || MG.$('#app')?.classList.contains('hidden')) return;
+      const current = window.MentorFB?.auth?.currentUser;
+      const phone = MG.firebasePhone(current);
+      if (!phone) MG.showVerifiedSignIn(MG.state.mobile);
+      else if (current.uid !== MG.state.authUid || phone !== MG.state.mobile) void MG.startApp(phone);
+    });
+  }
+  const verified = MG.firebasePhone(user);
+  if (verified) {
+    MG.setSiteAuth(verified);
+    await MG.startApp(verified);
+    return;
+  }
+
+  // Shared sessions can prefill OTP sign-in in secure mode.
   let detected = MG.parentManPowerMobile() || MG.getSiteAuthMobile() || MG.detectMobile();
+  if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
+    MG.showVerifiedSignIn(detected);
+    return;
+  }
   if (!detected) {
     detected = await MG.requestMobileFromParent();
   }
@@ -98,10 +122,32 @@ MG.init = async function() {
   }
 }
 
+MG.showVerifiedSignIn = function(mob) {
+  MG.$('#app')?.classList.add('hidden');
+  const prompt = MG.$('#mobilePrompt');
+  prompt?.classList.remove('hidden');
+  prompt?.classList.add('flex');
+  MG.showOtpStep?.(false);
+  const input = MG.$('#mobileInput');
+  if (input && mob) input.value = mob;
+  input?.focus();
+};
+
 MG.startApp = async function(mob) {
+  if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
+    const user = window.MentorFB?.waitForAuth ? await window.MentorFB.waitForAuth() : null;
+    const verified = MG.firebasePhone(user);
+    if (!verified) {
+      MG.showVerifiedSignIn(mob);
+      return;
+    }
+    mob = verified;
+    MG.state.authUid = user.uid;
+    MG.state.viewingAs = null;
+  }
   MG.state.mobile = mob;
   MG.state.isMentor = false;
-  MG.state.data = MG.loadUserData(MG.state.mobile); // instant from cache
+  MG.state.data = MG.SECURE_DATA_ENABLED ? MG.emptyUserData(mob) : MG.loadUserData(mob);
   try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e0) {}
   try { MG.refreshProfileButton(); } catch (e) {}
   try { if (typeof MG.updateSignedInLabel === 'function') MG.updateSignedInLabel(); } catch (e2) {}
@@ -317,8 +363,9 @@ MG.bindEvents = function() {
     const btn = MG.$('#otpVerifyBtn');
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Verifying…'; }
     try {
-      await window.MentorFB.verifyPhoneOtp(code);
-      MG.finishLogin(_pendingMobile, { forceSetup: !MG.canQuickLogin(_pendingMobile) });
+      const mobile = MG.firebasePhone(await window.MentorFB.verifyPhoneOtp(code));
+      if (!mobile) throw new Error('Verified phone account was not returned.');
+      MG.finishLogin(mobile, { forceSetup: !MG.canQuickLogin(mobile) });
     } catch (e) {
       console.error(e);
       if (e && e.code === 'auth/credential-already-in-use') {
@@ -339,9 +386,10 @@ MG.bindEvents = function() {
     if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
     try {
       const user = await window.MentorFB.continueWithExistingPhoneAccount();
-      if (!user || !user.phoneNumber) throw new Error('Verified phone account was not returned.');
+      const mobile = MG.firebasePhone(user);
+      if (!mobile) throw new Error('Verified phone account was not returned.');
       MG.showToast('Signed in to the existing phone account. Guest account data remains separate.');
-      MG.finishLogin(_pendingMobile, { forceSetup: !MG.canQuickLogin(_pendingMobile) });
+      MG.finishLogin(mobile, { forceSetup: !MG.canQuickLogin(mobile) });
     } catch (e) {
       console.error(e);
       MG.$('#otpError').textContent = 'Could not open the existing account. Your guest account is still signed in; request a new OTP and try again.';
@@ -604,7 +652,7 @@ if (false && _bb) _bb.addEventListener('click', () => {
     });
   }
   var _pay = MG.$('#payNowBtn'); if (_pay) _pay.addEventListener('click', function(e){
-    if (MG.SECURE_BOOKINGS_ENABLED === true) e.preventDefault();
+    if (MG.SECURE_BOOKINGS_ENABLED || MG.state.viewingAs || MG.state.isMentor) e.preventDefault();
     try { if (typeof MG.notifyMentorPayIntent === 'function') MG.notifyMentorPayIntent(); } catch (e) {}
   });
   var _cp = MG.$('#confirmPaidBtn'); if (_cp) _cp.addEventListener('click', function(){ MG.confirmPayment(); });

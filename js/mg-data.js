@@ -37,10 +37,15 @@ MG.ensureProgressFields = function(data) {
 MG.isSecureDataEnabled = function() { return MG.SECURE_DATA_ENABLED === true; };
 
 MG.loadSecureUserData = async function(mob) {
-  var mentorViewing = !!(MG.state.isMentor && MG.state.viewingAs);
+  const fb = window.MentorFB;
+  const current = await fb.waitForAuth();
+  const viewingAs = MG.state.viewingAs;
+  const mentorViewing = !!(MG.state.isMentor && viewingAs === mob);
+  if (!current || current.isAnonymous) throw new Error('Verified sign-in required.');
+  const call = (name, data) => fb.callSecure(name, data, current.uid);
   var legacy, secureProfile = {}, secureProgress = {}, securePathProgress = {}, secureCerts = {}, secureChats = {}, secureRecordings = {}, dataSecureBookings = {}, secureSubscription = null, secureEntitlements = {};
   if (mentorViewing) {
-    var adminRecord = await window.MentorFB.callSecure('getSecureStudentByMobile', { mobile: mob });
+    var adminRecord = await call('getSecureStudentByMobile', { mobile: mob });
     legacy = adminRecord && adminRecord.legacy;
     if (adminRecord && adminRecord.uid) {
       secureProfile = adminRecord.profile || {};
@@ -54,18 +59,17 @@ MG.loadSecureUserData = async function(mob) {
       secureEntitlements = adminRecord.entitlements && adminRecord.entitlements.topics || {};
     }
   } else {
-    var current = window.MentorFB && window.MentorFB.auth && window.MentorFB.auth.currentUser;
-    var authMobile = current && current.phoneNumber ? String(current.phoneNumber).replace(/\D/g, '').slice(-10) : '';
+    var authMobile = MG.firebasePhone(current);
     if (authMobile !== String(mob).replace(/\D/g, '').slice(-10)) throw new Error('Signed-in phone does not match the requested student record.');
     var results = await Promise.all([
-      window.MentorFB.callSecure('getMyStudentRecord', {}),
-      window.MentorFB.callSecure('getMyV3Profile', {}),
-      window.MentorFB.callSecure('getMyCertificates', {}),
-      window.MentorFB.callSecure('getMyLearningProgress', {}),
-      window.MentorFB.callSecure('getMyRecordings', {}),
-      window.MentorFB.callSecure('getMyBookings', {}),
-      window.MentorFB.callSecure('getMySubscription', {}),
-      window.MentorFB.callSecure('getMyEntitlements', {})
+      call('getMyStudentRecord', {}),
+      call('getMyV3Profile', {}),
+      call('getMyCertificates', {}),
+      call('getMyLearningProgress', {}),
+      call('getMyRecordings', {}),
+      call('getMyBookings', {}),
+      call('getMySubscription', {}),
+      call('getMyEntitlements', {})
     ]);
     legacy = results[0];
     secureProfile = results[1] || {};
@@ -77,6 +81,7 @@ MG.loadSecureUserData = async function(mob) {
     secureSubscription = (results[6] && results[6].subscription) || null;
     secureEntitlements = results[7] || {};
   }
+  if (fb.auth.currentUser?.uid !== current.uid || MG.state.viewingAs !== viewingAs) throw new Error('The selected account changed.');
   var data = Object.assign({}, MG.emptyUserData(mob), legacy || {}, { mobile: mob });
   data.secureBookings = dataSecureBookings;
   data.subscription = secureSubscription;
@@ -243,7 +248,8 @@ MG.loadUserData = function(mob) {
 }
 
 MG.loadUserDataAsync = async function(mob) {
-  if (MG.isSecureDataEnabled() && window.MentorFB && typeof window.MentorFB.callSecure === 'function') {
+  if (MG.isSecureDataEnabled()) {
+    if (!window.MentorFB?.waitForAuth) throw new Error('Secure student data is unavailable.');
     try {
       MG.state.data = await MG.loadSecureUserData(mob);
       return MG.state.data;

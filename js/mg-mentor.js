@@ -4,6 +4,18 @@
 (function (MG) {
 'use strict';
 // ========== Payment History ==========
+function bookingDetail(b) {
+  const price = '₹' + Number(b.amount || 0).toLocaleString('en-IN');
+  const rate = b.hourlyRate == null ? '' : ' · ₹' + Number(b.hourlyRate).toLocaleString('en-IN') + '/hr';
+  const discount = b.discountPct == null ? '' : ' · ' + Number(b.discountPct) + '% discount';
+  const paymentStatus = b.paymentStatus === 'paid' && b.paymentOrderId && !b.paymentFinalizedAt
+    ? 'verification pending' : b.paymentStatus || 'unpaid';
+  return '<p class="text-xs mt-1">' + MG.formatBookingDuration(b.hours) + ' · ' + price + rate + discount + '</p>' +
+    '<p class="text-[11px] mt-1">Booking: ' + MG.esc(b.status || 'pending') + ' · Payment: ' + MG.esc(paymentStatus) + '</p>' +
+    '<p class="text-[11px] break-all">Booking ref: ' + MG.esc(b.id || '') +
+    (b.paymentId ? ' · Payment ref: ' + MG.esc(b.paymentId) : '') + '</p>';
+}
+
 MG.openHistory = async function() {
   function statusLabel(st) {
     st = String(st || 'pending').toLowerCase();
@@ -119,17 +131,18 @@ MG.openHistory = async function() {
     try {
       const queue = await window.MentorFB.callSecure('listPendingBookings', {});
       const rows = Object.keys(queue || {}).map(function(id) { return queue[id]; }).filter(Boolean);
-      if (!rows.length) { section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3><p class="text-xs text-slate-500">No secure bookings awaiting review.</p>'; return; }
-      section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure Mentor 3.0 bookings</h3>' + rows.map(function(b) {
+      section.innerHTML = '<div class="flex items-center justify-between mb-2"><h3 class="font-bold text-sm">Secure Mentor 3.0 bookings</h3>' +
+        '<button type="button" class="secure-booking-refresh text-xs underline">Refresh bookings</button></div>' + (rows.length ? rows.map(function(b) {
         const uid = MG.esc(String(b.uid || ''));
         const bid = MG.esc(String(b.id || ''));
-        const paid = b.paymentStatus === 'paid';
+        const paid = b.paymentStatus === 'paid' && (!b.paymentOrderId || b.paymentFinalizedAt);
         return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
-          '<p class="text-xs text-slate-500">' + MG.esc(b.track || '') + ' · +91 ' + MG.esc(b.mobile || '') + '</p>' +
-          '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + ' · payment: ' + MG.esc(b.paymentStatus || 'unpaid') + '</p>' +
+          '<p class="text-xs text-slate-500">' + MG.esc(MG.TRACKS[b.track]?.name || b.track || '') + ' · +91 ' + MG.esc(b.mobile || '') + '</p>' +
+          bookingDetail(b) +
           '<div class="flex gap-2 mt-2"><button class="secure-booking-approve px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs" ' + (paid ? '' : 'disabled title="Awaiting verified payment"') + ' data-uid="' + uid + '" data-bid="' + bid + '">' + (paid ? 'Approve booking' : 'Awaiting payment') + '</button>' +
           '<button class="secure-booking-reject px-3 py-1.5 rounded-lg bg-slate-200 text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Reject</button></div></article>';
-      }).join('');
+      }).join('') : '<p class="text-xs text-slate-500">No secure bookings awaiting review.</p>');
+      section.querySelector('.secure-booking-refresh').addEventListener('click', () => MG.openHistory());
       section.querySelectorAll('.secure-booking-approve').forEach(function(btn) { btn.addEventListener('click', async function() {
         btn.disabled = true; try { await window.MentorFB.callSecure('approveBooking', { uid: btn.dataset.uid, bookingId: btn.dataset.bid }); MG.showToast('Secure booking approved'); await MG.openHistory(); }
         catch (e) { btn.disabled = false; MG.showToast(e.message || 'Approval failed'); }
@@ -180,16 +193,18 @@ MG.openHistory = async function() {
     }).filter(Boolean).sort(function(a,b){ return Number(b.createdAt || 0) - Number(a.createdAt || 0); });
     const sub = MG.state.data && MG.state.data.subscription;
     let plans = {};
-    try { plans = await window.MentorFB.callSecure('listAvailableSubscriptionPlans', {}); }
+    try { if (!viewing) plans = await window.MentorFB.callSecure('listAvailableSubscriptionPlans', {}); }
     catch (error) { console.warn('[Mentor] subscription plans unavailable', error && error.message); }
     if (!rows.length && !sub && !Object.keys(plans || {}).length) return;
     const section = document.createElement('section');
     section.className = 'mt-5 pt-4 border-t border-slate-200 dark:border-slate-700';
     const bookingRows = rows.map(function(b) {
+      const needsCheck = !viewing && b.paymentStatus === 'paid' && !b.paymentFinalizedAt;
+      const payable = !viewing && ['pending', 'approved'].includes(b.status) && (!b.paymentStatus || b.paymentStatus === 'unpaid');
       return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
-        '<p class="text-xs text-slate-500">' + MG.esc(b.track || '') + ' · ' + MG.esc(MG.formatDate(b.createdAt)) + '</p>' +
-        '<p class="text-xs mt-1">' + Number(b.hours || 0) + ' hours · ₹' + Number(b.amount || 0).toLocaleString('en-IN') + '</p>' +
-        '<p class="text-[11px] mt-1">Booking: ' + MG.esc(b.status || 'pending') + ' · Payment: ' + MG.esc(b.paymentStatus || 'unpaid') + '</p></article>';
+        '<p class="text-xs text-slate-500">' + MG.esc(MG.TRACKS[b.track]?.name || b.track || '') + ' · ' + MG.esc(MG.formatDate(b.createdAt)) + '</p>' +
+        bookingDetail(b) + (payable || needsCheck ? '<button type="button" class="secure-booking-resume mt-2 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs" data-booking="' +
+          MG.esc(b.id) + '">' + (needsCheck ? 'Check payment status' : 'Resume payment') + '</button>' : '') + '</article>';
     }).join('');
     const active = sub && sub.status === 'active' && Number(sub.expiresAt) > Date.now();
     const subHtml = sub ? '<p class="text-xs mb-2">Subscription: <b>' + (active ? 'Active' : MG.esc(sub.status || 'inactive')) + '</b>' +
@@ -204,6 +219,24 @@ MG.openHistory = async function() {
     }).join('');
     section.innerHTML = '<h3 class="font-bold text-sm mb-2">Secure bookings and access</h3>' + subHtml + (bookingRows || (!plans || !Object.keys(plans).length ? '<p class="text-xs text-slate-500">No secure bookings yet.</p>' : '')) + planHtml;
     container.appendChild(section);
+    section.querySelectorAll('.secure-booking-resume').forEach(button => button.addEventListener('click', async function() {
+      const booking = rows.find(row => row.id === button.dataset.booking);
+      if (!booking || button.disabled) return;
+      const label = button.textContent;
+      button.disabled = true;
+      let result;
+      try {
+        result = await MG.launchSecureCheckout(booking.id, {
+          reconcileOnly: booking.paymentStatus === 'paid',
+          description: (MG.TRACKS[booking.track]?.name || booking.track) + ' · ' + MG.formatBookingDuration(booking.hours),
+          amount: Number(booking.amount),
+          onProgress(message) { button.textContent = message; }
+        });
+      } finally {
+        button.disabled = false;
+        button.textContent = result?.status === 'verification_pending' ? 'Check payment status' : label;
+      }
+    }));
     const cancelButton = section.querySelector('#cancelSubscriptionRenewal');
     if (cancelButton) cancelButton.addEventListener('click', async function() {
       cancelButton.disabled = true;
@@ -216,8 +249,8 @@ MG.openHistory = async function() {
     });
     section.querySelectorAll('.buy-subscription-plan').forEach(function(button) { button.addEventListener('click', async function() {
       button.disabled = true;
-      try { await MG.launchSecureSubscriptionCheckout(button.dataset.plan); }
-      catch (error) { button.disabled = false; MG.showToast((error && error.message) || 'Could not start subscription checkout.'); }
+      try { await MG.launchSecureSubscriptionCheckout(button.dataset.plan, Number(plans[button.dataset.plan].amountPaise) / 100); }
+      finally { button.disabled = false; }
     }); });
   }
 

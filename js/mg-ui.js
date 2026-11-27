@@ -690,24 +690,13 @@ MG.initFastBooking = function () {
 
   if (!card || !durSel || !trackSel) return;
 
-  function getTrackPricing(trackId) {
-    var tr = (MG.TRACKS && MG.TRACKS[trackId]) || { hourlyRate: 699, packageDisc: { '1': 0, '3': 5, '5': 10 } };
-    return {
-      hourlyRate: Number(tr.hourlyRate) || 699,
-      packageDisc: tr.packageDisc || { '1': 0, '3': 5, '5': 10 }
-    };
-  }
-
   function calcAmount(trackId, hours) {
-    var p = getTrackPricing(trackId);
-    var hrs = Number(hours) || 1;
-    var disc = 0;
-    if (hrs >= 1 && p.packageDisc && p.packageDisc[String(hrs)] != null) {
-      disc = Number(p.packageDisc[String(hrs)]) || 0;
-    }
-    var raw = p.hourlyRate * hrs;
-    var finalAmt = Math.max(1, Math.round(raw * (1 - disc / 100)));
-    return { amount: finalAmt, disc: disc, hourlyRate: p.hourlyRate };
+    const track = MG.TRACKS[trackId];
+    const hourlyRate = Number(track?.hourlyRate);
+    const disc = hours < 1 ? 0 : Number(track?.packageDisc?.[hours]);
+    if (![0.25, 0.5, 1, 3, 5].includes(hours) || !Number.isInteger(hourlyRate) || hourlyRate < 1 ||
+        !Number.isFinite(disc) || disc < 0 || disc > 50) return null;
+    return { amount: Math.max(1, Math.round(hourlyRate * hours * (1 - disc / 100))), disc, hourlyRate };
   }
 
   function refreshLabels() {
@@ -723,15 +712,15 @@ MG.initFastBooking = function () {
       var info = labels[idx];
       if (!info) return;
       var res = calcAmount(trackId, Number(info.val));
-      opt.textContent = info.text + ' — ₹' + res.amount.toLocaleString('en-IN');
+      opt.textContent = res ? info.text + ' — ₹' + res.amount.toLocaleString('en-IN') : info.text;
     });
 
     var currentRes = calcAmount(trackId, Number(durSel.value));
-    if (priceEl) priceEl.textContent = '₹' + currentRes.amount.toLocaleString('en-IN');
+    if (priceEl) priceEl.textContent = currentRes ? '₹' + currentRes.amount.toLocaleString('en-IN') : '—';
     if (discEl) {
-      discEl.textContent = currentRes.disc > 0
-        ? '(' + currentRes.disc + '% package discount applied)'
-        : '(Base rate ₹' + currentRes.hourlyRate.toLocaleString('en-IN') + '/hr)';
+      discEl.textContent = !currentRes ? 'Fee confirmed by the server' : currentRes.disc > 0
+        ? 'Estimate · ' + currentRes.disc + '% package discount'
+        : 'Estimate · Base rate ₹' + currentRes.hourlyRate.toLocaleString('en-IN') + '/hr';
     }
   }
 
@@ -752,40 +741,46 @@ MG.initFastBooking = function () {
         card.classList.add('hidden');
       });
     }
-    durSel.addEventListener('change', refreshLabels);
-    trackSel.addEventListener('change', refreshLabels);
+    const payLabel = payBtn?.innerHTML;
+    function refreshForm() {
+      refreshLabels();
+      if (payBtn && !payBtn.disabled) payBtn.innerHTML = payLabel;
+    }
+    durSel.addEventListener('change', refreshForm);
+    trackSel.addEventListener('change', refreshForm);
+    probInput?.addEventListener('input', () => { if (payBtn && !payBtn.disabled) payBtn.innerHTML = payLabel; });
 
     if (payBtn) {
       payBtn.addEventListener('click', async function () {
-        var trackId = trackSel.value || 'career_ai';
-        var hours = Number(durSel.value) || 1;
+        if (payBtn.disabled) return;
+        var trackId = trackSel.value;
+        var hours = Number(durSel.value);
         var problem = (probInput && probInput.value || '').trim();
         if (!problem) {
           MG.showToast('Please describe your problem briefly before paying');
           if (probInput) probInput.focus();
           return;
         }
-        var defaultTopic = (MG.TOPICS || []).find(function (t) { return (t.track || 'career_ai') === trackId; });
-        var topicId = defaultTopic ? defaultTopic.id : (trackId === 'packaging' ? 'pack-capacity' : 'ai-tools');
+        var topicId = MG.getBookingTopicId(trackId);
         var res = calcAmount(trackId, hours);
-
-        if (MG.state) {
-          MG.state.bookingTopicId = topicId;
-          MG.state.bookingTrack = trackId;
-          MG.state.bookingHours = hours;
-          MG.state.bookingCustomTopic = problem;
-        }
-
-        if (typeof MG.startSecureRazorpayBooking === 'function') {
-          await MG.startSecureRazorpayBooking({
-            track: trackId,
-            topic: problem,
-            topicId: topicId,
-            hours: hours,
-            amount: res.amount
+        const controls = [payBtn, durSel, trackSel, probInput].filter(Boolean);
+        controls.forEach(control => { control.disabled = true; });
+        payBtn.setAttribute('aria-busy', 'true');
+        let result;
+        try {
+          result = await MG.startSecureRazorpayBooking({ track: trackId, topic: problem, topicId, hours, amount: res?.amount }, {
+            onProgress: message => { payBtn.textContent = message; },
+            onPrice(amount, booking) {
+              if (priceEl) priceEl.textContent = '₹' + amount.toLocaleString('en-IN');
+              if (discEl) discEl.textContent = booking?.discountPct > 0 ? 'Confirmed · ' + booking.discountPct + '% package discount' : 'Confirmed fee';
+            },
+            onPaid() { if (probInput) probInput.value = ''; }
           });
-        } else if (typeof MG.openBooking === 'function') {
-          MG.openBooking(topicId);
+        } finally {
+          controls.forEach(control => { control.disabled = false; });
+          payBtn.removeAttribute('aria-busy');
+          if (result?.status === 'verification_pending') payBtn.textContent = 'Check payment status';
+          else payBtn.innerHTML = payLabel;
         }
       });
     }

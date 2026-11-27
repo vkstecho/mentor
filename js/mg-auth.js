@@ -172,13 +172,22 @@ MG.parentManPowerMobile = function() {
   return null;
 }
 
-MG.doSiteLogout = function() {
-  MG.clearSiteAuth();
+MG.firebasePhone = function(user) {
+  const phone = user && !user.isAnonymous && /^\+91[6-9]\d{9}$/.test(user.phoneNumber) && user.phoneNumber;
+  return phone ? phone.slice(3) : '';
+};
+
+MG.doSiteLogout = async function() {
   try {
-    if (window.MentorFB && window.MentorFB.auth && window.MentorFB.auth.signOut) {
-      window.MentorFB.auth.signOut();
+    if (window.MentorFB && window.MentorFB.auth) {
+      await window.MentorFB.waitForAuth();
+      await window.MentorFB.auth.signOut();
     }
-  } catch (e) {}
+  } catch (e) {
+    MG.showToast('Could not sign out. Please try again.');
+    return;
+  }
+  MG.clearSiteAuth();
   try { MG.showToast('Logged out'); } catch (e2) {}
   // Always return to Mentor marketing landing after logout
   setTimeout(function () {

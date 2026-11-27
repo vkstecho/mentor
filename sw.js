@@ -1,4 +1,4 @@
-const CACHE = 'mentor-pwa-v15-relative-paths';
+const CACHE = 'mentor-pwa-v17-payment-recovery';
 const PRECACHE = [
   './',
   './mentor.html',
