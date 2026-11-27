@@ -473,6 +473,7 @@ MG.renderCatalog = function() {
   try { MG.initCategoryNav(); } catch (e2) {}
   try { MG.loadMentorTestimonials(); } catch (e3) {}
   try { MG.loadYoutubeShowcase(); } catch (e4) {}
+  try { MG.initFastBooking(); } catch (e5) {}
 }
 
 // ========== In-app testimonials (GitHub shared library) ==========
@@ -577,7 +578,7 @@ MG.loadMentorTestimonials = async function () {
 
 
 
-// ========== YouTube Channel Showcase (@WorkoHolicVKSTech) ==========
+// ========== YouTube Channel Showcase (VKS Tech (@vkstechpro)) ==========
 MG.loadYoutubeShowcase = async function () {
   var host = document.getElementById('ytShowcaseScroll');
   if (!host || MG._ytLoaded) return;
@@ -610,7 +611,7 @@ MG.loadYoutubeShowcase = async function () {
   var mode = 'videos';
   function playEmbed(src, title) {
     if (!playerWrap || !iframe) return;
-    if (playerTitle) playerTitle.textContent = title || '@WorkoHolicVKSTech';
+    if (playerTitle) playerTitle.textContent = title || 'VKS Tech (@vkstechpro)';
     iframe.src = src;
     playerWrap.classList.remove('hidden');
     playerWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -619,7 +620,7 @@ MG.loadYoutubeShowcase = async function () {
   function renderList() {
     var items = mode === 'playlists' ? (data.playlists || []) : (data.videos || []);
     if (!items.length) {
-      host.innerHTML = '<a href="https://www.youtube.com/@WorkoHolicVKSTech" target="_blank" rel="noopener" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-red-600">Open @WorkoHolicVKSTech on YouTube →</a>';
+      host.innerHTML = '<a href="https://www.youtube.com/@vkstechpro" target="_blank" rel="noopener" class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-red-600">Open VKS Tech (@vkstechpro) on YouTube →</a>';
       return;
     }
     host.innerHTML = items.map(function (it) {
@@ -672,6 +673,125 @@ MG.loadYoutubeShowcase = async function () {
   }
 
   renderList();
+};
+
+
+// ========== Fast Booking (15m / 30m / 1h / 3h / 5h) ==========
+MG.initFastBooking = function () {
+  var toggleBtn = document.getElementById('m3FastBookToggleBtn');
+  var card = document.getElementById('fastBookingCard');
+  var closeBtn = document.getElementById('fastBookCloseBtn');
+  var durSel = document.getElementById('fbDurationSelect');
+  var trackSel = document.getElementById('fbTrackSelect');
+  var probInput = document.getElementById('fbProblemInput');
+  var priceEl = document.getElementById('fbCalculatedPrice');
+  var discEl = document.getElementById('fbDiscountNote');
+  var payBtn = document.getElementById('fbPayNowBtn');
+
+  if (!card || !durSel || !trackSel) return;
+
+  function getTrackPricing(trackId) {
+    var tr = (MG.TRACKS && MG.TRACKS[trackId]) || { hourlyRate: 699, packageDisc: { '1': 0, '3': 5, '5': 10 } };
+    return {
+      hourlyRate: Number(tr.hourlyRate) || 699,
+      packageDisc: tr.packageDisc || { '1': 0, '3': 5, '5': 10 }
+    };
+  }
+
+  function calcAmount(trackId, hours) {
+    var p = getTrackPricing(trackId);
+    var hrs = Number(hours) || 1;
+    var disc = 0;
+    if (hrs >= 1 && p.packageDisc && p.packageDisc[String(hrs)] != null) {
+      disc = Number(p.packageDisc[String(hrs)]) || 0;
+    }
+    var raw = p.hourlyRate * hrs;
+    var finalAmt = Math.max(1, Math.round(raw * (1 - disc / 100)));
+    return { amount: finalAmt, disc: disc, hourlyRate: p.hourlyRate };
+  }
+
+  function refreshLabels() {
+    var trackId = trackSel.value || 'career_ai';
+    var labels = [
+      { val: '0.25', text: '15 Minutes (Quick Doubt)' },
+      { val: '0.5', text: '30 Minutes (Focused Session)' },
+      { val: '1', text: '1 Hour (Deep-Dive)' },
+      { val: '3', text: '3 Hours (Value Pack)' },
+      { val: '5', text: '5 Hours (Mastery Pack)' }
+    ];
+    Array.from(durSel.options).forEach(function (opt, idx) {
+      var info = labels[idx];
+      if (!info) return;
+      var res = calcAmount(trackId, Number(info.val));
+      opt.textContent = info.text + ' — ₹' + res.amount.toLocaleString('en-IN');
+    });
+
+    var currentRes = calcAmount(trackId, Number(durSel.value));
+    if (priceEl) priceEl.textContent = '₹' + currentRes.amount.toLocaleString('en-IN');
+    if (discEl) {
+      discEl.textContent = currentRes.disc > 0
+        ? '(' + currentRes.disc + '% package discount applied)'
+        : '(Base rate ₹' + currentRes.hourlyRate.toLocaleString('en-IN') + '/hr)';
+    }
+  }
+
+  if (!card._bound) {
+    card._bound = true;
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        if (typeof MG.showCategory === 'function') MG.showCategory(null);
+        card.classList.toggle('hidden');
+        if (!card.classList.contains('hidden')) {
+          refreshLabels();
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        card.classList.add('hidden');
+      });
+    }
+    durSel.addEventListener('change', refreshLabels);
+    trackSel.addEventListener('change', refreshLabels);
+
+    if (payBtn) {
+      payBtn.addEventListener('click', async function () {
+        var trackId = trackSel.value || 'career_ai';
+        var hours = Number(durSel.value) || 1;
+        var problem = (probInput && probInput.value || '').trim();
+        if (!problem) {
+          MG.showToast('Please describe your problem briefly before paying');
+          if (probInput) probInput.focus();
+          return;
+        }
+        var defaultTopic = (MG.TOPICS || []).find(function (t) { return (t.track || 'career_ai') === trackId; });
+        var topicId = defaultTopic ? defaultTopic.id : (trackId === 'packaging' ? 'pack-capacity' : 'ai-tools');
+        var res = calcAmount(trackId, hours);
+
+        if (MG.state) {
+          MG.state.bookingTopicId = topicId;
+          MG.state.bookingTrack = trackId;
+          MG.state.bookingHours = hours;
+          MG.state.bookingCustomTopic = problem;
+        }
+
+        if (typeof MG.startSecureRazorpayBooking === 'function') {
+          await MG.startSecureRazorpayBooking({
+            track: trackId,
+            topic: problem,
+            topicId: topicId,
+            hours: hours,
+            amount: res.amount
+          });
+        } else if (typeof MG.openBooking === 'function') {
+          MG.openBooking(topicId);
+        }
+      });
+    }
+  }
+
+  refreshLabels();
 };
 
 })(window.MG = window.MG || {});

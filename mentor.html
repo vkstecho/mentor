@@ -564,8 +564,9 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           <div id="m3WelcomeCard">
             <div class="m3-eyebrow">Your Mentor learning hub</div>
             <h2>Make your next step count.</h2>
-            <p>Choose a focused learning track, explore practical modules, and keep your mentoring sessions and learning resources in one place.</p>
+            <p>Over a decade of real industry &amp; plant leadership. Choose a focused learning track, explore free modules, or book an instant 1-on-1 session with recordings &amp; doubt support.</p>
             <div id="m3WelcomeActions">
+              <button type="button" id="m3FastBookToggleBtn" class="m3-path-active"><i class="fas fa-bolt mr-1 text-amber-500"></i> Fast Booking</button>
               <button type="button" id="m3HeroBtnCareer" onclick="document.getElementById('catBtnCareer')?.click()">Explore Career &amp; AI <i class="fas fa-arrow-right ml-1"></i></button>
               <button type="button" id="m3HeroBtnPackaging" onclick="document.getElementById('catBtnPackaging')?.click()">Explore Packaging <i class="fas fa-arrow-right ml-1"></i></button>
             </div>
@@ -578,9 +579,56 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           </div>
         </section>
 
-        <div id="catalogIntro" class="mb-4 sm:mb-5">
-          <h2 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white" data-i18n="choosePath">Choose your path</h2>
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="choosePathSub">Free modules · paid 1:1 · recordings &amp; doubt chat</p>
+        <!-- Interactive Fast Booking Drawer (3-Step Instant Session) -->
+        <div id="fastBookingCard" class="hidden mb-5 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-brand-500/40 shadow-lg space-y-3.5">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400"><i class="fas fa-bolt mr-1"></i> Instant 1-on-1 Session</span>
+              <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Fast Booking</h3>
+            </div>
+            <button type="button" id="fastBookCloseBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Close Fast Booking"><i class="fas fa-times"></i></button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Row 1: Duration -->
+            <div>
+              <label for="fbDurationSelect" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">1. Session Duration</label>
+              <select id="fbDurationSelect" class="form-input text-sm w-full font-semibold">
+                <option value="0.25">15 Minutes (Quick Doubt)</option>
+                <option value="0.5">30 Minutes (Focused Session)</option>
+                <option value="1" selected>1 Hour (Deep-Dive)</option>
+                <option value="3">3 Hours (Value Pack)</option>
+                <option value="5">5 Hours (Mastery Pack)</option>
+              </select>
+            </div>
+
+            <!-- Row 2: Track -->
+            <div>
+              <label for="fbTrackSelect" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">2. Select Area</label>
+              <select id="fbTrackSelect" class="form-input text-sm w-full font-semibold">
+                <option value="career_ai">Career &amp; AI Guidance</option>
+                <option value="packaging">Flexible Packaging Expert</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 3: Problem Description -->
+          <div>
+            <label for="fbProblemInput" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">3. Briefly describe your problem</label>
+            <input type="text" id="fbProblemInput" maxlength="160" class="form-input text-sm w-full" placeholder="e.g. Excel automation with AI, Resume review, or Metalliser OD / yield issue..." />
+          </div>
+
+          <!-- Live Calculated Rate + Pay Now -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+            <div>
+              <span class="text-xs text-slate-500 dark:text-slate-400 block">Calculated Fee (Live Admin Rate)</span>
+              <span id="fbCalculatedPrice" class="text-xl font-black text-brand-600 dark:text-brand-400">Loading rate…</span>
+              <span id="fbDiscountNote" class="text-[11px] font-semibold text-emerald-600 ml-1.5"></span>
+            </div>
+            <button type="button" id="fbPayNowBtn" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow transition shrink-0">
+              <i class="fas fa-lock"></i> Pay Now
+            </button>
+          </div>
         </div>
 
         <!-- Mentor Student Selector (Mentor Mode only) -->
@@ -608,7 +656,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                 <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
                   <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200">Plant</span>
                   <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">Free + Paid</span>
-                  <span class="text-[11px] font-extrabold text-orange-600 dark:text-orange-300" data-track-rate="packaging">₹799/hr</span>
+                  <span class="text-[11px] font-extrabold text-orange-600 dark:text-orange-300" data-track-rate="packaging">—</span>
                 </div>
               </div>
             </div>
@@ -622,7 +670,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                 <div class="font-extrabold text-[15px] sm:text-lg text-slate-900 dark:text-white leading-snug">Career &amp; AI Guidance</div>
                 <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
                   <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-200">1:1</span>
-                  <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-300" data-track-rate="career_ai">₹699/hr</span>
+                  <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-300" data-track-rate="career_ai">—</span>
                 </div>
               </div>
             </div>
@@ -632,19 +680,19 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         </div>
 
 
-        <!-- YouTube Channel Showcase (@WorkoHolicVKSTech) -->
+        <!-- YouTube Channel Showcase (VKS Tech (@vkstechpro)) -->
         <div id="vksYoutubeShowcase" class="mb-6 p-4 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
             <div class="min-w-0">
               <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-red-600 dark:text-red-400 truncate">
-                <i class="fab fa-youtube mr-1"></i> @WorkoHolicVKSTech
+                <i class="fab fa-youtube mr-1"></i> VKS Tech (@vkstechpro)
               </p>
               <h3 class="text-sm sm:text-base font-extrabold text-slate-800 dark:text-slate-100">Videos &amp; Playlists</h3>
             </div>
             <div class="flex flex-wrap items-center gap-1.5 shrink-0">
               <button type="button" id="ytTabVideos" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white shrink-0">Videos</button>
               <button type="button" id="ytTabPlaylists" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0">Playlists</button>
-              <a href="https://www.youtube.com/@WorkoHolicVKSTech" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-red-400 shrink-0 whitespace-nowrap">
+              <a href="https://www.youtube.com/@vkstechpro" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-red-400 shrink-0 whitespace-nowrap">
                 <span>Channel</span><i class="fas fa-external-link-alt text-[9px]"></i>
               </a>
             </div>
@@ -662,7 +710,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           </div>
 
           <div id="ytShowcaseScroll" class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory" style="scrollbar-width:thin">
-            <div class="shrink-0 w-64 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500">Loading @WorkoHolicVKSTech videos…</div>
+            <div class="shrink-0 w-64 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500">Loading VKS Tech (@vkstechpro) videos…</div>
           </div>
         </div>
 
@@ -751,7 +799,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 
           <div class="mb-2 flex items-center gap-2">
             <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100">Paid one-to-one — Packaging Expert</h2>
-            <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 text-amber-800" data-track-rate="packaging">₹799/hr</span>
+            <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 text-amber-800" data-track-rate="packaging">—</span>
           </div>
           <p class="text-sm text-slate-500 mb-4">Real shop-floor problems: capacity, yield, metalliser, manpower, cost/sqm, troubleshooting.</p>
           <div id="topicsGridPackaging" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
@@ -763,7 +811,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             <button type="button" class="back-to-cats px-3 py-1.5 rounded-lg text-sm font-semibold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"><i class="fas fa-arrow-left mr-1"></i> All paths</button>
             <div class="text-right">
               <div class="font-bold text-indigo-700 dark:text-indigo-300">Career &amp; AI Guidance</div>
-              <div class="text-[11px] text-slate-500">15 programs · <span data-track-rate="career_ai">₹699 / hour</span></div>
+              <div class="text-[11px] text-slate-500">15 programs · <span data-track-rate="career_ai">—</span></div>
             </div>
           </div>
           <div id="topicsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -783,7 +831,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             </div>
           </div>
           <button id="bookMoreBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow transition">
-            <i class="fas fa-calendar-plus"></i> Book Another Hour (₹699)
+            <i class="fas fa-calendar-plus"></i> Book Another Hour
           </button>
         </div>
 
@@ -900,7 +948,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <div class="flex justify-between"><span class="text-slate-500">Rate</span><span id="sumRate" class="font-semibold">—</span></div>
         <div class="flex justify-between"><span class="text-slate-500">Hours</span><span id="sumHours" class="font-semibold">1</span></div>
         <div class="flex justify-between items-center pt-1 border-t border-slate-200 dark:border-slate-700"><span class="font-medium">Total</span>
-          <span id="bookingTotal" class="text-xl font-bold text-brand-600">₹699</span></div>
+          <span id="bookingTotal" class="text-xl font-bold text-brand-600">—</span></div>
       </div>
 
       <p id="bookingPaymentNote" class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
