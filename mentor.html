@@ -44,8 +44,9 @@
   <script type="module">
     import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, signInAnonymously, signOut, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+    import { createMentorPhoneAuth } from "./js/mg-phone-auth.mjs";
 
     try {
       const firebaseConfig = window.MENTOR_FIREBASE_CONFIG;
@@ -59,6 +60,36 @@
       const functions = getFunctions(app, "asia-south1");
       let resolveInitialAuth;
       const initialAuthReady = new Promise(resolve => { resolveInitialAuth = resolve; });
+      let guestAuth;
+      const phoneAuth = createMentorPhoneAuth({
+        waitForAuth: async () => { await initialAuthReady; await guestAuth; },
+        currentUser: () => auth.currentUser,
+        signInWithPhone: (phone, verifier) => signInWithPhoneNumber(auth, phone, verifier),
+        verifyGuestPhone: (phone, verifier) => new PhoneAuthProvider(auth).verifyPhoneNumber(phone, verifier),
+        makeCredential: (verificationId, code) => PhoneAuthProvider.credential(verificationId, code),
+        linkCredential: (guest, credential) => linkWithCredential(guest, credential),
+        credentialFromError: error => PhoneAuthProvider.credentialFromError(error),
+        signInCredential: credential => signInWithCredential(auth, credential),
+        createVerifier(context) {
+          const host = document.getElementById(context === 'mentor' ? 'recaptcha-container-mentor' : 'recaptcha-container');
+          if (!host) throw Object.assign(new Error('Missing security check'), { code: 'auth/captcha-check-failed' });
+          host.replaceChildren();
+          host.classList.add('mentor-recaptcha-visible');
+          const clear = () => {
+            try { verifier?.clear(); } catch {}
+            host.classList.remove('mentor-recaptcha-visible');
+            host.replaceChildren();
+          };
+          let verifier;
+          try {
+            verifier = new RecaptchaVerifier(auth, host, { size: 'normal' });
+            return { verifier, clear };
+          } catch (error) {
+            clear();
+            throw error;
+          }
+        }
+      });
 
       // Expose simple API for guidance.js
       window.MentorFB = {
@@ -69,10 +100,14 @@
           return auth.currentUser;
         },
         async callSecure(name, payload, expectedUid) {
-          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "getYoutubeShowcase", "health"];
-          if (!allowed.includes(name)) throw new Error("Unsupported secure operation");
+          const allowed = ["getMyStudentRecord", "getMyV3Profile", "updateMyProfile", "createBooking", "createRazorpayOrder", "verifyRazorpayPayment", "adminReconcileBookingPayment", "getMySubscription", "listAvailableSubscriptionPlans", "getMyBookings", "getMyEntitlements", "cancelMySubscriptionRenewal", "sendTopicMessage", "listTopicMessages", "listSecureStudentTopicMessages", "adminSendTopicMessage", "adminSendLegacyTopicMessage", "getSecureStudentByMobile", "getMyLearningProgress", "getMyRecordings", "adminAddRecording", "updateLearningProgress", "getMyCertificates", "revokeCertificate", "listPendingBookings", "listRefundReviews", "resolveRefundReview", "listStudents", "approveBooking", "rejectBooking", "setMentorSettings", "approveLegacyPayment", "rejectLegacyPayment", "getYoutubeShowcase", "health"];
+          const sessionCalls = ["getBookingSessionDashboard", "markPaidBookingNotificationRead", "manageBookingSession", "getBookingSessionLink",
+            "getBookingPaymentReceipt", "markBookingConfirmationRead", "getBookingConversation", "sendBookingMessage", "submitBookingFeedback"];
+          const appointmentCalls = ["getAppointmentAvailability", "getMentorAvailability", "updateMentorAvailability", "respondToAppointmentProposal"];
+          if (!allowed.includes(name) && !sessionCalls.includes(name) && !appointmentCalls.includes(name)) throw new Error("Unsupported secure operation");
           const user = await this.waitForAuth();
-          if (name !== "getYoutubeShowcase" && (!user || user.isAnonymous || (expectedUid && user.uid !== expectedUid))) {
+          const publicRead = name === "getYoutubeShowcase" || (name === "getAppointmentAvailability" && payload?.asAdmin !== true);
+          if (!publicRead && (!user || user.isAnonymous || (expectedUid && user.uid !== expectedUid))) {
             throw Object.assign(new Error("Phone verification required"), { code: "functions/unauthenticated" });
           }
           const callable = httpsCallable(functions, name);
@@ -82,132 +117,30 @@
           }
           return result.data;
         },
-        async sendOtp(phoneE164Or10) {
-          // Alias for mentor unlock + login
-          const p = String(phoneE164Or10||'').replace(/\D/g,'');
-          const ten = p.length>=10 ? p.slice(-10) : p;
-          return this.sendPhoneOtp(ten);
+        sendOtp(phoneE164Or10) {
+          const digits = String(phoneE164Or10 || '').replace(/\D/g, '').slice(-10);
+          return phoneAuth.send(digits, { context: 'mentor' });
         },
-        async confirmOtp(code) {
-          return this.verifyPhoneOtp(code);
-        },
-        async sendPhoneOtp(phone10) {
-          await this.ensureAuth();
-          const guest = auth.currentUser?.isAnonymous ? auth.currentUser : null;
-          const phone = '+91' + phone10;
-          try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
-          window._mentorRecaptcha = null;
-          // Prefer login prompt container; fall back to mentor-mode container
-          let host = document.getElementById('recaptcha-container');
-          let hostId = 'recaptcha-container';
-          const loginPrompt = document.getElementById('mobilePrompt');
-          const loginVisible = loginPrompt && !loginPrompt.classList.contains('hidden');
-          if (!loginVisible) {
-            const mHost = document.getElementById('recaptcha-container-mentor');
-            if (mHost) { host = mHost; hostId = 'recaptcha-container-mentor'; }
-          }
-          if (host) {
-            host.innerHTML = '';
-            host.style.minHeight = '78px';
-            host.style.display = 'flex';
-            host.style.justifyContent = 'center';
-            host.style.alignItems = 'center';
-            host.style.marginTop = '8px';
-            host.style.overflow = 'visible';
-            host.style.visibility = 'visible';
-            host.style.opacity = '1';
-            host.style.position = 'relative';
-            host.style.zIndex = '10001';
-            try {
-              if (window.innerWidth < 640) {
-                host.style.position = 'fixed';
-                host.style.left = '50%';
-                host.style.bottom = '24px';
-                host.style.transform = 'translateX(-50%)';
-                host.style.background = '#fff';
-                host.style.padding = '10px';
-                host.style.borderRadius = '12px';
-                host.style.boxShadow = '0 12px 40px rgba(0,0,0,.25)';
-                host.style.width = 'auto';
-                host.style.maxWidth = '95vw';
-              }
-            } catch (e0) {}
-          }
-          // Visible reCAPTCHA is more reliable on mobile (checkbox must be tappable)
-          window._mentorRecaptcha = new RecaptchaVerifier(auth, hostId, {
-            size: 'normal',
-            callback: () => {},
-            'expired-callback': () => { window._mentorRecaptcha = null; }
-          });
-          await window._mentorRecaptcha.render();
-          window._mentorPendingPhoneCredential = null;
-          window._mentorPhoneLinkAttempt = null;
-          window._mentorConfirmOtp = null;
-          if (guest) {
-            const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber(phone, window._mentorRecaptcha);
-            if (auth.currentUser?.uid !== guest.uid) throw new Error('The guest account changed. Request a new OTP.');
-            window._mentorPhoneLinkAttempt = { guestUid: guest.uid, verificationId };
-          } else {
-            const conf = await signInWithPhoneNumber(auth, phone, window._mentorRecaptcha);
-            window._mentorConfirmOtp = (code) => conf.confirm(code);
-          }
-          try { if (window._mentorRecaptcha) { window._mentorRecaptcha.clear(); } } catch(e) {}
-          window._mentorRecaptcha = null;
-          if (host) {
-            host.style.display = 'none';
-            host.innerHTML = '';
-          }
-          return true;
-        },
-        async verifyPhoneOtp(code) {
-          const attempt = window._mentorPhoneLinkAttempt;
-          if (attempt) {
-            const guest = auth.currentUser;
-            if (!guest || !guest.isAnonymous || guest.uid !== attempt.guestUid) throw new Error('Guest account changed during phone verification. Restart the sign-in step.');
-            const credential = PhoneAuthProvider.credential(attempt.verificationId, code);
-            try {
-              const result = await linkWithCredential(guest, credential);
-              if (result.user.uid !== attempt.guestUid || !result.user.phoneNumber) throw new Error('Phone linking did not preserve the guest account.');
-              window._mentorPhoneLinkAttempt = null;
-              window._mentorPendingPhoneCredential = null;
-              return result.user;
-            } catch (error) {
-              if (error && (error.code === 'auth/credential-already-in-use' || error.code === 'auth/account-exists-with-different-credential')) {
-                window._mentorPendingPhoneCredential = { guestUid: guest.uid, credential };
-                if (error.code !== 'auth/credential-already-in-use') {
-                  throw Object.assign(new Error('An existing phone account requires confirmation.'), { code: 'auth/credential-already-in-use' });
-                }
-              }
-              throw error;
-            }
-          }
-          if (!window._mentorConfirmOtp) throw new Error('Request OTP first');
-          const cred = await window._mentorConfirmOtp(code);
-          window._mentorConfirmOtp = null;
-          return cred?.user || null;
-        },
-        async continueWithExistingPhoneAccount() {
-          const pending = window._mentorPendingPhoneCredential;
-          if (!pending || !auth.currentUser || !auth.currentUser.isAnonymous || auth.currentUser.uid !== pending.guestUid) throw new Error('The verified sign-in is no longer available. Request a new OTP.');
-          const result = await signInWithCredential(auth, pending.credential);
-          window._mentorPhoneLinkAttempt = null;
-          window._mentorPendingPhoneCredential = null;
-          return result.user;
-        },
+        confirmOtp(code) { return phoneAuth.verify(code, 'mentor'); },
+        sendPhoneOtp(phone10, options) { return phoneAuth.send(phone10, options); },
+        resendPhoneOtp() { return phoneAuth.resend(); },
+        verifyPhoneOtp(code) { return phoneAuth.verify(code); },
+        continueWithExistingPhoneAccount() { return phoneAuth.continueExisting(); },
+        cancelPhoneOtp(context) { return phoneAuth.cancel(context); },
         async ensureAuth() {
           await initialAuthReady;
           if (auth.currentUser) return auth.currentUser;
+          if (phoneAuth.inProgress()) return null;
           try {
-            // Prefer parent Man Power auth if iframed
             if (window.parent && window.parent !== window && window.parent._fbAuth?.currentUser) {
               return window.parent._fbAuth.currentUser;
             }
-            await signInAnonymously(auth);
-            return auth.currentUser;
-          } catch (e) {
-            console.warn("[MentorFB] auth failed", e.message);
+          } catch {}
+          guestAuth ||= signInAnonymously(auth).then(result => result.user).catch(error => {
+            console.warn('[MentorFB] guest authentication failed', error?.code || 'unavailable');
             return null;
-          }
+          }).finally(() => { guestAuth = null; });
+          return guestAuth;
         },
         async get(path) {
           await this.ensureAuth();
@@ -267,7 +200,7 @@
       window.dispatchEvent(new Event("mentor-fb-ready"));
       console.info("[MentorFB] Initialized Firebase project", app.options.projectId);
     } catch (e) {
-      console.warn("[MentorFB] init failed – localStorage only", e);
+      console.warn("[MentorFB] initialization failed", e?.code || "unavailable");
       window.MentorFB = null;
     }
   </script>
@@ -363,6 +296,14 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 </style>
 
   <link rel="stylesheet" href="css/mentor-premium-ui.css">
+  <link rel="stylesheet" href="css/appointments.css">
+  <style>
+    .mentor-recaptcha-host { display:none; }
+    .mentor-recaptcha-visible { display:flex; justify-content:center; margin-top:.5rem; position:relative; z-index:10001; }
+    @media(max-width:639px) {
+      .mentor-recaptcha-visible { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#fff; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+    }
+  </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 font-sans">
 
@@ -385,10 +326,11 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           <input type="tel" id="mobileInput" maxlength="10" pattern="[6-9][0-9]{9}"
             class="form-input flex-1 text-base" placeholder="9876543210" autocomplete="tel" />
         </div>
-        <p id="mobileError" class="text-xs text-red-500 mt-1.5 hidden">Enter a valid 10-digit Indian mobile number</p>
+        <p id="mobileError" role="alert" class="text-xs text-red-500 mt-1.5 hidden"></p>
         <button id="mobileSubmit" class="w-full mt-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
           <i class="fas fa-arrow-right mr-1.5"></i> Continue
         </button>
+        <button id="upgradeGuestBtn" type="button" class="hidden w-full mt-2 py-2 text-sm text-brand-600 hover:underline">Link this guest session to a phone</button>
       </div>
 
       <!-- Install / Share on login (hidden when already installed as PWA) -->
@@ -418,9 +360,9 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Enter 6-digit OTP</label>
         <input type="text" id="otpInput" maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
           class="form-input w-full text-center text-2xl tracking-[0.4em] font-bold" placeholder="••••••" autocomplete="one-time-code" />
-        <p id="otpError" class="text-xs text-red-500 mt-1.5 hidden">Invalid OTP. Please try again.</p>
+        <p id="otpError" role="alert" class="text-xs text-red-500 mt-1.5 hidden"></p>
         <div id="phoneAccountConflict" class="hidden mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-left">
-          <p class="text-xs leading-relaxed text-amber-900">This phone already has an account. Your guest account and its UID remain saved separately; they will not be merged or deleted.</p>
+          <p class="text-xs leading-relaxed text-amber-900">Use the existing phone account to access its history. Your guest session data stays with the guest account.</p>
           <button type="button" id="continueExistingPhoneAccountBtn" class="w-full mt-2 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold">Continue with existing phone account</button>
         </div>
         <button id="otpVerifyBtn" class="w-full mt-4 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow transition">
@@ -449,12 +391,12 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           </button>
         </div>
         <button type="button" id="quickUseOtpBtn" class="w-full mt-3 py-2 text-sm text-brand-600 hover:underline">Use OTP instead</button>
-        <button type="button" id="quickChangeNumBtn" type="button" class="w-full py-1 text-xs text-slate-500 hover:underline">Change number</button>
+        <button type="button" id="quickChangeNumBtn" class="w-full py-1 text-xs text-slate-500 hover:underline">Change number</button>
       </div>
 
       <!-- Step 4: After first OTP — set password / fingerprint for this device -->
       <div id="otpStepSetup" class="hidden">
-        <p class="text-sm text-slate-600 dark:text-slate-300 text-center mb-3">Remember this device? Next time you can login without OTP.</p>
+        <p class="text-sm text-slate-600 dark:text-slate-300 text-center mb-3">You can use a local password or fingerprint while your Firebase session is active.</p>
         <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Create device password</label>
         <input type="password" id="setupPasswordInput" class="form-input w-full mb-2" placeholder="Min 4 characters" autocomplete="new-password" />
         <input type="password" id="setupPasswordConfirm" class="form-input w-full mb-2" placeholder="Confirm password" autocomplete="new-password" />
@@ -468,7 +410,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <button type="button" id="setupSkipBtn" class="w-full mt-3 py-2 text-sm text-slate-500 hover:underline">Skip for now</button>
       </div>
 
-      <div id="recaptcha-container" class="flex justify-center items-center w-full mt-3 mb-1" style="min-height:78px;overflow:visible;"></div>
+      <div id="recaptcha-container" class="mentor-recaptcha-host"></div>
       <p class="text-[10px] text-center text-slate-400 mt-2">OTP via SMS · Complete the reCAPTCHA checkbox if shown · Firebase Auth</p>
     </div>
   </div>
@@ -517,6 +459,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
           <button id="paymentHistoryBtn" aria-label="Payments" class="p-2 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1.5" title="Payment History">
               <i class="fas fa-receipt"></i>
               <span class="hidden sm:inline">Payments</span>
+              <span id="mentorSecureBookingsBadge" class="text-[10px] font-bold" aria-live="polite"></span>
+            </button>
+            <button type="button" id="mentorSessionBell" aria-label="Paid booking notifications" title="Paid booking notifications" class="hidden p-2 rounded-lg bg-amber-100 dark:bg-slate-700 text-sm">
+              <i class="fas fa-bell" aria-hidden="true"></i> <span id="mentorSessionUnread" aria-live="polite">0</span>
             </button>
                         <button type="button" id="mentorLangBtn" class="p-2 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1" title="Language" onclick="try{if(window.MG&&MG.openLangPicker)MG.openLangPicker();else if(window.openMentorLangPicker)openMentorLangPicker();else alert('Language loading…');}catch(e){alert(e&&e.message?e.message:e)}">
               <span aria-hidden="true">🌐</span>
@@ -582,6 +528,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             <p>Over a decade of real industry &amp; plant leadership. Choose a focused learning track, explore free modules, or book an instant 1-on-1 session with recordings &amp; doubt support.</p>
             <div id="m3WelcomeActions">
               <button type="button" id="m3FastBookToggleBtn" class="m3-path-active"><i class="fas fa-bolt mr-1 text-amber-500"></i> Fast Booking</button>
+              <button type="button" id="mentorSessionsButton"><i class="fas fa-calendar-check mr-1" aria-hidden="true"></i> <span id="mentorSessionsButtonTitle">My Sessions</span></button>
               <button type="button" id="m3HeroBtnCareer" onclick="document.getElementById('catBtnCareer')?.click()">Explore Career &amp; AI <i class="fas fa-arrow-right ml-1"></i></button>
               <button type="button" id="m3HeroBtnPackaging" onclick="document.getElementById('catBtnPackaging')?.click()">Explore Packaging <i class="fas fa-arrow-right ml-1"></i></button>
             </div>
@@ -633,6 +580,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             <input type="text" id="fbProblemInput" maxlength="160" class="form-input text-sm w-full" placeholder="e.g. Excel automation with AI, Resume review, or Metalliser OD / yield issue..." />
           </div>
 
+          <div id="fastAppointmentPicker"></div>
+
           <!-- Live Calculated Rate + Pay Now -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-700">
             <div>
@@ -641,7 +590,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
               <span id="fbDiscountNote" class="text-[11px] font-semibold text-emerald-600 ml-1.5"></span>
             </div>
             <button type="button" id="fbPayNowBtn" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow transition shrink-0">
-              <i class="fas fa-lock"></i> Pay Now
+              <i class="fas fa-lock"></i> Confirm Slot &amp; Pay Now
             </button>
           </div>
         </div>
@@ -940,6 +889,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       <div>
         <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2" data-i18n="packageLabel">Package</p>
         <div class="flex gap-2" id="packageBtns">
+          <button type="button" data-hrs="0.25" data-disc="0" class="hrs-btn flex-1 py-2.5 rounded-lg border text-sm font-semibold">15 Min</button>
+          <button type="button" data-hrs="0.5" data-disc="0" class="hrs-btn flex-1 py-2.5 rounded-lg border text-sm font-semibold">30 Min</button>
           <button type="button" data-hrs="1" data-disc="0" class="hrs-btn active-hrs flex-1 py-2.5 rounded-lg border text-sm font-semibold">1 Hour</button>
           <button type="button" data-hrs="3" data-disc="5" class="hrs-btn flex-1 py-2.5 rounded-lg border text-sm font-semibold">3 Hours<br><span class="text-[10px] font-normal text-emerald-600">~5% off</span></button>
           <button type="button" data-hrs="5" data-disc="10" class="hrs-btn flex-1 py-2.5 rounded-lg border text-sm font-semibold">5 Hours<br><span class="text-[10px] font-normal text-emerald-600">~10% off</span></button>
@@ -952,7 +903,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         <input type="text" id="bookingTopicCustom" class="form-input text-sm w-full mt-2 hidden" placeholder="Or type your topic…" />
       </div>
 
-      <div>
+      <div id="standardAppointmentPicker"></div>
+      <div id="legacySlotPreference" class="hidden">
         <label class="block text-xs font-semibold text-slate-500 mb-1">Preferred time window</label>
         <select id="bookingSlotPref" class="form-input text-sm w-full"></select>
         <p class="text-[10px] text-slate-400 mt-1">Not a fixed calendar slot yet — helps mentor plan. Confirm on WhatsApp.</p>
@@ -969,13 +921,11 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       <p id="bookingPaymentNote" class="text-[11px] text-slate-500 leading-relaxed">After paying, copy the <b>Payment ID</b> (e.g. pay_…) from Razorpay success screen and paste below. If the link says <b>Payment Completed</b>, ask mentor for a fresh link (or use a multi-payment link).</p>
       <a id="payNowBtn" href="#" rel="noopener"
          class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
-        <i class="fas fa-lock"></i> Pay Now via Razorpay
+        <i class="fas fa-lock"></i> Confirm Slot &amp; Pay Now
       </a>
 
       <p class="text-[12px] text-center text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-700/40 rounded-xl px-3 py-2.5">
-        <strong>Pay Now</strong> notifies the Mentor automatically.<br/>
-        <span class="text-slate-500">No UTR or Payment ID needed from you.</span><br/>
-        Session unlocks only after <strong>Mentor approves</strong>.
+        The Mentor receives your appointment after payment verification. Check My Sessions for approval and your meeting link.
       </p>
       <div id="legacyUtrFlow">
       <div class="relative">
@@ -995,6 +945,14 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   </div>
 
 <!-- ===== Payment History Modal ===== -->
+  <dialog id="mentorSessionsDialog" aria-labelledby="mentorSessionsHeading" class="m-auto w-[calc(100%-2rem)] max-w-3xl max-h-[90vh] rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-5 shadow-xl backdrop:bg-black/60">
+    <div class="flex justify-between items-center gap-3 mb-3">
+      <h2 id="mentorSessionsHeading" class="text-xl font-bold">Mentor Sessions</h2>
+      <button type="button" data-session-close class="rounded-lg border px-3 py-1.5 text-sm">Close</button>
+    </div>
+    <p data-session-status role="status" class="text-sm mb-2 text-slate-600 dark:text-slate-300"></p>
+    <div data-session-content></div>
+  </dialog>
   <div id="historyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between shrink-0">
@@ -1017,7 +975,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-5 space-y-3 max-h-[90vh] overflow-y-auto">
       <h3 class="font-bold text-center">Mentor OTP Verification</h3>
       <p id="mentorOtpStatus" class="text-xs text-center text-slate-500 leading-relaxed">OTP SMS to admin +91 8929397949. Complete captcha if asked, then enter the code.</p>
-      <div id="recaptcha-container-mentor" class="flex justify-center items-center w-full mt-2" style="min-height:78px;overflow:visible;"></div>
+      <div id="recaptcha-container-mentor" class="mentor-recaptcha-host"></div>
       <input type="text" inputmode="numeric" id="mentorPinInput" class="form-input text-center tracking-widest text-lg" placeholder="Enter 6-digit OTP" maxlength="6" autocomplete="one-time-code" />
       <button id="pinSubmit" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold">Verify OTP & Unlock</button>
       <button id="pinCancel" class="w-full py-2 text-sm text-slate-500">Cancel</button>
@@ -1035,6 +993,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
       <p class="text-xs text-slate-500">Admin +91 8929397949 only. Edit ₹/hour, discounts, and paste Razorpay links. Save → live for all students.</p>
       <div id="pricingAdminFields" class="space-y-4"></div>
       <button type="button" id="savePricingAdmin" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold">Save to Firebase</button>
+      <section id="mentorAvailability" class="av-admin"></section>
     </div>
   </div>
 
@@ -1051,6 +1010,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   <script src="js/mg-tracks.js"></script>
   <script src="js/mg-workspace.js"></script>
   <script src="js/mg-mentor.js"></script>
+  <script src="js/mg-appointments.js"></script>
+  <script src="js/mg-sessions.js"></script>
   <script src="js/mg-profile.js"></script>
   <script src="js/mg-i18n.js"></script>
 <script src="js/mg-app.js"></script>

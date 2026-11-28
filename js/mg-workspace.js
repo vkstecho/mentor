@@ -371,6 +371,7 @@ MG.openPricingAdmin = function() {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         modal.style.display = 'flex';
+        MG.openMentorAvailability?.();
       }
       host.querySelectorAll('.admin-rate, .admin-d3, .admin-d5').forEach(function (inp) {
         inp.addEventListener('input', function () {

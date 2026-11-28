@@ -177,10 +177,61 @@ MG.firebasePhone = function(user) {
   return phone ? phone.slice(3) : '';
 };
 
+MG.verifiedFirebaseSession = async function(expectedMobile, refresh = false) {
+  try {
+    const bridge = window.MentorFB;
+    const user = await bridge?.waitForAuth?.();
+    const mobile = MG.firebasePhone(user);
+    if (!mobile || (expectedMobile && mobile !== expectedMobile)) return null;
+    const result = await user.getIdTokenResult(refresh);
+    const claims = result.claims || {};
+    if (claims.phone_number !== user.phoneNumber ||
+        (result.signInProvider !== 'phone' && claims.phone_number_verified !== true) ||
+        bridge.auth.currentUser?.uid !== user.uid) return null;
+    return { user, mobile };
+  } catch {
+    return null;
+  }
+};
+
+MG.phoneAuthMessage = function(error, fallback) {
+  switch (error?.code) {
+    case 'auth/invalid-verification-code': return 'That OTP is incorrect. Check the latest SMS and try again.';
+    case 'auth/session-expired':
+    case 'auth/code-expired':
+    case 'auth/invalid-verification-id':
+    case 'auth/missing-verification-id': return 'This OTP has expired. Request a new code.';
+    case 'auth/invalid-credential':
+    case 'auth/invalid-login-credentials':
+    case 'auth/user-token-expired':
+    case 'auth/invalid-user-token': return 'Phone verification is no longer valid. Request a new OTP.';
+    case 'auth/invalid-phone-number': return 'Enter a valid 10-digit Indian mobile number.';
+    case 'auth/too-many-requests':
+    case 'auth/quota-exceeded': return 'Too many OTP requests. Wait before trying again.';
+    case 'auth/captcha-check-failed':
+    case 'auth/invalid-app-credential':
+    case 'auth/missing-app-credential': return 'The reCAPTCHA check failed. Request a code and complete the check again.';
+    case 'auth/unauthorized-domain':
+    case 'auth/operation-not-allowed': return 'Phone sign-in is unavailable on this site. Contact support.';
+    case 'auth/network-request-failed': return 'Could not reach Firebase. Check your connection and try again.';
+    case 'auth/user-disabled': return 'This Firebase account is disabled. Contact support.';
+    case 'mentor/account-conflict': return 'This phone belongs to an existing account.';
+    case 'mentor/guest-required': return 'This guest session is no longer available. Sign in with your phone.';
+    case 'mentor/account-changed': return 'The Firebase account changed. Start phone verification again.';
+    case 'mentor/auth-busy': return 'A phone verification request is already in progress.';
+    case 'mentor/otp-required': return 'Request an OTP before verifying.';
+    default: return fallback;
+  }
+};
+
 MG.doSiteLogout = async function() {
   try {
     if (window.MentorFB && window.MentorFB.auth) {
       await window.MentorFB.waitForAuth();
+      if (window.MentorFB.cancelPhoneOtp?.() === false || window.MentorFB.cancelPhoneOtp?.('mentor') === false) {
+        MG.showToast('Wait for phone verification to finish before signing out.');
+        return;
+      }
       await window.MentorFB.auth.signOut();
     }
   } catch (e) {
@@ -199,8 +250,7 @@ MG.doSiteLogout = async function() {
 
 
 // ========== Device remember: password + fingerprint (WebAuthn) ==========
-// Stored per mobile on this browser/device only. Survives logout so same
-// device can re-login without OTP (password or biometrics).
+// Stored per phone on this device. The app checks Firebase before using the local unlock.
 var DEVICE_CREDS_PREFIX = 'vks_device_creds_';
 
 MG._bufToB64 = function (buf) {

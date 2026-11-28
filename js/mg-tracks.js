@@ -131,7 +131,9 @@ function showPaymentError(stage, error, fallback) {
   console.warn('[Mentor payment]', stage, code || 'unavailable');
   const authRequired = paymentAuthErrors.includes(code);
   if (authRequired) MG.showVerifiedSignIn?.(MG.state.mobile);
-  MG.showToast(error?.checkoutMessage || (authRequired ? 'Please verify your phone number before booking.' : fallback));
+  const appointmentError = ['appointment_unavailable', 'appointment_expired'].includes(error?.details?.reason);
+  MG.showToast(error?.checkoutMessage || (appointmentError ? error.message
+    : authRequired ? 'Please verify your phone number before booking.' : fallback));
 }
 
 async function bookingStudent() {
@@ -266,12 +268,24 @@ async function checkoutOnce(user, product, options) {
   try {
     const reconcileOnly = options.reconcileOnly || paymentVerificationMarker(product.idempotencyKey);
     progress(reconcileOnly ? 'Verifying payment…' : 'Creating secure payment order…');
-    const order = await request({ reconcileOnly });
+    let order;
+    try {
+      order = await request({ reconcileOnly });
+    } catch (error) {
+      if (error?.details?.reason !== 'provider_rejected_order' &&
+          (!error?.code || ['functions/internal', 'functions/deadline-exceeded', 'functions/unavailable'].includes(error.code))) {
+        options.onOrderProtected?.();
+      }
+      throw error;
+    }
+    if (order?.orderId || ['verification_pending', 'support_required'].includes(order?.status)) options.onOrderProtected?.();
     if (['paid', 'refunded'].includes(order?.status)) {
       paymentVerificationMarker(product.idempotencyKey, false);
       return order;
     }
-    if (order?.status === 'verification_pending') return order;
+    if (order?.status === 'support_required') paymentVerificationMarker(product.idempotencyKey, true);
+    if (['verification_pending', 'support_required'].includes(order?.status)) return order;
+    if (reconcileOnly && order?.status === 'unpaid' && !paymentVerificationMarker(product.idempotencyKey)) return order;
     if (reconcileOnly) return { status: 'verification_pending', reference };
     if (!order?.orderId || !order.keyId || !Number.isSafeInteger(order.amount) || order.amount < 100 || order.currency !== 'INR') {
       throw checkoutError('Payment service is temporarily unavailable.');
@@ -331,6 +345,10 @@ async function reportCheckout(result, user, reference, onPaid, subscription) {
     }
   } else if (result.status === 'verification_pending') {
     MG.showToast('Payment verification is pending. Please do not pay again. Reference: ' + (result.paymentId || result.orderId || reference || result.reference));
+  } else if (result.status === 'support_required') {
+    MG.showToast('Payment requires support. Keep reference ' + (result.orderId || reference || result.reference) + ' and do not pay again.');
+  } else if (result.status === 'unpaid') {
+    MG.showToast('The provider reports no captured payment on this order. Refresh booking history for the latest status.');
   } else if (result.status === 'refunded') {
     MG.showToast('This payment was refunded. Reference: ' + (result.paymentId || reference));
   } else if (result.status === 'cancelled') {
@@ -362,7 +380,7 @@ MG.launchSecureCheckout = async function(bookingId, options = {}) {
 
 MG.startSecureRazorpayBooking = async function(input, options = {}) {
   if (bookingActive || checkoutActive) return { status: 'busy' };
-  const { track, topicId, hours } = input;
+  const { track, topicId, hours, appointmentStart } = input;
   const topic = typeof input.topic === 'string' ? input.topic.trim() : '';
   const slotPreference = input.slotPreference || '';
   if (!topic || topic.length > 160 || slotPreference.length > 100 || !['career_ai', 'packaging'].includes(track) ||
@@ -370,16 +388,21 @@ MG.startSecureRazorpayBooking = async function(input, options = {}) {
     MG.showToast('Choose a valid session and enter a problem description of up to 160 characters.');
     return { status: 'error' };
   }
+  if (!Number.isSafeInteger(appointmentStart) || appointmentStart <= Date.now()) {
+    MG.showToast('Select an available appointment before payment.');
+    return { status: 'error' };
+  }
   bookingActive = true;
   try {
     options.onProgress?.('Preparing booking…');
     const user = await bookingStudent();
-    const details = { track, topic, topicId, slotPreference, hours };
+    const details = { track, topic, topicId, slotPreference, hours, appointmentStart };
     const attempt = await getPaymentAttempt(user.uid, details);
     const booking = await callPayment(user, 'createBooking', { ...details, attemptId: attempt.id });
     if (!booking?.ok || !booking.bookingId || !Number.isSafeInteger(booking.amount) || booking.amount < 1 || booking.currency !== 'INR') {
       throw checkoutError('Could not create your booking. Please try again.');
     }
+    options.onAppointment?.(booking.appointment);
     const onPaid = () => { attempt.clear(); options.onPaid?.(); };
     const reconcileOnly = booking.paymentStatus === 'paid' || paymentVerificationMarker('booking_' + booking.bookingId);
     if (booking.paymentStatus === 'refunded' || (booking.status === 'rejected' && !reconcileOnly)) {
@@ -392,7 +415,8 @@ MG.startSecureRazorpayBooking = async function(input, options = {}) {
           !window.confirm('The price changed to ₹' + booking.amount.toLocaleString('en-IN') + '. Continue to Razorpay?')) return { status: 'price_declined' };
     }
     const description = (MG.TRACKS[track]?.name || track) + ' · ' + MG.formatBookingDuration(hours);
-    const result = await MG.launchSecureCheckout(booking.bookingId, { ...options, user, description, amount: booking.amount, onPaid, reconcileOnly });
+    const result = await MG.launchSecureCheckout(booking.bookingId, { ...options, user, description, amount: booking.amount, onPaid, reconcileOnly,
+      onOrderProtected: () => options.onAppointment?.(booking.appointment && { ...booking.appointment, status: 'payment_pending' }) });
     if (result.status === 'refunded') attempt.clear();
     return result;
   } catch (error) {
@@ -442,21 +466,30 @@ MG.notifyMentorPayIntent = async function() {
 
     if (MG.SECURE_BOOKINGS_ENABLED === true) {
       const button = document.getElementById('payNowBtn');
+      const picker = document.getElementById('standardAppointmentPicker')?.appointmentPicker;
+      const appointmentStart = picker?.getSelection();
+      if (!appointmentStart) {
+        MG.showToast('Select an available appointment before payment.');
+        return;
+      }
       if (button?.getAttribute('aria-busy') === 'true') return;
       const label = button?.innerHTML;
       button?.setAttribute('aria-busy', 'true');
+      picker.busy(true);
       try {
         const track = MG.selectedTrackId;
         await MG.startSecureRazorpayBooking({
           track, topicId: MG.getBookingTopicId(track, topic.id), topic: focus || topic.title,
-          slotPreference: slotPref, hours: Number(MG.state.selectedHours), amount
+          hours: Number(MG.state.selectedHours), amount, appointmentStart
         }, {
           onProgress(message) { if (button) button.textContent = message; },
+          onAppointment: appointment => picker.setHold(appointment),
           onPrice(price) { document.getElementById('bookingTotal').textContent = '₹' + price.toLocaleString('en-IN'); },
-          onPaid: MG.closeBooking
+          onPaid() { picker.clear(); MG.closeBooking(); }
         });
       } finally {
         button?.removeAttribute('aria-busy');
+        picker.busy(false);
         if (button) button.innerHTML = label;
       }
       return;
@@ -563,11 +596,16 @@ MG.openBooking = function(topicId) {
   MG.$('#bookingTopicName').textContent = topic.title;
   MG.$('#bookingMobile').textContent = '+91 ' + (MG.state.viewingAs || MG.state.mobile);
   MG.$$('.hrs-btn').forEach(b => {
-    b.classList.toggle('active-hrs', parseInt(b.dataset.hrs, 10) === 1);
+    b.classList.toggle('active-hrs', Number(b.dataset.hrs) === 1);
   });
   MG.$('#utrInput').value = '';
   var legacyUtrFlow = document.getElementById('legacyUtrFlow');
   if (legacyUtrFlow) legacyUtrFlow.classList.toggle('hidden', MG.SECURE_BOOKINGS_ENABLED === true);
+  const slotHost = document.getElementById('standardAppointmentPicker');
+  document.getElementById('legacySlotPreference')?.classList.toggle('hidden', MG.SECURE_BOOKINGS_ENABLED === true);
+  if (slotHost && MG.SECURE_BOOKINGS_ENABLED === true) {
+    MG.createAppointmentPicker(slotHost, () => Number(MG.state.selectedHours)).refresh();
+  }
   var paymentNote = document.getElementById('bookingPaymentNote');
   if (paymentNote && MG.SECURE_BOOKINGS_ENABLED === true) paymentNote.textContent = 'Checkout opens with a server-created Razorpay order. Your booking is paid only after the server verifies the payment with Razorpay.';
   // Highlight only the relevant track in the modal (still allow switching)

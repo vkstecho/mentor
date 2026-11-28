@@ -4,14 +4,37 @@
 (function (MG) {
 'use strict';
 // ========== Payment History ==========
+MG.bookingPaymentLabel = function(booking) {
+  const state = booking.paymentState || (booking.paymentStatus === 'paid' && !booking.paymentFinalizedAt
+    ? 'verification_pending' : booking.paymentStatus || 'unpaid');
+  return { unpaid: 'Unpaid', processing: 'Payment processing', verification_pending: 'Verification pending',
+    paid: 'Payment verified', refunded: 'Refunded', payment_failed: 'Payment failed', support_required: 'Requires support' }[state] || 'Verification pending';
+};
+
+MG.reconcileAdminBooking = async function(uid, bookingId) {
+  const orderId = window.prompt('Razorpay order reference for this booking');
+  if (!orderId) return;
+  const paymentId = window.prompt('Captured Razorpay payment reference for this order');
+  if (!paymentId) return;
+  try {
+    const result = await window.MentorFB.callSecure('adminReconcileBookingPayment', { uid, bookingId, orderId: orderId.trim(), paymentId: paymentId.trim() });
+    MG.showToast(result.status === 'paid' ? 'Payment verified. Booking is ready for Mentor review.' : 'Payment still requires review.');
+    return result;
+  } catch (error) {
+    MG.showToast(error?.code === 'functions/failed-precondition' ? 'The references or captured payment did not match. Check Razorpay details.'
+      : 'Reconciliation could not complete. Keep the original booking and check the payment logs.');
+    throw error;
+  }
+};
+
 function bookingDetail(b) {
   const price = '₹' + Number(b.amount || 0).toLocaleString('en-IN');
   const rate = b.hourlyRate == null ? '' : ' · ₹' + Number(b.hourlyRate).toLocaleString('en-IN') + '/hr';
   const discount = b.discountPct == null ? '' : ' · ' + Number(b.discountPct) + '% discount';
-  const paymentStatus = b.paymentStatus === 'paid' && b.paymentOrderId && !b.paymentFinalizedAt
-    ? 'verification pending' : b.paymentStatus || 'unpaid';
+  const paymentStatus = MG.bookingPaymentLabel(b);
   return '<p class="text-xs mt-1">' + MG.formatBookingDuration(b.hours) + ' · ' + price + rate + discount + '</p>' +
-    '<p class="text-[11px] mt-1">Booking: ' + MG.esc(b.status || 'pending') + ' · Payment: ' + MG.esc(paymentStatus) + '</p>' +
+    '<p class="text-[11px] mt-1">' + MG.esc(paymentStatus) + ' · ' +
+    MG.esc(b.status === 'pending' && paymentStatus === 'Payment verified' ? 'Awaiting Mentor confirmation' : 'Booking: ' + (b.status || 'pending')) + '</p>' +
     '<p class="text-[11px] break-all">Booking ref: ' + MG.esc(b.id || '') +
     (b.paymentId ? ' · Payment ref: ' + MG.esc(b.paymentId) : '') + '</p>';
 }
@@ -140,9 +163,15 @@ MG.openHistory = async function() {
           '<p class="text-xs text-slate-500">' + MG.esc(MG.TRACKS[b.track]?.name || b.track || '') + ' · +91 ' + MG.esc(b.mobile || '') + '</p>' +
           bookingDetail(b) +
           '<div class="flex gap-2 mt-2"><button class="secure-booking-approve px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs" ' + (paid ? '' : 'disabled title="Awaiting verified payment"') + ' data-uid="' + uid + '" data-bid="' + bid + '">' + (paid ? 'Approve booking' : 'Awaiting payment') + '</button>' +
+          (!paid && b.paymentStatus !== 'refunded' ? '<button class="secure-booking-reconcile px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Reconcile captured payment</button>' : '') +
           '<button class="secure-booking-reject px-3 py-1.5 rounded-lg bg-slate-200 text-xs" data-uid="' + uid + '" data-bid="' + bid + '">Reject</button></div></article>';
       }).join('') : '<p class="text-xs text-slate-500">No secure bookings awaiting review.</p>');
       section.querySelector('.secure-booking-refresh').addEventListener('click', () => MG.openHistory());
+      section.querySelectorAll('.secure-booking-reconcile').forEach(btn => btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try { if (await MG.reconcileAdminBooking(btn.dataset.uid, btn.dataset.bid)) await MG.openHistory(); }
+        catch {} finally { btn.disabled = false; }
+      }));
       section.querySelectorAll('.secure-booking-approve').forEach(function(btn) { btn.addEventListener('click', async function() {
         btn.disabled = true; try { await window.MentorFB.callSecure('approveBooking', { uid: btn.dataset.uid, bookingId: btn.dataset.bid }); MG.showToast('Secure booking approved'); await MG.openHistory(); }
         catch (e) { btn.disabled = false; MG.showToast(e.message || 'Approval failed'); }
@@ -199,8 +228,10 @@ MG.openHistory = async function() {
     const section = document.createElement('section');
     section.className = 'mt-5 pt-4 border-t border-slate-200 dark:border-slate-700';
     const bookingRows = rows.map(function(b) {
-      const needsCheck = !viewing && b.paymentStatus === 'paid' && !b.paymentFinalizedAt;
-      const payable = !viewing && ['pending', 'approved'].includes(b.status) && (!b.paymentStatus || b.paymentStatus === 'unpaid');
+      const state = b.paymentState || b.paymentStatus || 'unpaid';
+      const needsCheck = !viewing && (['processing', 'verification_pending', 'support_required'].includes(state) ||
+        (state === 'paid' && !b.paymentFinalizedAt));
+      const payable = !viewing && ['pending', 'approved'].includes(b.status) && ['unpaid', 'payment_failed'].includes(state);
       return '<article class="hist-card mb-2"><div class="font-semibold text-sm">' + MG.esc(b.topic || 'Session') + '</div>' +
         '<p class="text-xs text-slate-500">' + MG.esc(MG.TRACKS[b.track]?.name || b.track || '') + ' · ' + MG.esc(MG.formatDate(b.createdAt)) + '</p>' +
         bookingDetail(b) + (payable || needsCheck ? '<button type="button" class="secure-booking-resume mt-2 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs" data-booking="' +
@@ -227,7 +258,7 @@ MG.openHistory = async function() {
       let result;
       try {
         result = await MG.launchSecureCheckout(booking.id, {
-          reconcileOnly: booking.paymentStatus === 'paid',
+          reconcileOnly: booking.paymentStatus === 'paid' || ['processing', 'verification_pending', 'support_required'].includes(booking.paymentState),
           description: (MG.TRACKS[booking.track]?.name || booking.track) + ' · ' + MG.formatBookingDuration(booking.hours),
           amount: Number(booking.amount),
           onProgress(message) { button.textContent = message; }
@@ -306,15 +337,23 @@ MG.openHistory = async function() {
 
 MG.exportCsv = function() {
   const payments = MG.state.data.payments || [];
-  if (!payments.length) {
+  const bookings = Object.values(MG.state.data.secureBookings || {});
+  if (!payments.length && !bookings.length) {
     MG.showToast('No data to export');
     return;
   }
-  const header = 'Date,Track,Topic,Focus,Hours,Rate,Amount,UTR,Status\n';
-  const rows = payments.map(p =>
-    `"${MG.formatDate(p.ts)}","${p.trackName||''}","${p.topicTitle}","${p.focusTopic||''}",${p.hours},${p.hourlyRate||''},${p.amount},"${p.utr}","${stInfo.t}"`
-  ).join('\n');
-  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const field = value => {
+    const text = String(value ?? '');
+    const safe = /^[\s]*[=+@-]/.test(text) ? "'" + text : text;
+    return '"' + safe.replace(/"/g, '""') + '"';
+  };
+  const rows = [
+    ['Date', 'Track', 'Topic', 'Focus', 'Hours', 'Rate', 'Amount', 'Reference', 'Payment', 'Booking', 'Booking reference'],
+    ...payments.map(p => [MG.formatDate(p.ts), p.trackName, p.topicTitle, p.focusTopic, p.hours, p.hourlyRate, p.amount, p.utr, p.status, '', '']),
+    ...bookings.map(b => [MG.formatDate(b.createdAt), MG.TRACKS[b.track]?.name || b.track, b.topic, '', b.hours, b.hourlyRate,
+      b.amount, b.paymentId, MG.bookingPaymentLabel(b), b.status, b.id])
+  ];
+  const blob = new Blob([rows.map(row => row.map(field).join(',')).join('\r\n')], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `guidance_payments_${MG.state.mobile}.csv`;
@@ -332,26 +371,11 @@ MG.requestMentorOTP = async function() {
     MG.showToast('Mentor mode only for admin +91 ' + MG.MENTOR_MOBILE);
     return;
   }
-  // Already signed in with Firebase as this admin number → unlock without new SMS
-  try {
-    var u = window.MentorFB && window.MentorFB.auth && window.MentorFB.auth.currentUser;
-    var digits = u && u.phoneNumber ? String(u.phoneNumber).replace(/\D/g,'').slice(-10) : '';
-    if (digits === MG.MENTOR_MOBILE) {
-      MG.enableMentorMode();
-      MG.showToast('Mentor unlocked (already verified on this device)');
-      return;
-    }
-    // Parent Man Power Firebase user
-    if (window.parent && window.parent !== window && window.parent._fbAuth && window.parent._fbAuth.currentUser) {
-      var pu = window.parent._fbAuth.currentUser;
-      var pd = pu.phoneNumber ? String(pu.phoneNumber).replace(/\D/g,'').slice(-10) : '';
-      if (pd === MG.MENTOR_MOBILE) {
-        MG.enableMentorMode();
-        MG.showToast('Mentor unlocked via Man Power session');
-        return;
-      }
-    }
-  } catch (e) {}
+  if (await MG.verifiedFirebaseSession(MG.MENTOR_MOBILE, true)) {
+    MG.enableMentorMode();
+    MG.showToast('Mentor unlocked');
+    return;
+  }
   // Show OTP panel immediately so user always has an input UI
   try {
     var modal = document.getElementById('pinModal');
@@ -386,8 +410,7 @@ MG.requestMentorOTP = async function() {
     MG.showToast('OTP sent by SMS to +91 ' + MG.MENTOR_MOBILE);
     try { document.getElementById('mentorPinInput')?.focus(); } catch (e) {}
   } catch (e) {
-    console.warn('[mentor] requestMentorOTP', e);
-    var msg = (e && e.message) ? e.message : 'Failed to send OTP SMS';
+    var msg = MG.phoneAuthMessage(e, 'Could not send the Mentor OTP. Try again.');
     MG.showToast(msg);
     var st3 = document.getElementById('mentorOtpStatus');
     if (st3) st3.textContent = msg + ' — try again in a few seconds.';
@@ -406,15 +429,18 @@ MG.verifyMentorOTP = async function() {
       return;
     }
     const conf = window.MentorFB.confirmOtp || window.MentorFB.verifyPhoneOtp;
-    await conf.call(window.MentorFB, entered);
+    const user = await conf.call(window.MentorFB, entered);
+    if (MG.firebasePhone(user) !== MG.MENTOR_MOBILE || !await MG.verifiedFirebaseSession(MG.MENTOR_MOBILE)) {
+      throw Object.assign(new Error('Mentor account changed'), { code: 'mentor/account-changed' });
+    }
+    MG.$('#mentorPinInput').value = '';
     window._mentorUnlockOtpPending = false;
     try { localStorage.removeItem(MG.OTP_STORAGE_KEY); } catch (e) {}
     MG.$('#pinModal').classList.add('hidden');
     MG.$('#pinModal').classList.remove('flex');
     MG.enableMentorMode();
   } catch (e) {
-    console.warn('[mentor] verifyMentorOTP', e);
-    MG.showToast((e && e.message) ? e.message : 'Incorrect or expired OTP');
+    MG.showToast(MG.phoneAuthMessage(e, 'Could not verify the Mentor OTP. Request a new code.'));
   }
 }
 
@@ -497,6 +523,7 @@ MG.enableMentorMode = function(opts) {
   try { MG.refreshStudentList(); } catch (e) {}
   try { MG.renderCatalog(); } catch (e) {}
   try { MG.startMentorNotificationListen(); } catch (eN) {}
+  MG.refreshSessionBadge?.();
   if (!opts.silent) MG.showToast('Mentor mode enabled · remembered on this device');
 }
 

@@ -3,6 +3,7 @@
  */
 (function (MG) {
 'use strict';
+let appStart = 0;
 // ========== Init Flow ==========
 MG.isMobileVerified = function(mob) {
   if (!mob) return false;
@@ -62,9 +63,9 @@ MG.init = async function() {
     await new Promise(r => setTimeout(r, 100));
   }
 
-  const user = window.MentorFB?.waitForAuth ? await window.MentorFB.waitForAuth() : null;
   if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
     window.addEventListener('mentor-auth-changed', function () {
+      MG.updateGuestUpgrade?.();
       if (!MG.state.mobile || MG.$('#app')?.classList.contains('hidden')) return;
       const current = window.MentorFB?.auth?.currentUser;
       const phone = MG.firebasePhone(current);
@@ -72,10 +73,10 @@ MG.init = async function() {
       else if (current.uid !== MG.state.authUid || phone !== MG.state.mobile) void MG.startApp(phone);
     });
   }
-  const verified = MG.firebasePhone(user);
-  if (verified) {
-    MG.setSiteAuth(verified);
-    await MG.startApp(verified);
+  const session = await MG.verifiedFirebaseSession();
+  if (session) {
+    MG.setSiteAuth(session.mobile);
+    await MG.startApp(session.mobile);
     return;
   }
 
@@ -123,10 +124,18 @@ MG.init = async function() {
 }
 
 MG.showVerifiedSignIn = function(mob) {
+  appStart++;
   MG.$('#app')?.classList.add('hidden');
   const prompt = MG.$('#mobilePrompt');
+  const alreadyShowing = prompt?.classList.contains('flex');
   prompt?.classList.remove('hidden');
   prompt?.classList.add('flex');
+  MG.updateGuestUpgrade?.();
+  const activeStep = ['#otpStepCode', '#otpStepQuick', '#otpStepSetup'].some(selector => {
+    const step = MG.$(selector);
+    return step && !step.classList.contains('hidden');
+  });
+  if (alreadyShowing && activeStep) return;
   MG.showOtpStep?.(false);
   const input = MG.$('#mobileInput');
   if (input && mob) input.value = mob;
@@ -134,15 +143,25 @@ MG.showVerifiedSignIn = function(mob) {
 };
 
 MG.startApp = async function(mob) {
+  const run = ++appStart;
   if (MG.SECURE_DATA_ENABLED || MG.SECURE_BOOKINGS_ENABLED) {
-    const user = window.MentorFB?.waitForAuth ? await window.MentorFB.waitForAuth() : null;
-    const verified = MG.firebasePhone(user);
-    if (!verified) {
+    const session = await MG.verifiedFirebaseSession(mob);
+    if (run !== appStart) return;
+    if (!session) {
       MG.showVerifiedSignIn(mob);
       return;
     }
-    mob = verified;
-    MG.state.authUid = user.uid;
+    if (MG.state.authUid && MG.state.authUid !== session.user.uid) {
+      const problem = MG.$('#fbProblemInput');
+      if (problem) problem.value = '';
+      const focus = MG.$('#bookingTopicCustom');
+      if (focus) focus.value = '';
+      MG.$('#fastAppointmentPicker')?.appointmentPicker?.clear();
+      MG.$('#standardAppointmentPicker')?.appointmentPicker?.clear();
+      MG.closeBooking?.();
+    }
+    mob = session.mobile;
+    MG.state.authUid = session.user.uid;
     MG.state.viewingAs = null;
   }
   MG.state.mobile = mob;
@@ -210,7 +229,9 @@ MG.startApp = async function(mob) {
   try { MG.renderFreePackSection(); } catch (eF) {}
   // Then refresh from Firebase
   try {
-    MG.state.data = await MG.loadUserDataAsync(MG.state.mobile);
+    const data = await MG.loadUserDataAsync(mob);
+    if (run !== appStart) return;
+    MG.state.data = data;
     try { if (MG.ensureProgressFields) MG.ensureProgressFields(MG.state.data); } catch (e1) {}
     MG.startRealtimeFor(MG.state.mobile);
     try { MG.refreshProfileButton(); } catch (ePf) {}
@@ -218,6 +239,7 @@ MG.startApp = async function(mob) {
     MG.renderCatalog();
     try { MG.renderFreePackSection(); } catch (eF2) {}
   } catch (e) {}
+  if (run !== appStart) return;
   try { if (MG.handleMentorDeepLink) MG.handleMentorDeepLink(); } catch (eDL) {}
 }
 
@@ -288,208 +310,222 @@ MG.bindEvents = function() {
     var s = MG.$('#otpStepSetup');
     if (s) s.classList.remove('hidden');
     MG.$('#loginTitle').textContent = (MG.t ? MG.t('rememberDevice') : 'Remember this device');
-    MG.$('#loginSub').textContent = 'Optional — skip OTP next time on this phone';
+    MG.$('#loginSub').textContent = 'Optional local unlock while your Firebase session is active';
     var fpBtn = MG.$('#setupFingerprintBtn');
     if (fpBtn) {
       fpBtn.style.display = MG.supportsWebAuthn() ? '' : 'none';
     }
   };
 
-  MG.finishLogin = function(mobile, opts) {
-    opts = opts || {};
+  let loginBusy = false;
+  let accountConflict = false;
+  let requiresNewCode = false;
+  const numberFromInput = () => MG.extractMobileFromString(MG.$('#mobileInput')?.value || '');
+  const phoneError = message => loginError('#mobileError', message);
+  const codeError = message => loginError('#otpError', message);
+  const loginButtons = ['#mobileSubmit', '#upgradeGuestBtn', '#otpVerifyBtn', '#otpResendBtn', '#otpChangeNumBtn',
+    '#continueExistingPhoneAccountBtn', '#quickPasswordBtn', '#quickFingerprintBtn', '#quickUseOtpBtn', '#quickChangeNumBtn'];
+
+  function loginError(selector, message) {
+    const node = MG.$(selector);
+    if (!node) return;
+    node.textContent = message || '';
+    node.classList.toggle('hidden', !message);
+  }
+
+  function codeActions(conflict = false, expired = false) {
+    accountConflict = conflict;
+    requiresNewCode = expired;
+    MG.$('#phoneAccountConflict')?.classList.toggle('hidden', !conflict);
+    MG.$('#otpVerifyBtn')?.classList.toggle('hidden', conflict || expired);
+    MG.$('#otpResendBtn')?.classList.toggle('hidden', conflict);
+    const input = MG.$('#otpInput');
+    if (input) input.disabled = conflict || expired;
+  }
+
+  async function runLogin(action) {
+    if (loginBusy) return;
+    loginBusy = true;
+    loginButtons.forEach(selector => { const node = MG.$(selector); if (node) node.disabled = true; });
+    try { await action(); }
+    finally {
+      loginButtons.forEach(selector => { const node = MG.$(selector); if (node) node.disabled = false; });
+      loginBusy = false;
+    }
+  }
+
+  MG.updateGuestUpgrade = function() {
+    MG.$('#upgradeGuestBtn')?.classList.toggle('hidden', window.MentorFB?.auth?.currentUser?.isAnonymous !== true);
+  };
+
+  MG.finishLogin = async function(mobile) {
+    const session = await MG.verifiedFirebaseSession(mobile);
+    if (!session) {
+      changeNumber(true);
+      phoneError('The Firebase session could not be restored. Request a new OTP.');
+      return;
+    }
     MG.setSiteAuth(mobile);
-    var needSetup = !MG.canQuickLogin(mobile);
-    if (opts.forceSetup || needSetup) {
+    if (!MG.canQuickLogin(mobile)) {
       MG.showDeviceSetupStep(mobile);
       return;
     }
     MG.showToast('Login verified');
-    MG.startApp(mobile);
+    await MG.startApp(mobile);
   };
 
-  MG.sendMentorOtp = async function() {
-    const val = (MG.$('#mobileInput').value || '').trim();
-    const m = MG.extractMobileFromString(val) || (/^[6-9]\d{9}$/.test(val) ? val : null);
-    if (!m) {
-      MG.$('#mobileError')?.classList.remove('hidden');
-      return;
-    }
-    MG.$('#mobileError')?.classList.add('hidden');
-    MG.$('#phoneAccountConflict')?.classList.add('hidden');
-    const btn = MG.$('#mobileSubmit');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Please wait…'; }
+  function enterCode(message) {
+    codeActions();
+    MG.$('#otpInput').value = '';
+    codeError('');
+    MG.showOtpStep(true);
+    if (message) MG.$('#loginSub').textContent = message;
+  }
+
+  async function sendCode(mobile, mode = 'sign-in', message = '') {
+    _pendingMobile = mobile;
+    phoneError('');
+    MG.showOtpStep(false);
     try {
-      if (!window.MentorFB || !window.MentorFB.sendPhoneOtp) {
-        // Wait briefly for module
-        await new Promise(r => setTimeout(r, 800));
+      const bridge = window.MentorFB;
+      if (!bridge?.sendPhoneOtp) {
+        phoneError('Firebase is still loading. Try again in a moment.');
+        return;
       }
-      if (!window.MentorFB || !window.MentorFB.sendPhoneOtp) {
-        throw new Error('Firebase not ready. Refresh and try again.');
-      }
-      await window.MentorFB.sendPhoneOtp(m);
-      _pendingMobile = m;
-      MG.showOtpStep(true);
-      MG.showToast('OTP sent to +91 ' + m);
-    } catch (e) {
-      console.error('[sendMentorOtp]', e);
-      var code = (e && e.code) ? String(e.code) : '';
-      var msg = (e && e.message) ? String(e.message) : 'Failed to send OTP';
-      if (code.indexOf('too-many-requests') >= 0 || /too-many-requests/i.test(msg)) {
-        msg = 'Too many OTP attempts. Wait a few minutes and try again.';
-      } else if (/invalid-phone/i.test(code + msg)) {
-        msg = 'Invalid mobile number.';
-      } else if (/captcha|recaptcha|app-credential|invalid-app/i.test(msg + code)) {
-        msg = 'Security check failed. Complete reCAPTCHA, and ensure mentor.vkstech.com is in Firebase Authorized domains.';
-      } else if (/network|Failed to fetch|offline/i.test(msg)) {
-        msg = 'Network error. Check internet and try again.';
-      } else if (/Firebase not ready/i.test(msg)) {
-        msg = 'App still loading. Wait 2 seconds and tap Send OTP again.';
-      }
-      MG.showToast(msg);
-      var err = MG.$('#mobileError');
-      if (err) { err.textContent = msg; err.classList.remove('hidden'); }
-    } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right mr-1.5"></i> Continue'; }
+      await bridge.sendPhoneOtp(mobile, { mode });
+      enterCode(message);
+      MG.showToast('OTP sent');
+    } catch (error) {
+      phoneError(MG.phoneAuthMessage(error, 'Could not send an OTP. Try again.'));
     }
   }
 
-  MG.verifyMentorOtp = async function() {
+  MG.onMobileContinue = () => runLogin(async () => {
+    const mobile = numberFromInput();
+    if (!mobile) { phoneError('Enter a valid 10-digit Indian mobile number.'); return; }
+    phoneError('');
+    _pendingMobile = mobile;
+    const remembered = MG.canQuickLogin(mobile);
+    if (remembered && await MG.verifiedFirebaseSession(mobile, true)) {
+      MG.showQuickLoginStep(mobile);
+      return;
+    }
+    await sendCode(mobile, 'sign-in', remembered ? 'Verify this phone by SMS to restore your Firebase session.' : '');
+  });
+
+  MG.verifyMentorOtp = () => runLogin(async () => {
+    if (accountConflict || requiresNewCode) return;
     const code = (MG.$('#otpInput').value || '').trim();
-    if (!/^[0-9]{6}$/.test(code)) {
-      MG.$('#otpError')?.classList.remove('hidden');
-      return;
-    }
-    MG.$('#otpError')?.classList.add('hidden');
-    const btn = MG.$('#otpVerifyBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Verifying…'; }
+    if (!/^[0-9]{6}$/.test(code)) { codeError('Enter the 6-digit OTP from your SMS.'); return; }
+    codeError('');
     try {
-      const mobile = MG.firebasePhone(await window.MentorFB.verifyPhoneOtp(code));
-      if (!mobile) throw new Error('Verified phone account was not returned.');
-      MG.finishLogin(mobile, { forceSetup: !MG.canQuickLogin(mobile) });
-    } catch (e) {
-      console.error(e);
-      if (e && e.code === 'auth/credential-already-in-use') {
-        MG.$('#otpError').textContent = 'This phone belongs to an existing account. Your guest account remains unchanged.';
-        MG.$('#phoneAccountConflict')?.classList.remove('hidden');
+      const user = await window.MentorFB.verifyPhoneOtp(code);
+      MG.$('#otpInput').value = '';
+      await MG.finishLogin(MG.firebasePhone(user));
+    } catch (error) {
+      if (error?.code === 'mentor/account-conflict') {
+        codeActions(true);
+        MG.$('#otpInput').value = '';
+      } else if (['auth/session-expired', 'auth/code-expired', 'auth/invalid-verification-id', 'auth/missing-verification-id',
+        'auth/invalid-credential', 'auth/invalid-login-credentials', 'mentor/account-changed'].includes(error?.code)) {
+        codeActions(false, true);
+        MG.$('#otpInput').value = '';
+      }
+      codeError(MG.phoneAuthMessage(error, 'Phone verification failed. Try again or request a new OTP.'));
+    }
+  });
+
+  MG.continueWithExistingPhoneAccount = () => runLogin(async () => {
+    codeError('');
+    try {
+      const result = await window.MentorFB.continueWithExistingPhoneAccount();
+      if (result.status === 'code-required') {
+        enterCode('A new OTP was sent for your existing account. Use the latest SMS.');
       } else {
-        MG.$('#otpError').textContent = 'Invalid OTP. Please try again.';
+        await MG.finishLogin(MG.firebasePhone(result.user));
       }
-      MG.$('#otpError')?.classList.remove('hidden');
-      MG.showToast('OTP verification failed');
-    } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check mr-1.5"></i> Verify & Continue'; }
-    }
-  };
-
-  MG.continueWithExistingPhoneAccount = async function() {
-    const btn = MG.$('#continueExistingPhoneAccountBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
-    try {
-      const user = await window.MentorFB.continueWithExistingPhoneAccount();
-      const mobile = MG.firebasePhone(user);
-      if (!mobile) throw new Error('Verified phone account was not returned.');
-      MG.showToast('Signed in to the existing phone account. Guest account data remains separate.');
-      MG.finishLogin(mobile, { forceSetup: !MG.canQuickLogin(mobile) });
-    } catch (e) {
-      console.error(e);
-      MG.$('#otpError').textContent = 'Could not open the existing account. Your guest account is still signed in; request a new OTP and try again.';
-      MG.$('#otpError')?.classList.remove('hidden');
-    } finally {
-      if (btn) { btn.disabled = false; btn.textContent = 'Continue with existing phone account'; }
-    }
-  };
-
-  // After phone entered: if device remembered → quick login, else OTP
-  MG.onMobileContinue = async function() {
-    const val = (MG.$('#mobileInput').value || '').trim();
-    const m = MG.extractMobileFromString(val) || (/^[6-9]\d{9}$/.test(val) ? val : null);
-    if (!m) {
-      MG.$('#mobileError')?.classList.remove('hidden');
-      return;
-    }
-    MG.$('#mobileError')?.classList.add('hidden');
-    _pendingMobile = m;
-    if (MG.canQuickLogin(m)) {
-      MG.showQuickLoginStep(m);
-      return;
-    }
-    await MG.sendMentorOtp();
-  };
-
-  MG.$('#mobileSubmit')?.addEventListener('click', function () { MG.onMobileContinue(); });
-  MG.$('#mobileInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') MG.onMobileContinue();
-  });
-  MG.$('#otpVerifyBtn')?.addEventListener('click', function () { MG.verifyMentorOtp(); });
-  MG.$('#continueExistingPhoneAccountBtn')?.addEventListener('click', function () { MG.continueWithExistingPhoneAccount(); });
-  MG.$('#otpInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') MG.verifyMentorOtp();
-  });
-  MG.$('#otpResendBtn')?.addEventListener('click', async () => {
-    if (_pendingMobile) {
-      MG.$('#mobileInput').value = _pendingMobile;
-      MG.showOtpStep(false);
-      await MG.sendMentorOtp();
+    } catch (error) {
+      codeError(MG.phoneAuthMessage(error, 'Could not continue. Try again to request a new OTP.'));
     }
   });
-  MG.$('#otpChangeNumBtn')?.addEventListener('click', () => {
+
+  function changeNumber(force = false) {
+    if ((loginBusy && force !== true) || window.MentorFB?.cancelPhoneOtp?.() === false) return;
     _pendingMobile = null;
-    MG.showOtpStep(false);
     MG.$('#otpInput').value = '';
-  });
-
-  // Quick login handlers
-  MG.$('#quickPasswordBtn')?.addEventListener('click', async function () {
-    var pw = (MG.$('#quickPasswordInput').value || '');
-    var err = MG.$('#quickPasswordError');
-    var btn = MG.$('#quickPasswordBtn');
-    if (btn) { btn.disabled = true; }
-    try {
-      var ok = await MG.verifyDevicePassword(_pendingMobile, pw);
-      if (!ok) {
-        if (err) { err.classList.remove('hidden'); }
-        MG.showToast('Incorrect password');
-        return;
-      }
-      if (err) err.classList.add('hidden');
-      MG.setSiteAuth(_pendingMobile);
-      MG.showToast('Unlocked');
-      MG.startApp(_pendingMobile);
-    } finally {
-      if (btn) btn.disabled = false;
-    }
-  });
-  MG.$('#quickPasswordInput')?.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') MG.$('#quickPasswordBtn') && MG.$('#quickPasswordBtn').click();
-  });
-  MG.$('#quickFingerprintBtn')?.addEventListener('click', async function () {
-    var btn = MG.$('#quickFingerprintBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Waiting…'; }
-    try {
-      var ok = await MG.verifyFingerprint(_pendingMobile);
-      if (!ok) {
-        MG.showToast('Fingerprint failed — try password or OTP');
-        return;
-      }
-      MG.setSiteAuth(_pendingMobile);
-      MG.showToast('Unlocked');
-      MG.startApp(_pendingMobile);
-    } catch (e) {
-      MG.showToast('Fingerprint cancelled');
-    } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-fingerprint mr-1.5"></i> Unlock with fingerprint'; }
-    }
-  });
-  MG.$('#quickUseOtpBtn')?.addEventListener('click', async function () {
-    if (_pendingMobile) {
-      MG.$('#mobileInput').value = _pendingMobile;
-      await MG.sendMentorOtp();
-    }
-  });
-  MG.$('#quickChangeNumBtn')?.addEventListener('click', function () {
-    _pendingMobile = null;
+    const password = MG.$('#quickPasswordInput');
+    if (password) password.value = '';
+    codeActions();
+    phoneError('');
+    codeError('');
     MG.showOtpStep(false);
+    MG.$('#mobileInput')?.focus();
+  }
+
+  MG.$('#mobileSubmit')?.addEventListener('click', MG.onMobileContinue);
+  MG.$('#mobileInput')?.addEventListener('keydown', event => { if (event.key === 'Enter') MG.onMobileContinue(); });
+  MG.$('#upgradeGuestBtn')?.addEventListener('click', () => runLogin(async () => {
+    const mobile = numberFromInput();
+    if (!mobile) { phoneError('Enter a valid 10-digit Indian mobile number.'); return; }
+    await sendCode(mobile, 'upgrade');
+  }));
+  MG.$('#otpVerifyBtn')?.addEventListener('click', MG.verifyMentorOtp);
+  MG.$('#continueExistingPhoneAccountBtn')?.addEventListener('click', MG.continueWithExistingPhoneAccount);
+  MG.$('#otpInput')?.addEventListener('keydown', event => { if (event.key === 'Enter') MG.verifyMentorOtp(); });
+  MG.$('#otpResendBtn')?.addEventListener('click', () => runLogin(async () => {
+    codeError('');
+    try {
+      await window.MentorFB.resendPhoneOtp();
+      enterCode('A new OTP was sent. Use the latest SMS.');
+    } catch (error) {
+      codeActions(false, true);
+      codeError(MG.phoneAuthMessage(error, 'Could not send a new code. Try again.'));
+    }
+  }));
+  MG.$('#otpChangeNumBtn')?.addEventListener('click', changeNumber);
+  MG.$('#quickChangeNumBtn')?.addEventListener('click', changeNumber);
+  MG.$('#quickUseOtpBtn')?.addEventListener('click', () => runLogin(() => sendCode(_pendingMobile)));
+
+  async function unlockLocally(check, failed) {
+    const mobile = _pendingMobile;
+    const session = await MG.verifiedFirebaseSession(mobile, true);
+    if (!session) {
+      await sendCode(mobile, 'sign-in', 'Verify this phone by SMS to restore your Firebase session.');
+      return;
+    }
+    if (!await check(mobile)) { failed(); return; }
+    const restored = await MG.verifiedFirebaseSession(mobile);
+    if (restored?.user.uid !== session.user.uid) {
+      await sendCode(mobile, 'sign-in', 'Verify this phone by SMS to restore your Firebase session.');
+      return;
+    }
+    MG.setSiteAuth(mobile);
+    MG.showToast('Unlocked');
+    await MG.startApp(mobile);
+  }
+
+  MG.$('#quickPasswordBtn')?.addEventListener('click', () => runLogin(async () => {
+    const input = MG.$('#quickPasswordInput');
+    const password = input.value;
+    input.value = '';
+    loginError('#quickPasswordError', '');
+    try {
+      await unlockLocally(mobile => MG.verifyDevicePassword(mobile, password),
+        () => loginError('#quickPasswordError', 'Incorrect device password.'));
+    } catch {
+      loginError('#quickPasswordError', 'Could not unlock this device. Use an OTP to continue.');
+    }
+  }));
+  MG.$('#quickPasswordInput')?.addEventListener('keydown', event => {
+    if (event.key === 'Enter') MG.$('#quickPasswordBtn')?.click();
   });
+  MG.$('#quickFingerprintBtn')?.addEventListener('click', () => runLogin(async () => {
+    try {
+      await unlockLocally(MG.verifyFingerprint, () => MG.showToast('Fingerprint check failed. Try your password or an OTP.'));
+    } catch {
+      MG.showToast('Could not use fingerprint. Try your password or an OTP.');
+    }
+  }));
 
   // First-login device setup
   MG.$('#setupPasswordBtn')?.addEventListener('click', async function () {
@@ -506,6 +542,8 @@ MG.bindEvents = function() {
     }
     if (err) err.classList.add('hidden');
     try {
+      if (!await MG.verifiedFirebaseSession(_pendingMobile)) { changeNumber(); return; }
+      MG.$('#setupPasswordInput').value = MG.$('#setupPasswordConfirm').value = '';
       await MG.setDevicePassword(_pendingMobile, p1);
       MG.showToast('Password saved for this device');
       MG.setSiteAuth(_pendingMobile);
@@ -518,6 +556,7 @@ MG.bindEvents = function() {
     var btn = MG.$('#setupFingerprintBtn');
     if (btn) { btn.disabled = true; }
     try {
+      if (!await MG.verifiedFirebaseSession(_pendingMobile)) { changeNumber(); return; }
       await MG.registerFingerprint(_pendingMobile);
       MG.showToast('Fingerprint enabled');
       MG.setSiteAuth(_pendingMobile);
@@ -632,11 +671,12 @@ if (false && _bb) _bb.addEventListener('click', () => {
   var _cb = MG.$('#closeBooking'); if (_cb) _cb.addEventListener('click', function(){ MG.closeBooking(); });
   MG.$$('.hrs-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      MG.state.selectedHours = parseInt(btn.dataset.hrs, 10) || 1;
+      MG.state.selectedHours = Number(btn.dataset.hrs) || 1;
       MG.selectedPackageDisc = parseInt(btn.dataset.disc, 10) || 0;
       MG.$$('.hrs-btn').forEach(b => b.classList.remove('active-hrs'));
       btn.classList.add('active-hrs');
       MG.updateBookingTotal();
+      document.getElementById('standardAppointmentPicker')?.appointmentPicker?.refresh();
     });
   });
   document.querySelectorAll('.track-card').forEach(function (btn) {
@@ -693,7 +733,7 @@ if (false && _bb) _bb.addEventListener('click', () => {
 
 // Boot
 document.addEventListener('DOMContentLoaded', function () {
-  try { MG.init(); } catch (e) { console.error('MG.init', e); }
+  void MG.init().catch(error => console.warn('[Mentor] initialization failed', error?.code || 'unavailable'));
   try {
     var appEl = document.getElementById('app');
     var mp = document.getElementById('mobilePrompt');

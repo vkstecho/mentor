@@ -1,4 +1,4 @@
-const CACHE = 'mentor-pwa-v17-payment-recovery';
+const CACHE = 'mentor-pwa-v21-phone-auth';
 const PRECACHE = [
   './',
   './mentor.html',
@@ -7,6 +7,7 @@ const PRECACHE = [
   './favicon-192.png',
   './favicon.ico',
   './css/guidance.css',
+  './css/appointments.css',
   './assets/mentor-icon.jpg',
   './icons/icon-512-maskable.png',
   './icons/icon-192-maskable.png',
@@ -17,12 +18,15 @@ const PRECACHE = [
   './js/mg-config.js',
   './js/mg-state.js',
   './js/mg-auth.js',
+  './js/mg-phone-auth.mjs',
   './js/mg-data.js',
   './js/mg-ui.js',
   './js/mg-pwa.js',
   './js/mg-tracks.js',
   './js/mg-workspace.js',
   './js/mg-mentor.js',
+  './js/mg-appointments.js',
+  './js/mg-sessions.js',
   './js/mg-profile.js',
   './js/mg-app.js',
   './js/mg-i18n.js',
@@ -46,7 +50,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = e.request.url || '';
-  const netFirst = /\.(html|js)(\?|$)/i.test(url) || url.endsWith('/') || url.includes('mentor.html') || url.includes('manifest.json');
+  const netFirst = /\.(html|m?js)(\?|$)/i.test(url) || url.endsWith('/') || url.includes('mentor.html') || url.includes('manifest.json');
   if (netFirst) {
     e.respondWith(
       fetch(e.request).then((res) => {

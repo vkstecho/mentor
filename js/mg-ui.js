@@ -689,6 +689,7 @@ MG.initFastBooking = function () {
   var payBtn = document.getElementById('fbPayNowBtn');
 
   if (!card || !durSel || !trackSel) return;
+  const picker = MG.createAppointmentPicker?.(document.getElementById('fastAppointmentPicker'), () => Number(durSel.value));
 
   function calcAmount(trackId, hours) {
     const track = MG.TRACKS[trackId];
@@ -732,6 +733,7 @@ MG.initFastBooking = function () {
         card.classList.toggle('hidden');
         if (!card.classList.contains('hidden')) {
           refreshLabels();
+          picker?.refresh();
           card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       });
@@ -746,7 +748,7 @@ MG.initFastBooking = function () {
       refreshLabels();
       if (payBtn && !payBtn.disabled) payBtn.innerHTML = payLabel;
     }
-    durSel.addEventListener('change', refreshForm);
+    durSel.addEventListener('change', () => { refreshForm(); picker?.refresh(); });
     trackSel.addEventListener('change', refreshForm);
     probInput?.addEventListener('input', () => { if (payBtn && !payBtn.disabled) payBtn.innerHTML = payLabel; });
 
@@ -763,23 +765,31 @@ MG.initFastBooking = function () {
         }
         var topicId = MG.getBookingTopicId(trackId);
         var res = calcAmount(trackId, hours);
+        const appointmentStart = picker?.getSelection();
+        if (!appointmentStart) {
+          MG.showToast('Select an available appointment before payment.');
+          return;
+        }
         const controls = [payBtn, durSel, trackSel, probInput].filter(Boolean);
         controls.forEach(control => { control.disabled = true; });
+        picker.busy(true);
         payBtn.setAttribute('aria-busy', 'true');
         let result;
         try {
-          result = await MG.startSecureRazorpayBooking({ track: trackId, topic: problem, topicId, hours, amount: res?.amount }, {
+          result = await MG.startSecureRazorpayBooking({ track: trackId, topic: problem, topicId, hours, amount: res?.amount, appointmentStart }, {
             onProgress: message => { payBtn.textContent = message; },
+            onAppointment: appointment => picker.setHold(appointment),
             onPrice(amount, booking) {
               if (priceEl) priceEl.textContent = '₹' + amount.toLocaleString('en-IN');
               if (discEl) discEl.textContent = booking?.discountPct > 0 ? 'Confirmed · ' + booking.discountPct + '% package discount' : 'Confirmed fee';
             },
-            onPaid() { if (probInput) probInput.value = ''; }
+            onPaid() { picker.clear(); if (probInput) probInput.value = ''; }
           });
         } finally {
           controls.forEach(control => { control.disabled = false; });
+          picker.busy(false);
           payBtn.removeAttribute('aria-busy');
-          if (result?.status === 'verification_pending') payBtn.textContent = 'Check payment status';
+          if (['verification_pending', 'support_required'].includes(result?.status)) payBtn.textContent = 'Check payment status';
           else payBtn.innerHTML = payLabel;
         }
       });

@@ -6,6 +6,7 @@
 
 MG.state = {
   mobile: null,
+  authUid: null,
   _chatUnsub: null,
   _dataUnsub: null,
   _lastLocalChatWrite: 0,
